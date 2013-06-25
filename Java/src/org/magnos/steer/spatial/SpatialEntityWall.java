@@ -10,15 +10,17 @@ public class SpatialEntityWall extends Wall implements SpatialEntity
 	public final Vector center = new Vector();
 	public boolean inert;
 	public long groups;
+	public long collisionGroups;
 	
 	public SpatialEntityWall()
 	{
 	}
 	
-	public SpatialEntityWall(float x0, float y0, float x1, float y1, long groups)
+	public SpatialEntityWall(float x0, float y0, float x1, float y1, long groups, long collisionGroups)
 	{
 		this.set( x0, y0, x1, y1 );
 		this.groups = groups;
+		this.collisionGroups = collisionGroups; 
 		this.inert = false;
 	}
 	
@@ -47,6 +49,12 @@ public class SpatialEntityWall extends Wall implements SpatialEntity
 	public long getSpatialGroups()
 	{
 		return groups;
+	}
+	
+	@Override
+	public long getSpatialCollisionGroups()
+	{
+		return collisionGroups;
 	}
 
 	@Override

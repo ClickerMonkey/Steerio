@@ -9,6 +9,8 @@ public class SpatialGridCell extends LinkedList<SpatialGridNode>
 	public final float t, b, r, l;
 	// The location of this cell on the grid.
 	public final int x, y;
+	// The look-backs for entity's that overlap cells on the right and bottom.
+	public int lookbackX, lookbackY;
 
 	public SpatialGridCell(int cellX, int cellY, SpatialGrid db) 
 	{
@@ -18,5 +20,8 @@ public class SpatialGridCell extends LinkedList<SpatialGridNode>
 		this.b = t + db.size.y;
 		this.l = (x * db.size.x) + db.offset.x;
 		this.r = l + db.size.x;
+		this.lookbackX = 0;
+		this.lookbackY = 0;
 	}
+	
 }

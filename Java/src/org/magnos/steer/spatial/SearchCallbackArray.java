@@ -12,6 +12,7 @@ public class SearchCallbackArray implements SearchCallback
 	public final int capacity;
 	public final SpatialEntity[] entity;
 	public final float[] overlap;
+	public int count;
 
 	public SearchCallbackArray( int capacity )
 	{

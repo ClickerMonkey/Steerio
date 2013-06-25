@@ -4,9 +4,11 @@ package org.magnos.steer.spatial.array;
 import java.util.Arrays;
 
 import org.magnos.steer.Vector;
+import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.spatial.SpatialUtility;
 
 
 // A SpatialDatabase that uses Brute-Force
@@ -56,6 +58,63 @@ public class SpatialArray implements SpatialDatabase
 	}
 
 	@Override
+	public int handleCollisions( CollisionCallback callback )
+	{
+		int collisionCount = 0;
+		
+		callback.onCollisionStart();
+		
+		for (int j = 0; j < count - 1; j++)
+		{
+			final SpatialEntity a = entities[j];
+			
+			for (int k = j + 1; k < count; k++)
+			{
+				final SpatialEntity b = entities[k];
+				
+				// Based on their groups, determine if they are applicable for collision
+				final boolean applicableA = (a.getSpatialCollisionGroups() & b.getSpatialGroups()) != 0;
+				final boolean applicableB = (b.getSpatialCollisionGroups() & a.getSpatialGroups()) != 0;
+				
+				// At least one needs to be...
+				if ( applicableA || applicableB )
+				{
+					// Calculate overlap
+					final float overlap = SpatialUtility.getOverlap( a, b.getPosition(), b.getRadius() );
+					
+					// If they are intersecting...
+					if ( overlap > 0 )
+					{
+						// If they both can intersect with each other, make sure to 
+						// let the callback know that it's a duplicate collision
+						// notification, it's just going the other way.
+						boolean second = false;
+						
+						// If A can collide with B, notify A of a collision.
+						if ( applicableA )
+						{
+							callback.onCollision( a, b, overlap, collisionCount, second );
+							second = true;
+						}
+						
+						// If B can collide with A, notify B of a collision
+						if ( applicableB )
+						{
+							callback.onCollision( b, a, overlap, collisionCount, second );
+						}
+						
+						collisionCount++;
+					}
+				}
+			}
+		}
+		
+		callback.onCollisionEnd();
+		
+		return collisionCount;
+	}
+	
+	@Override
 	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
 		int intersectCount = 0;
@@ -66,7 +125,7 @@ public class SpatialArray implements SpatialDatabase
 
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				final float overlap = getOverlap( a, offset, radius );
+				final float overlap = SpatialUtility.getOverlap( a, offset, radius );
 
 				if (overlap > 0 && callback.onFound( a, overlap, intersectCount, offset, radius, max, collidesWith ))
 				{
@@ -92,7 +151,9 @@ public class SpatialArray implements SpatialDatabase
 		{
 			final SpatialEntity a = entities[j];
 
-			if ((collidesWith & a.getSpatialGroups()) != 0 && contains( a, offset, radius ) && callback.onFound( a, 0, containCount, offset, radius, max, collidesWith ))
+			if ((collidesWith & a.getSpatialGroups()) != 0 && 
+				 SpatialUtility.contains( a, offset, radius ) && 
+				 callback.onFound( a, 0, containCount, offset, radius, max, collidesWith ))
 			{
 				containCount++;
 
@@ -128,54 +189,13 @@ public class SpatialArray implements SpatialDatabase
 
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				final float overlap = -getOverlap( a, offset, 0 );
-				int place = 0;
-
-				while (place < near && overlap > distance[place])
-				{
-					place++;
-				}
-
-				if (place < k)
-				{
-					final int first = Math.max( 1, place );
-
-					for (int i = near - 1; i > first; i--)
-					{
-						nearest[i] = nearest[i - 1];
-						distance[i] = distance[i - 1];
-					}
-
-					nearest[place] = a;
-					distance[place] = overlap;
-
-					if (near < k)
-					{
-						near++;
-					}
-				}
+				final float overlap = -SpatialUtility.getOverlap( a, offset, 0 );
+				
+				near = SpatialUtility.accumulateKnn( overlap, a, near, k, distance, nearest );
 			}
 		}
 
 		return near;
-	}
-
-	private float getOverlap( SpatialEntity a, Vector bpos, float bradius )
-	{
-		final Vector apos = a.getPosition();
-		final float dx = apos.x - bpos.x;
-		final float dy = apos.y - bpos.y;
-		final float sr = a.getRadius() + bradius;
-		return (sr * sr) - (dx * dx + dy * dy);
-	}
-
-	private boolean contains( SpatialEntity a, Vector bpos, float bradius )
-	{
-		final Vector apos = a.getPosition();
-		final float dx = apos.x - bpos.x;
-		final float dy = apos.y - bpos.y;
-		final float mr = bradius - a.getRadius();
-		return (dx * dx + dy * dy) <= (mr * mr);
 	}
 
 }

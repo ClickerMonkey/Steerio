@@ -40,8 +40,8 @@ public class SteerSprite extends BaseSteerSubject implements Entity
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		SteerBasicExample.drawVector( gr, color, position, direction, radius * 1.2f, false );
-		SteerBasicExample.drawCircle( gr, color, position, radius, false );
+		SteerBasicExample.drawVector( gr, color, position, direction, radius * 1.2f, true );
+		SteerBasicExample.drawCircle( gr, color, position, radius, true );
 	}
 
 	@Override

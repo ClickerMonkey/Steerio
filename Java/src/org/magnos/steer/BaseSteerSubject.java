@@ -14,6 +14,7 @@ public class BaseSteerSubject implements SteerSubject
 	public float accelerationMax;
 	public float radius;
 	public long groups = SpatialDatabase.ALL_GROUPS;
+	public long collisionGroups = SpatialDatabase.ALL_GROUPS;
 	public boolean dynamic = true;
 	public boolean inert = false;
 	public SteerController controller;
@@ -66,6 +67,12 @@ public class BaseSteerSubject implements SteerSubject
 		return groups;
 	}
 
+	@Override
+	public long getSpatialCollisionGroups()
+	{
+		return collisionGroups;
+	}
+	
 	@Override
 	public boolean isStatic()
 	{

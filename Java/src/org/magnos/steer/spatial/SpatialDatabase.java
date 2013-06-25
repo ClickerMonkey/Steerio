@@ -27,6 +27,17 @@ public interface SpatialDatabase
 	 * @return The number of active entities in the database.
 	 */
 	public int refresh();
+	
+	/**
+	 * Notifies the given callback of all collisions that exist in the current 
+	 * state of the spatial database.
+	 *  
+	 * @param callback
+	 * 		The callback to notify on each collision.
+	 * @return
+	 * 		The number of collisions detected.
+	 */
+	public int handleCollisions( CollisionCallback callback );
 
 	/**
 	 * Notifies the given callback of a maximum number of entities that are in

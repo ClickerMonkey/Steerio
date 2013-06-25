@@ -12,6 +12,8 @@ public interface SpatialEntity
 	public float getRadius();
 
 	public long getSpatialGroups();
+	
+	public long getSpatialCollisionGroups();
 
 	public boolean isStatic();
 

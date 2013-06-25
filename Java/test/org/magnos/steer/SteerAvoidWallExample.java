@@ -46,10 +46,10 @@ public class SteerAvoidWallExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		walls = new ArrayList<SpatialEntityWall>();
-		walls.add( new SpatialEntityWall( 24, 24, width - 24, 24, GROUP_WALL ) );
-		walls.add( new SpatialEntityWall( width - 24, 24, width - 24, height - 24, GROUP_WALL ) );
-		walls.add( new SpatialEntityWall( width - 24, height - 24, 24, height - 24, GROUP_WALL ) );
-		walls.add( new SpatialEntityWall( 24, height - 24, 24, 24, GROUP_WALL ) );
+		walls.add( new SpatialEntityWall( 24, 24, width - 24, 24, GROUP_WALL, GROUP_WALL ) );
+		walls.add( new SpatialEntityWall( width - 24, 24, width - 24, height - 24, GROUP_WALL, GROUP_WALL ) );
+		walls.add( new SpatialEntityWall( width - 24, height - 24, 24, height - 24, GROUP_WALL, GROUP_WALL ) );
+		walls.add( new SpatialEntityWall( 24, height - 24, 24, 24, GROUP_WALL, GROUP_WALL ) );
 		
 		database = new SpatialArray( 16 );
 		
