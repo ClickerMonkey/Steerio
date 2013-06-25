@@ -1,0 +1,41 @@
+<project name="Steerio" default="build" basedir=".">
+	<description>Build for Steerio - The Steering Behavior Library</description>
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="bin" location=".bin"/>
+	<property name="version" value="1.0.0"/>
+	<property name="project" value="steerio"/>
+
+	<target name="init">
+		<!-- Create the bin directory structure used by compile -->
+		<mkdir dir="${bin}"/>
+		<!-- Create the distribution directory -->
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${bin} -->
+		<javac srcdir="${src}" destdir="${bin}" optimize="on" />
+	</target>
+
+	<target name="build" depends="compile" description="generate the build" >
+		<!-- Put everything in ${build} into the testility-${version}.jar file -->
+		<jar jarfile="${build}/${project}-${version}.jar" basedir="${bin}" compress="true"/>
+	</target>
+
+	<target name="build-src" depends="compile" description="generate the build" >
+		<!-- Put everything in ${build} into the testility-${version}.jar file -->
+		<jar jarfile="${build}/${project}-src-${version}.jar" basedir="${bin}" compress="true">
+		    <fileset dir="${src}"/>
+		</jar>
+	</target>
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${bin} and ${dist} directory trees -->
+		<delete dir="${bin}"/>
+		<delete dir="${build}"/>
+	</target>
+		
+</project>
