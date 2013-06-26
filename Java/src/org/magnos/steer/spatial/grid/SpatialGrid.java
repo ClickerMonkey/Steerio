@@ -86,6 +86,7 @@ public class SpatialGrid implements SpatialDatabase
 		final SpatialGridCell cell = node.cell;
 		final Vector pos = entity.getPosition();
 		final float rad = entity.getRadius();
+		
 		final int cx = getCellX( pos.x - rad, -1, -1 );
 		final int cy = getCellY( pos.y - rad, -1, -1 );
 		
@@ -111,14 +112,11 @@ public class SpatialGrid implements SpatialDatabase
 		
 		final int actualX = getCellX( pos.x - rad );
 		final int actualY = getCellY( pos.y - rad );
-		final int l = getCellX( pos.x - rad, 0, width - 1 );
-		final int r = getCellX( pos.x + rad, 0, width - 1 );
-		final int t = getCellY( pos.y - rad, 0, height - 1 );
-		final int b = getCellY( pos.y + rad, 0, height - 1 );
+		final CellSpan span = getCellSpan( pos, rad, false, new CellSpan() );
 		
-		for (int y = t; y <= b; y++)
+		for (int y = span.T; y <= span.B; y++)
 		{
-			for (int x = l; x <= r; x++)
+			for (int x = span.L; x <= span.R; x++)
 			{
 				SpatialGridCell currentCell = cells[y][x];
 				currentCell.lookbackX = Math.max( currentCell.lookbackX, x - actualX );
@@ -190,7 +188,8 @@ public class SpatialGrid implements SpatialDatabase
 		callback.onCollisionStart();
 		
 		LinkedNode<SpatialGridNode> linkedNode = entities.head.next;
-
+		CellSpan span = new CellSpan();
+		
 		while (linkedNode != entities.head)
 		{
 			final SpatialGridNode node = linkedNode.value;
@@ -199,8 +198,30 @@ public class SpatialGrid implements SpatialDatabase
 			final float rad = entity.getRadius();
 			final LinkedNode<SpatialGridNode> nextNode = linkedNode.next;
 			
+			getCellSpan( pos, rad, false, span );
 			
-			// TODO entity
+			for (int y = span.T; y <= span.B; y++)
+			{
+				for (int x = span.L; x <= span.R; x++)
+				{
+					SpatialGridCell cell = cells[y][x];
+					
+					if ( cell == node.cell )
+					{
+						collisionCount += handleCollisions( entity, node.cellNode.next, cell.head, callback );
+					}
+					else
+					{
+						collisionCount += handleCollisions( entity, cell.head.next, cell.head, callback );
+					}
+				}
+			}
+			
+			// If the current entity is partially outside, check collisions with other entities
+			if ( isOutsidePartially( pos, rad ) )
+			{
+				collisionCount += handleCollisions( entity, outside.head.next, outside.head, callback );
+			}
 			
 			// Next entity...
 			linkedNode = nextNode;
@@ -210,19 +231,67 @@ public class SpatialGrid implements SpatialDatabase
 		
 		return collisionCount;
 	}
+	
+	private int handleCollisions( SpatialEntity a, LinkedNode<SpatialGridNode> start, LinkedNode<SpatialGridNode> end, CollisionCallback callback)
+	{
+		int collisionCount = 0;
+		
+		while ( start != end )
+		{
+			LinkedNode<SpatialGridNode> next = start.next;
+			SpatialEntity b = start.value.entity;
+			
+			// Based on their groups, determine if they are applicable for collision
+			final boolean applicableA = (a.getSpatialCollisionGroups() & b.getSpatialGroups()) != 0;
+			final boolean applicableB = (b.getSpatialCollisionGroups() & a.getSpatialGroups()) != 0;
+			
+			// At least one needs to be...
+			if ( applicableA || applicableB )
+			{
+				// Calculate overlap
+				final float overlap = SpatialUtility.getOverlap( a, b.getPosition(), b.getRadius() );
+				
+				// If they are intersecting...
+				if ( overlap > 0 )
+				{
+					// If they both can intersect with each other, make sure to 
+					// let the callback know that it's a duplicate collision
+					// notification, it's just going the other way.
+					boolean second = false;
+					
+					// If A can collide with B, notify A of a collision.
+					if ( applicableA )
+					{
+						callback.onCollision( a, b, overlap, collisionCount, second );
+						second = true;
+					}
+					
+					// If B can collide with A, notify B of a collision
+					if ( applicableB )
+					{
+						callback.onCollision( b, a, overlap, collisionCount, second );
+					}
+					
+					collisionCount++;
+				}
+			}
+			
+			start = next;
+		}
+		
+		return collisionCount;
+	}
 
 	@Override
 	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
+		final CellSpan span = getCellSpan( offset, radius, true, new CellSpan() );
+		
 		int intersectCount = 0;
-		int cellL = SpatialUtility.floor( (offset.x - radius) * sizeInversed.x, 0, width );
-		int cellR = SpatialUtility.ceil( (offset.x + radius) * sizeInversed.x, 0, width );
-		int cellT = SpatialUtility.floor( (offset.y - radius) * sizeInversed.y, 0, height );
-		int cellB = SpatialUtility.ceil( (offset.y + radius) * sizeInversed.y, 0, height );
 
-		for (int y = cellT; y < cellB; y++)
+		for (int y = span.T; y <= span.B; y++)
 		{
-			for (int x = cellL; x < cellR; x++)
+			for (int x = span.L; x <= span.R; x++)
 			{
 				final SpatialGridCell cell = cells[y][x];
 				final LinkedNode<SpatialGridNode> cellHead = cell.head;
@@ -236,15 +305,17 @@ public class SpatialGrid implements SpatialDatabase
 					if ((entity.getSpatialGroups() & collidesWith) != 0)
 					{
 						final float overlap = SpatialUtility.getOverlap( entity, offset, radius );
+						
 						if (overlap > 0)
 						{
 							if (callback.onFound( entity, overlap, intersectCount, offset, radius, max, collidesWith ))
 							{
 								intersectCount++;
+								
 								if (intersectCount >= max)
 								{
-									y = cellB;
-									x = cellR;
+									y = span.B + 1;
+									x = span.R + 1;
 									break;
 								}
 							}
@@ -262,15 +333,13 @@ public class SpatialGrid implements SpatialDatabase
 	@Override
 	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
+		final CellSpan span = getCellSpan( offset, radius, true, new CellSpan() );
+		
 		int containedCount = 0;
-		int cellL = SpatialUtility.floor( (offset.x - radius) * sizeInversed.x, 0, width );
-		int cellR = SpatialUtility.ceil( (offset.x + radius) * sizeInversed.x, 0, width );
-		int cellT = SpatialUtility.floor( (offset.y - radius) * sizeInversed.y, 0, height );
-		int cellB = SpatialUtility.ceil( (offset.y + radius) * sizeInversed.y, 0, height );
 
-		for (int y = cellT; y < cellB; y++)
+		for (int y = span.T; y <= span.B; y++)
 		{
-			for (int x = cellL; x < cellR; x++)
+			for (int x = span.L; x <= span.R; x++)
 			{
 				final SpatialGridCell cell = cells[y][x];
 				final LinkedNode<SpatialGridNode> cellHead = cell.head;
@@ -288,10 +357,11 @@ public class SpatialGrid implements SpatialDatabase
 							if (callback.onFound( entity, 0, containedCount, offset, radius, max, collidesWith ))
 							{
 								containedCount++;
+								
 								if (containedCount >= max)
 								{
-									y = cellB;
-									x = cellR;
+									y = span.B + 1;
+									x = span.R + 1;
 									break;
 								}
 							}
@@ -306,20 +376,15 @@ public class SpatialGrid implements SpatialDatabase
 		return containedCount;
 	}
 
+	// TODO implementation that takes advantage of the cells
 	@Override
 	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
 	{
-		if (k == 0 || k > nearest.length || k > distance.length)
+		if (!SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
 			return 0;
 		}
-
-		for (int i = 0; i < k; i++)
-		{
-			nearest[i] = null;
-			distance[i] = Float.MAX_VALUE;
-		}
-
+		
 		int near = 0;
 
 		final LinkedNode<SpatialGridNode> headNode = entities.head;
@@ -342,34 +407,69 @@ public class SpatialGrid implements SpatialDatabase
 
 		return near;
 	}
-
-	// Computes the x cell the entity exists in, or -1 if it doesn't exist.
-	private int getCellX( float px, int outsideLeft, int outsideRight )
-	{
-		final int cx = (int)((px - offset.x) * sizeInversed.x);
-		return (cx < 0 ? outsideLeft : (cx >= width ? outsideRight : cx));
-	}
 	
 	private int getCellX( float px )
 	{
 		return (int)((px - offset.x) * sizeInversed.x);
 	}
 
-	// Computes the y cell the entity exists in, or -1 if it doesn't exist.
-	private int getCellY( float py, int outsideTop, int outsideBottom )
+	private int getCellX( float px, int outsideLeft, int outsideRight )
 	{
-		final int cy = (int)((py - offset.y) * sizeInversed.y);
-		return (cy < 0 ? outsideTop : (cy >= height ? outsideBottom : cy));
+		final int cx = (int)((px - offset.x) * sizeInversed.x);
+		return (cx < 0 ? outsideLeft : (cx >= width ? outsideRight : cx));
 	}
 	
 	private int getCellY( float py )
 	{
 		return (int)((py - offset.y) * sizeInversed.y);
 	}
-	
-	private void getCellSpan(float left, float top, float right, float bottom, CellSpan out)
+
+	private int getCellY( float py, int outsideTop, int outsideBottom )
 	{
+		final int cy = (int)((py - offset.y) * sizeInversed.y);
+		return (cy < 0 ? outsideTop : (cy >= height ? outsideBottom : cy));
+	}
+	
+	private CellSpan getCellSpan(Vector center, float radius, boolean lookback, CellSpan out)
+	{
+		return getCellSpan( center.x - radius, center.y - radius, center.x + radius, center.y + radius, lookback, out );
+	}
+	
+	private CellSpan getCellSpan(float left, float top, float right, float bottom, boolean lookback, CellSpan out)
+	{
+		out.L = getCellX( left, 0, width - 1 );
+		out.R = getCellX( right, 0, width - 1 );
+		out.T = getCellY( top, 0, height - 1 );
+		out.B = getCellY( bottom, 0, height - 1 );
 		
+		if ( lookback )
+		{
+			int maxX = 0;
+			int maxY = 0;
+			
+			for (int y = out.T; y <= out.B; y++)
+			{
+				maxX = Math.max( maxX, cells[y][out.L].lookbackX );
+			}
+			
+			for (int x = out.L; x <= out.R; x++)
+			{
+				maxY = Math.max( maxY, cells[out.T][x].lookbackY );
+			}
+			
+			out.L = Math.max( 0, out.L - maxX );
+			out.T = Math.max( 0, out.T - maxY );
+		}
+		
+		return out;
+	}
+	
+	public boolean isOutsidePartially(Vector center, float radius)
+	{
+		return (center.x - radius < l || 
+				  center.x + radius >= r ||
+				  center.y - radius < t || 
+				  center.y + radius >= b);
 	}
 	
 	public class CellSpan

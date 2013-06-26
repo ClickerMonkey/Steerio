@@ -6,6 +6,22 @@ import org.magnos.steer.Vector;
 public class SpatialUtility
 {
 
+	public static boolean prepareKnn( int k, SpatialEntity[] nearest, float[] distance )
+	{
+		if (k == 0 || k > nearest.length || k > distance.length)
+		{
+			return false;
+		}
+		
+		for (int i = 0; i < k; i++)
+		{
+			nearest[i] = null;
+			distance[i] = Float.MAX_VALUE;
+		}
+		
+		return true;
+	}
+
 	public static int accumulateKnn(float overlap, SpatialEntity a, int near, int k, float[] distance, SpatialEntity[] nearest)
 	{
 		int place = 0;
@@ -70,5 +86,6 @@ public class SpatialUtility
 		if (v > max) v = max;
 		return v;
 	}
+		
 	
 }

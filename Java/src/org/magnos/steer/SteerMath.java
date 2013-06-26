@@ -346,6 +346,11 @@ public class SteerMath
 	{
 		return random.nextLong();
 	}
+	
+	public static long randomLong( long min, long max )
+	{
+		return (long)((max - min + 1 ) * random.nextDouble() + min);
+	}
 
 	public static boolean randomBoolean()
 	{

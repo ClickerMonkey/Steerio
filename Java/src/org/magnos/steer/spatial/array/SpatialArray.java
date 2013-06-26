@@ -170,17 +170,11 @@ public class SpatialArray implements SpatialDatabase
 	@Override
 	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
 	{
-		if (count == 0 || k == 0 || k > nearest.length || k > distance.length)
+		if (count == 0 || !SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
 			return 0;
 		}
-
-		for (int i = 0; i < k; i++)
-		{
-			nearest[i] = null;
-			distance[i] = Float.MAX_VALUE;
-		}
-
+		
 		int near = 0;
 
 		for (int j = 0; j < count; j++)
