@@ -45,6 +45,10 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	public static final long GROUP_MAX = 15;
 	public static final float VELOCITY_MAX = 100.0f;
 	
+	public static final Ellipse2D.Float ellipse = new Ellipse2D.Float();
+	public static final Line2D.Float line = new Line2D.Float();
+	public static final Rectangle2D.Float rect = new Rectangle2D.Float();
+	
 	public EntityList<BouncyBall> balls;
 	public SpatialDatabase database;
 	public int ballCount;
@@ -53,6 +57,11 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	public float[] knnOverlap;
 	public boolean playing;
 	public Vector mouse = new Vector();
+	
+	public boolean viewDatabase = true;
+	public boolean viewCollision = true;
+	public boolean viewKnn = true;
+	public boolean viewHelp = false;
 	
 	public int statUniqueCollisions;
 	public int statMutualCount;
@@ -111,6 +120,18 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			balls.get( i ).expire();
 		}
 	}
+	
+	private void rebuildDatabase(SpatialDatabase newDatabase)
+	{
+		database = newDatabase;
+		
+		for (int i = 0; i < balls.size(); i++)
+		{
+			database.add( balls.get(i) );
+		}
+		
+		System.out.println( "SpatialDatabase changed to " + newDatabase.getClass().getSimpleName() );
+	}
 
 	@Override
 	public void input( GameInput input )
@@ -118,6 +139,44 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		if (input.keyDown[KeyEvent.VK_ESCAPE])
 		{
 			playing = false;
+		}
+
+		if (input.keyUp[KeyEvent.VK_H])
+		{
+			viewHelp = !viewHelp;
+		}
+		if (input.keyUp[KeyEvent.VK_F1])
+		{
+			viewDatabase = !viewDatabase;
+		}
+		if (input.keyUp[KeyEvent.VK_F2])
+		{
+			viewCollision = !viewCollision;
+		}
+		if (input.keyUp[KeyEvent.VK_F3])
+		{
+			viewKnn = !viewKnn;
+		}
+		
+		if (input.keyUp[KeyEvent.VK_1])
+		{
+			rebuildDatabase( new SpatialArray( ballCount ) );
+		}
+		
+		if (input.keyUp[KeyEvent.VK_2])
+		{
+			rebuildDatabase( new SpatialGrid( 20, 15, 32, 32, 0, 0 ) );
+		}
+		
+		if (input.keyUp[KeyEvent.VK_UP])
+		{
+			ballCount <<= 1;
+			fill();
+		}
+		if (input.keyUp[KeyEvent.VK_DOWN] && (ballCount >> 1) > 0)
+		{
+			ballCount >>= 1;
+			fill();
 		}
 		
 		mouse.set( input.mouseX, input.mouseY );
@@ -130,28 +189,34 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		
 		database.refresh();
 		
-		statCollisionStartNanos = System.nanoTime();
-		statUniqueCollisions = database.handleCollisions( this );
-		statCollisionEndNanos = System.nanoTime();
-		statCollisionSeconds = (statCollisionEndNanos - statCollisionStartNanos) * 0.000000001;
+		if ( viewCollision )
+		{
+			statCollisionStartNanos = System.nanoTime();
+			statUniqueCollisions = database.handleCollisions( this );
+			statCollisionEndNanos = System.nanoTime();
+			statCollisionSeconds = (statCollisionEndNanos - statCollisionStartNanos) * 0.000000001;	
+		}
 	}
 
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		if ( database instanceof SpatialGrid )
+		if ( viewDatabase )
 		{
-			SpatialGrid grid = (SpatialGrid)database;
-			Rectangle2D.Float rect = new Rectangle2D.Float();
-			
-			gr.setColor( Color.lightGray );
-			for (int y = 0; y < grid.height; y++)
+			if ( database instanceof SpatialGrid )
 			{
-				for (int x = 0; x < grid.width; x++)
+				SpatialGrid grid = (SpatialGrid)database;
+				
+				gr.setColor( Color.lightGray );
+				for (int y = 0; y < grid.height; y++)
 				{
-					SpatialGridCell cell = grid.cells[y][x];
-					rect.setFrameFromDiagonal( cell.l, cell.t, cell.r, cell.b );
-					gr.draw( rect );
+					for (int x = 0; x < grid.width; x++)
+					{
+						SpatialGridCell cell = grid.cells[y][x];
+						rect.setFrameFromDiagonal( cell.l, cell.t, cell.r, cell.b );
+						gr.draw( rect );
+//						gr.drawString( String.format("{%d,%d}", cell.lookbackX, cell.lookbackY ), cell.l + 2, cell.t + 14 );
+					}
 				}
 			}
 		}
@@ -159,38 +224,60 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		gr.setColor( Color.green );
 		balls.draw( state, gr, scene );
 
-		statKnnStartNanos = System.nanoTime();
-		statKnnFound = database.knn( mouse, knn, SpatialDatabase.ALL_GROUPS, knnNeighbors, knnOverlap );
-		statKnnEndNanos = System.nanoTime();
-		statKnnSeconds = (statKnnEndNanos - statKnnStartNanos) * 0.000000001;
-		
-		gr.setColor( Color.darkGray );
-		Line2D.Float line = new Line2D.Float();
-		line.x1 = mouse.x;
-		line.y1 = mouse.y;
-		statKnnMax = 0.0f;
-		
-		for (int i = 0; i < statKnnFound; i++)
+		if ( viewKnn )
 		{
-			SpatialEntity se = knnNeighbors[i];
-			statKnnMax = Math.max( statKnnMax, knnOverlap[i] );
+			statKnnStartNanos = System.nanoTime();
+			statKnnFound = database.knn( mouse, knn, SpatialDatabase.ALL_GROUPS, knnNeighbors, knnOverlap );
+			statKnnEndNanos = System.nanoTime();
+			statKnnSeconds = (statKnnEndNanos - statKnnStartNanos) * 0.000000001;
 			
-			line.x2 = se.getPosition().x;
-			line.y2 = se.getPosition().y;
-			gr.draw( line );
+			gr.setColor( Color.darkGray );
+			line.x1 = mouse.x;
+			line.y1 = mouse.y;
+			statKnnMax = 0.0f;
+			
+			for (int i = 0; i < statKnnFound; i++)
+			{
+				SpatialEntity se = knnNeighbors[i];
+				statKnnMax = Math.max( statKnnMax, knnOverlap[i] );
+				
+				line.x2 = se.getPosition().x;
+				line.y2 = se.getPosition().y;
+				gr.draw( line );
+			}
 		}
 		
 		int textY = 4;
 		gr.setColor( Color.white );
-		gr.drawString( String.format("Unique: %d", statUniqueCollisions), 10, textY += 16 );
-		gr.drawString( String.format("Total: %d", statTotalCollisions), 10, textY += 16 );
-		gr.drawString( String.format("Mutual: %d", statMutualCount), 10, textY += 16 );
-		gr.drawString( String.format("One-sided: %d", statOnesideCount), 10, textY += 16 );
-		gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
-		gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );
-		gr.drawString( String.format("KNN Elapsed: %.9f", statKnnSeconds), 10, textY += 16 );
-		gr.drawString( String.format("KNN Found: %d", statKnnFound), 10, textY += 16 );
-		gr.drawString( String.format("KNN Max: %.2f", statKnnMax), 10, textY += 16 );
+		
+		gr.drawString( "Help [H]", 10, textY += 16 );
+		
+		if ( viewHelp )
+		{
+			gr.drawString( "View Database Debugging [F1]", 10, textY += 16 );
+			gr.drawString( "View Collision Stats [F2]", 10, textY += 16 );
+			gr.drawString( "View KNN Stats [F3]", 10, textY += 16 );
+		}
+		
+		gr.drawString( String.format("Balls [UP/DOWN]: %d", ballCount), 10, textY += 16 );
+		gr.drawString( String.format("Database [1/2]: %s", database.getClass().getSimpleName()), 10, textY += 16 );
+		
+		if ( viewCollision )
+		{
+			gr.drawString( String.format("Unique: %d", statUniqueCollisions), 10, textY += 16 );
+			gr.drawString( String.format("Total: %d", statTotalCollisions), 10, textY += 16 );
+			gr.drawString( String.format("Mutual: %d", statMutualCount), 10, textY += 16 );
+			gr.drawString( String.format("One-sided: %d", statOnesideCount), 10, textY += 16 );
+			gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
+			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
+		}
+		
+		if ( viewKnn )
+		{
+			gr.drawString( String.format("KNN Elapsed: %.9f", statKnnSeconds), 10, textY += 16 );
+			gr.drawString( String.format("KNN Found: %d", statKnnFound), 10, textY += 16 );
+			gr.drawString( String.format("KNN Max: %.2f", statKnnMax), 10, textY += 16 );
+		}
 	}
 
 	@Override
@@ -234,8 +321,6 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	{
 		
 	}
-
-	public static final Ellipse2D.Float ellipse = new Ellipse2D.Float();
 	
 	public class BouncyBall implements SpatialEntity, Entity
 	{

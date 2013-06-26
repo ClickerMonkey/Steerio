@@ -78,59 +78,11 @@ public class SpatialGrid implements SpatialDatabase
 		// Add them to their cell or the outside list.
 		updateNode( node );
 	}
-	
-	private boolean updateNode(SpatialGridNode node)
-	{
-		final SpatialEntity entity = node.entity;
-		final LinkedNode<SpatialGridNode> cellNode = node.cellNode;
-		final SpatialGridCell cell = node.cell;
-		final Vector pos = entity.getPosition();
-		final float rad = entity.getRadius();
-		
-		final int cx = getCellX( pos.x - rad, -1, -1 );
-		final int cy = getCellY( pos.y - rad, -1, -1 );
-		
-		boolean isOutside = ( cx == -1 || cy == -1 ); 
-		
-		if ( ((cell == null) != isOutside) || (cell != null && (cell.x != cx || cell.y != cy) ) )
-		{
-			cellNode.remove();
-			
-			if ( isOutside )
-			{
-				outside.add( cellNode );
-				node.cell = null;
-			}
-			else
-			{
-				cells[cy][cx].add( node.cellNode );
-				node.cell = cells[cy][cx];
-			}
-			
-			return true;
-		}
-		
-		final int actualX = getCellX( pos.x - rad );
-		final int actualY = getCellY( pos.y - rad );
-		final CellSpan span = getCellSpan( pos, rad, false, new CellSpan() );
-		
-		for (int y = span.T; y <= span.B; y++)
-		{
-			for (int x = span.L; x <= span.R; x++)
-			{
-				SpatialGridCell currentCell = cells[y][x];
-				currentCell.lookbackX = Math.max( currentCell.lookbackX, x - actualX );
-				currentCell.lookbackY = Math.max( currentCell.lookbackY, y - actualY );
-			}
-		}
-		
-		return false;
-	}
 
-	// Updates which cell each entity exists in.
 	@Override
 	public int refresh()
 	{
+		// Updates which cell each entity exists in.
 		int alive = 0;
 
 		remapped = 0;
@@ -173,11 +125,65 @@ public class SpatialGrid implements SpatialDatabase
 				}
 			}
 
+			// Update look-back of cells
+			updateLookback( entity.getPosition(), entity.getRadius() );
+
 			// Next entity...
 			linkedNode = nextNode;
 		}
 
 		return alive;
+	}
+	
+	private boolean updateNode(SpatialGridNode node)
+	{
+		final SpatialEntity entity = node.entity;
+		final LinkedNode<SpatialGridNode> cellNode = node.cellNode;
+		final SpatialGridCell cell = node.cell;
+		final Vector pos = entity.getPosition();
+		final float rad = entity.getRadius();
+		
+		final int cx = getCellX( pos.x - rad, -1, -1 );
+		final int cy = getCellY( pos.y - rad, -1, -1 );
+		
+		boolean isOutside = ( cx == -1 || cy == -1 ); 
+		
+		if ( ((cell == null) != isOutside) || (cell != null && (cell.x != cx || cell.y != cy) ) )
+		{
+			cellNode.remove();
+			
+			if ( isOutside )
+			{
+				outside.add( cellNode );
+				node.cell = null;
+			}
+			else
+			{
+				cells[cy][cx].add( node.cellNode );
+				node.cell = cells[cy][cx];
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private void updateLookback( Vector pos, float rad )
+	{
+		final int actualX = getCellX( pos.x - rad );
+		final int actualY = getCellY( pos.y - rad );
+		final CellSpan span = getCellSpan( pos, rad, false, new CellSpan() );
+		
+		for (int y = span.T; y <= span.B; y++)
+		{
+			for (int x = span.L; x <= span.R; x++)
+			{
+				SpatialGridCell currentCell = cells[y][x];
+				currentCell.lookbackX = Math.max( currentCell.lookbackX, x - actualX );
+				currentCell.lookbackY = Math.max( currentCell.lookbackY, y - actualY );
+			}
+		}
 	}
 	
 	@Override
@@ -206,13 +212,15 @@ public class SpatialGrid implements SpatialDatabase
 				{
 					SpatialGridCell cell = cells[y][x];
 					
+					// For the cell of the entity, start looking after the entity node to avoid duplicate.
 					if ( cell == node.cell )
 					{
-						collisionCount += handleCollisions( entity, node.cellNode.next, cell.head, callback );
+						collisionCount += handleCollisions( entity, node.cellNode, cell.head, callback );
 					}
+					// For other cells, check against entire cell.
 					else
 					{
-						collisionCount += handleCollisions( entity, cell.head.next, cell.head, callback );
+						collisionCount += handleCollisions( entity, cell.head, cell.head, callback );
 					}
 				}
 			}
@@ -220,7 +228,7 @@ public class SpatialGrid implements SpatialDatabase
 			// If the current entity is partially outside, check collisions with other entities
 			if ( isOutsidePartially( pos, rad ) )
 			{
-				collisionCount += handleCollisions( entity, outside.head.next, outside.head, callback );
+				collisionCount += handleCollisions( entity, outside.head, outside.head, callback );
 			}
 			
 			// Next entity...
@@ -234,6 +242,8 @@ public class SpatialGrid implements SpatialDatabase
 	
 	private int handleCollisions( SpatialEntity a, LinkedNode<SpatialGridNode> start, LinkedNode<SpatialGridNode> end, CollisionCallback callback)
 	{
+		start = start.next;
+		
 		int collisionCount = 0;
 		
 		while ( start != end )
@@ -341,41 +351,56 @@ public class SpatialGrid implements SpatialDatabase
 		{
 			for (int x = span.L; x <= span.R; x++)
 			{
-				final SpatialGridCell cell = cells[y][x];
-				final LinkedNode<SpatialGridNode> cellHead = cell.head;
-				LinkedNode<SpatialGridNode> cellNode = cellHead.next;
-
-				while (cellNode != cellHead)
+				containedCount = contains( offset, radius, max, collidesWith, callback, containedCount, cells[y][x] );
+				
+				if (containedCount == max)
 				{
-					final LinkedNode<SpatialGridNode> nextNode = cellNode.next;
-					final SpatialEntity entity = cellNode.value.entity;
-
-					if ((entity.getSpatialGroups() & collidesWith) != 0)
-					{
-						if (SpatialUtility.contains( entity, offset, radius ))
-						{
-							if (callback.onFound( entity, 0, containedCount, offset, radius, max, collidesWith ))
-							{
-								containedCount++;
-								
-								if (containedCount >= max)
-								{
-									y = span.B + 1;
-									x = span.R + 1;
-									break;
-								}
-							}
-						}
-					}
-
-					cellNode = nextNode;
+					y = span.B + 1;
+					x = span.R + 1;
 				}
 			}
+		}
+		
+		if ( isOutsidePartially( offset, radius ) )
+		{
+			containedCount = contains( offset, radius, max, collidesWith, callback, containedCount, outside );
 		}
 
 		return containedCount;
 	}
 
+	private int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback, int containedCount, LinkedList<SpatialGridNode> list )
+	{
+		final LinkedNode<SpatialGridNode> end = list.head;
+		LinkedNode<SpatialGridNode> start = end.next;
+		
+		while (start != end)
+		{
+			final LinkedNode<SpatialGridNode> next = start.next;
+			final SpatialEntity entity = start.value.entity;
+
+			if ((entity.getSpatialGroups() & collidesWith) != 0)
+			{
+				if (SpatialUtility.contains( entity, offset, radius ))
+				{
+					if (callback.onFound( entity, 0, containedCount, offset, radius, max, collidesWith ))
+					{
+						containedCount++;
+						
+						if (containedCount >= max)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			start = next;
+		}
+		
+		return containedCount;
+	}
+	
 	// TODO implementation that takes advantage of the cells
 	@Override
 	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
@@ -385,15 +410,25 @@ public class SpatialGrid implements SpatialDatabase
 			return 0;
 		}
 		
-		int near = 0;
+		int near = knn( offset, k, collidesWith, nearest, distance, 0, entities );
 
-		final LinkedNode<SpatialGridNode> headNode = entities.head;
-		LinkedNode<SpatialGridNode> cellNode = headNode.next;
-
-		while (cellNode != headNode)
+		if ( isOutsidePartially( offset, 0.0f ) )
 		{
-			final LinkedNode<SpatialGridNode> nextNode = cellNode.next;
-			final SpatialEntity a = cellNode.value.entity;
+			near = knn( offset, k, collidesWith, nearest, distance, near, outside );
+		}
+
+		return near;
+	}
+	
+	private int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance, int near, LinkedList<SpatialGridNode> list )
+	{
+		final LinkedNode<SpatialGridNode> end = list.head;
+		LinkedNode<SpatialGridNode> start = end.next;
+		
+		while (start != end)
+		{
+			final LinkedNode<SpatialGridNode> nextNode = start.next;
+			final SpatialEntity a = start.value.entity;
 
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
@@ -402,9 +437,9 @@ public class SpatialGrid implements SpatialDatabase
 				near = SpatialUtility.accumulateKnn( overlap, a, near, k, distance, nearest );
 			}
 
-			cellNode = nextNode;
+			start = nextNode;
 		}
-
+		
 		return near;
 	}
 	
