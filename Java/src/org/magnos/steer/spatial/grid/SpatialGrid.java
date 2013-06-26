@@ -63,7 +63,7 @@ public class SpatialGrid implements SpatialDatabase
 		}
 	}
 
-	// Adds the entity to the database and to
+	@Override
 	public void add( SpatialEntity entity )
 	{
 		// Create node for entity
@@ -79,6 +79,34 @@ public class SpatialGrid implements SpatialDatabase
 		updateNode( node );
 	}
 
+	@Override
+	public void clear()
+	{
+		clear( entities );
+		clear( outside );
+		
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				clear( cells[y][x] );
+			}
+		}
+	}
+	
+	private void clear(LinkedList<?> list)
+	{
+		LinkedNode<?> end = list.head;
+		LinkedNode<?> start = end.next;
+		
+		while (start != end)
+		{
+			LinkedNode<?> next = start.next;
+			start.remove();
+			start = next;
+		}
+	}
+	
 	@Override
 	public int refresh()
 	{

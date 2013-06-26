@@ -19,6 +19,11 @@ public interface SpatialDatabase
 	 * Adds an entity to the database.
 	 */
 	public void add( SpatialEntity entity );
+	
+	/**
+	 * Clears all entities from the database.
+	 */
+	public void clear();
 
 	/**
 	 * Removes all inert entities and updates the internal structure of the

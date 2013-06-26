@@ -33,6 +33,15 @@ public class SpatialArray implements SpatialDatabase
 
 		entities[count++] = entity;
 	}
+	
+	@Override
+	public void clear()
+	{
+		while (--count >= 0)
+		{
+			entities[count] = null;
+		}
+	}
 
 	@Override
 	public int refresh()

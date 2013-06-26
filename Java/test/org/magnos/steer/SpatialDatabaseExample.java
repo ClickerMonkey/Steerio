@@ -39,6 +39,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
+	public static final int GRID_SIZE = 32;
 	public static final float RADIUS_MIN = 0.5f;
 	public static final float RADIUS_MAX = 4.0f;
 	public static final long GROUP_MIN = 0;
@@ -62,6 +63,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	public boolean viewCollision = true;
 	public boolean viewKnn = true;
 	public boolean viewHelp = false;
+	public boolean viewBalls = true;
+	public boolean viewAccuracy = true;
 	
 	public int statUniqueCollisions;
 	public int statMutualCount;
@@ -157,6 +160,14 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		{
 			viewKnn = !viewKnn;
 		}
+		if (input.keyUp[KeyEvent.VK_F4])
+		{
+			viewBalls = !viewBalls;
+		}
+		if (input.keyUp[KeyEvent.VK_F5])
+		{
+			viewAccuracy = !viewAccuracy;
+		}
 		
 		if (input.keyUp[KeyEvent.VK_1])
 		{
@@ -165,7 +176,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		
 		if (input.keyUp[KeyEvent.VK_2])
 		{
-			rebuildDatabase( new SpatialGrid( 20, 15, 32, 32, 0, 0 ) );
+			rebuildDatabase( new SpatialGrid( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0 ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_UP])
@@ -221,8 +232,11 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			}
 		}
 		
-		gr.setColor( Color.green );
-		balls.draw( state, gr, scene );
+		if ( viewBalls )
+		{
+			gr.setColor( Color.green );
+			balls.draw( state, gr, scene );
+		}
 
 		if ( viewKnn )
 		{
@@ -257,6 +271,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( "View Database Debugging [F1]", 10, textY += 16 );
 			gr.drawString( "View Collision Stats [F2]", 10, textY += 16 );
 			gr.drawString( "View KNN Stats [F3]", 10, textY += 16 );
+			gr.drawString( "View Balls [F4]", 10, textY += 16 );
+			gr.drawString( "View Accuracy [F5]", 10, textY += 16 );
 		}
 		
 		gr.drawString( String.format("Balls [UP/DOWN]: %d", ballCount), 10, textY += 16 );
@@ -270,6 +286,49 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("One-sided: %d", statOnesideCount), 10, textY += 16 );
 			gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
 			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
+			
+			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
+			if ( viewAccuracy && database instanceof SpatialGrid )
+			{
+				SpatialArray array = new SpatialArray( balls.size() );
+				
+				for (int i = 0; i < balls.size(); i++)
+				{
+					array.add( balls.get(i) );
+				}
+				
+				int unique = statUniqueCollisions;
+				int total = statTotalCollisions;
+				int mutual = statMutualCount;
+				int onesided = statOnesideCount;
+				
+				long startTime = System.nanoTime();
+				array.handleCollisions( this );
+				long endTime = System.nanoTime();
+				double elapsed = (endTime - startTime) * 0.000000001;
+				
+				StringBuilder mismatches = new StringBuilder();
+
+				if ( unique != statUniqueCollisions )
+				{
+					mismatches.append("unique(A=").append( statUniqueCollisions ).append( ",E=" ).append( unique ).append( ") ");
+				}
+				if ( total != statTotalCollisions )
+				{
+					mismatches.append("total(A=").append( statTotalCollisions ).append( ",E=" ).append( total ).append( ") ");
+				}
+				if ( mutual != statMutualCount )
+				{
+					mismatches.append("mutual(A=").append( statMutualCount ).append( ",E=" ).append( mutual ).append( ") ");
+				}
+				if ( onesided != statOnesideCount )
+				{
+					mismatches.append("onesided(A=").append( statOnesideCount ).append( ",E=" ).append( onesided ).append( ") ");
+				}
+				
+				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
+				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statCollisionSeconds), 10, textY += 16 );
+			}
 		}
 		
 		if ( viewKnn )
@@ -277,6 +336,56 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("KNN Elapsed: %.9f", statKnnSeconds), 10, textY += 16 );
 			gr.drawString( String.format("KNN Found: %d", statKnnFound), 10, textY += 16 );
 			gr.drawString( String.format("KNN Max: %.2f", statKnnMax), 10, textY += 16 );
+			
+			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
+			if ( viewAccuracy && database instanceof SpatialGrid )
+			{
+				SpatialArray array = new SpatialArray( balls.size() );
+				
+				for (int i = 0; i < balls.size(); i++)
+				{
+					array.add( balls.get(i) );
+				}
+				
+				SpatialEntity[] neighbors = new SpatialEntity[knn];
+				float[] overlap = new float[knn];
+				
+				long startTime = System.nanoTime();
+				int found = database.knn( mouse, knn, SpatialDatabase.ALL_GROUPS, neighbors, overlap );
+				long endTime = System.nanoTime();
+				double elapsed = (endTime - startTime) * 0.000000001;
+				
+				StringBuilder mismatches = new StringBuilder();
+				
+				if ( found != statKnnFound ) 
+				{
+					mismatches.append("found(A=").append( statKnnFound ).append( ",E=" ).append( found ).append( ") ");
+				}
+				else
+				{
+					int mismatchCount = 0;
+					
+					for (int i = 0; i < found; i++)
+					{
+						if ( neighbors[i] != knnNeighbors[i] )
+						{
+							mismatchCount++;
+						}
+						if ( overlap[i] != knnOverlap[i] )
+						{
+							mismatchCount++;
+						}
+					}
+					
+					if (mismatchCount > 0)
+					{
+						mismatches.append("inequals(").append( mismatchCount ).append( ") " );
+					}
+				}
+
+				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
+				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statKnnSeconds), 10, textY += 16 );
+			}
 		}
 	}
 
