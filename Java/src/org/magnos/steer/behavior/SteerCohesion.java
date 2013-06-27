@@ -12,11 +12,13 @@ import org.magnos.steer.spatial.SpatialEntity;
  */
 public class SteerCohesion extends AbstractSteerSpatial
 {
+	public static int DEFAULT_MAX_RESULTS = 16;
+	
 	private final Vector center = new Vector();
 	
 	public SteerCohesion(SpatialDatabase space, float query)
 	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, SpatialDatabase.MAX_RESULTS, true );
+		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, true );
 	}
 	
 	public SteerCohesion(SpatialDatabase space, float query, long groups, int max)

@@ -13,9 +13,11 @@ import org.magnos.steer.spatial.SpatialEntity;
 public class SteerAlignment extends AbstractSteerSpatial
 {
 	
+	public static int DEFAULT_MAX_RESULTS = 16;
+	
 	public SteerAlignment(SpatialDatabase space, float query)
 	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, SpatialDatabase.MAX_RESULTS, true );
+		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, true );
 	}
 	
 	public SteerAlignment(SpatialDatabase space, float query, long groups, int max)

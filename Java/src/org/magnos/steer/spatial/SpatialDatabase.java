@@ -13,8 +13,6 @@ public interface SpatialDatabase
 
 	public static final long ALL_GROUPS = 0xFFFFFFFFFFFFFFFFL;
 	
-	public static int MAX_RESULTS = 16;
-
 	/**
 	 * Adds an entity to the database.
 	 */

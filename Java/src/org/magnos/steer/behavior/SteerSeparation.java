@@ -12,11 +12,13 @@ import org.magnos.steer.spatial.SpatialEntity;
  */
 public class SteerSeparation extends AbstractSteerSpatial
 {
+	public static int DEFAULT_MAX_RESULTS = 16;
+	
 	private final Vector towards = new Vector();
 	
 	public SteerSeparation(SpatialDatabase space, float query)
 	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, SpatialDatabase.MAX_RESULTS, true );
+		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, true );
 	}
 	
 	public SteerSeparation(SpatialDatabase space, float query, long groups, int max)

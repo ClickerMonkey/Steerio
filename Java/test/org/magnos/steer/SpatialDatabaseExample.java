@@ -10,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 import org.magnos.steer.spatial.CollisionCallback;
+import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
@@ -29,7 +30,7 @@ import com.gameprogblog.engine.core.EntityList;
 import com.gameprogblog.engine.input.GameInput;
 
 
-public class SpatialDatabaseExample implements Game, CollisionCallback
+public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCallback
 {
 
 	public static void main( String[] args )
@@ -49,6 +50,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	public static final long GROUP_MIN = 0;
 	public static final long GROUP_MAX = 15;
 	public static final float VELOCITY_MAX = 100.0f;
+	public static final float CONTAIN_RADIUS = 100.0f;
+	public static final float INTERSECT_RADIUS = 100.0f;
 	
 	public static final Ellipse2D.Float ellipse = new Ellipse2D.Float();
 	public static final Line2D.Float line = new Line2D.Float();
@@ -65,10 +68,12 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	
 	public boolean viewDatabase = true;
 	public boolean viewCollision = true;
-	public boolean viewKnn = true;
+	public boolean viewKnn = false;
 	public boolean viewHelp = false;
 	public boolean viewBalls = true;
 	public boolean viewAccuracy = true;
+	public boolean viewContains = false;
+	public boolean viewIntersections = false;
 	
 	public int statUniqueCollisions;
 	public int statMutualCount;
@@ -83,6 +88,16 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	public double statKnnSeconds;
 	public int statKnnFound;
 	public float statKnnMax;
+
+	public long statContainsStartNanos;
+	public long statContainsEndNanos;
+	public double statContainsSeconds;
+	public int statContainsCount;
+
+	public long statIntersectStartNanos;
+	public long statIntersectEndNanos;
+	public double statIntersectSeconds;
+	public int statIntersectCount;
 	
 	@Override
 	public void start( Scene scene )
@@ -172,6 +187,14 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 		{
 			viewAccuracy = !viewAccuracy;
 		}
+		if (input.keyUp[KeyEvent.VK_F6])
+		{
+			viewIntersections = !viewIntersections;
+		}
+		if (input.keyUp[KeyEvent.VK_F7])
+		{
+			viewContains = !viewContains;
+		}
 		
 		if (input.keyUp[KeyEvent.VK_1])
 		{
@@ -219,7 +242,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	}
 
 	@Override
-	public void draw( GameState state, Graphics2D gr, Scene scene )
+	public void draw( GameState state, final Graphics2D gr, Scene scene )
 	{
 		if ( viewDatabase )
 		{
@@ -234,9 +257,14 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 					for (int x = 0; x < grid.width; x++)
 					{
 						SpatialGridCell cell = grid.cells[y][x];
+						
 						rect.setFrameFromDiagonal( cell.l, cell.t, cell.r, cell.b );
 						gr.draw( rect );
-//						gr.drawString( String.format("{%d,%d}", cell.lookbackX, cell.lookbackY ), cell.l + 2, cell.t + 14 );
+						
+						if ( cell.lookbackX != 0 || cell.lookbackY != 0 )
+						{
+							gr.drawString( String.format("{%d,%d}", cell.lookbackX, cell.lookbackY ), cell.l + 2, cell.t + 14 );	
+						}
 					}
 				}
 			}
@@ -295,6 +323,50 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			}
 		}
 		
+		if ( viewContains )
+		{
+			gr.setColor( Color.darkGray );
+			line.x1 = mouse.x;
+			line.y1 = mouse.y;
+			
+			ellipse.setFrameFromDiagonal( mouse.x - CONTAIN_RADIUS, mouse.y - CONTAIN_RADIUS, mouse.x + CONTAIN_RADIUS, mouse.y + CONTAIN_RADIUS );
+			gr.draw( ellipse );
+			
+			statContainsStartNanos = System.nanoTime();
+			statContainsCount = database.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
+				public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+					line.x2 = entity.getPosition().x;
+					line.y2 = entity.getPosition().y;
+					gr.draw( line );
+					return true;
+				}
+			});
+			statContainsEndNanos = System.nanoTime();
+			statContainsSeconds = (statContainsEndNanos - statContainsStartNanos) * 0.000000001;
+		}
+		
+		if ( viewIntersections )
+		{
+			gr.setColor( Color.darkGray );
+			line.x1 = mouse.x;
+			line.y1 = mouse.y;
+			
+			ellipse.setFrameFromDiagonal( mouse.x - INTERSECT_RADIUS, mouse.y - INTERSECT_RADIUS, mouse.x + INTERSECT_RADIUS, mouse.y + INTERSECT_RADIUS );
+			gr.draw( ellipse );
+			
+			statIntersectStartNanos = System.nanoTime();
+			statIntersectCount = database.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
+				public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+					line.x2 = entity.getPosition().x;
+					line.y2 = entity.getPosition().y;
+					gr.draw( line );
+					return true;
+				}
+			});
+			statIntersectEndNanos = System.nanoTime();
+			statIntersectSeconds = (statIntersectEndNanos - statIntersectStartNanos) * 0.000000001;
+		}
+		
 		int textY = 4;
 		gr.setColor( Color.white );
 		
@@ -307,6 +379,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( "View KNN Stats [F3]", 10, textY += 16 );
 			gr.drawString( "View Balls [F4]", 10, textY += 16 );
 			gr.drawString( "View Accuracy [F5]", 10, textY += 16 );
+			gr.drawString( "View Intersections [F6]", 10, textY += 16 );
+			gr.drawString( "View Contains [F7]", 10, textY += 16 );
 		}
 		
 		gr.drawString( String.format("Balls [UP/DOWN]: %d", ballCount), 10, textY += 16 );
@@ -321,7 +395,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
 			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
 			
-			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
+			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
 				SpatialArray array = new SpatialArray( balls.size() );
@@ -371,7 +445,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("KNN Found: %d", statKnnFound), 10, textY += 16 );
 			gr.drawString( String.format("KNN Max: %.2f", statKnnMax), 10, textY += 16 );
 			
-			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
+			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
 				SpatialArray array = new SpatialArray( balls.size() );
@@ -419,6 +493,78 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 
 				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
 				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statKnnSeconds), 10, textY += 16 );
+			}
+		}
+		
+		if ( viewIntersections )
+		{
+			gr.drawString( String.format("Intersection Elapsed: %.9f", statIntersectSeconds), 10, textY += 16 );
+			gr.drawString( String.format("Intersection Found: %d", statIntersectCount), 10, textY += 16 );
+			
+			// Compare performance and accuracy against SpatialArray (brute-force)
+			if ( viewAccuracy && !(database instanceof SpatialArray) )
+			{
+				SpatialArray array = new SpatialArray( balls.size() );
+				
+				for (int i = 0; i < balls.size(); i++)
+				{
+					array.add( balls.get(i) );
+				}
+				
+				long startTime = System.nanoTime();
+				int intersectCount = array.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
+					public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+						return true;
+					}
+				});
+				long endTime = System.nanoTime();
+				double elapsed = (endTime - startTime) * 0.000000001;
+				
+				StringBuilder mismatches = new StringBuilder();
+
+				if ( intersectCount != statIntersectCount )
+				{
+					mismatches.append("total(A=").append( statIntersectCount ).append( ",E=" ).append( intersectCount ).append( ") ");
+				}
+
+				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
+				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statIntersectSeconds), 10, textY += 16 );
+			}
+		}
+		
+		if ( viewContains )
+		{
+			gr.drawString( String.format("Contains Elapsed: %.9f", statContainsSeconds), 10, textY += 16 );
+			gr.drawString( String.format("Contains Found: %d", statContainsCount), 10, textY += 16 );
+			
+			// Compare performance and accuracy against SpatialArray (brute-force)
+			if ( viewAccuracy && !(database instanceof SpatialArray) )
+			{
+				SpatialArray array = new SpatialArray( balls.size() );
+				
+				for (int i = 0; i < balls.size(); i++)
+				{
+					array.add( balls.get(i) );
+				}
+				
+				long startTime = System.nanoTime();
+				int containCount = array.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
+					public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+						return true;
+					}
+				});
+				long endTime = System.nanoTime();
+				double elapsed = (endTime - startTime) * 0.000000001;
+				
+				StringBuilder mismatches = new StringBuilder();
+
+				if ( containCount != statContainsCount )
+				{
+					mismatches.append("total(A=").append( statContainsCount ).append( ",E=" ).append( containCount ).append( ") ");
+				}
+
+				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
+				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statContainsSeconds), 10, textY += 16 );
 			}
 		}
 	}
@@ -576,6 +722,13 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			
 		}
 		
+	}
+
+	@Override
+	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

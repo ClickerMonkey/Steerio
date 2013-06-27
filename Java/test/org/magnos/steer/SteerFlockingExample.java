@@ -80,7 +80,7 @@ public class SteerFlockingExample extends SteerBasicExample
 		{
 			drawCircle( gr, Color.yellow, mouse, queryUser, false );
 			
-			database.intersects( mouse, queryUser, SpatialDatabase.MAX_RESULTS, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
+			database.intersects( mouse, queryUser, 16, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
 				public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
 					drawCircle( gr, Color.blue, entity.getPosition(), 8, false );
 					drawLine( gr, Color.white, entity.getPosition(), queryOffset, false );

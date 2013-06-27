@@ -376,7 +376,7 @@ public class SpatialQuadNode extends LinkedList<SpatialEntity>
 			
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				final float overlap = SpatialUtility.getOverlap( a, offset, radius );
+				final float overlap = SpatialUtility.overlap( a, offset, radius );
 
 				if (overlap > 0 && callback.onFound( a, overlap, intersectCount, offset, radius, max, collidesWith ))
 				{
@@ -422,12 +422,15 @@ public class SpatialQuadNode extends LinkedList<SpatialEntity>
 			
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				if (SpatialUtility.contains( a, offset, radius ))
+				final float aradius2 = a.getRadius() * 2;
+				final float overlap = SpatialUtility.overlap( a, offset, radius );
+				
+				if (overlap >= aradius2)
 				{
-					if (callback.onFound( a, 0, containCount, offset, radius, max, collidesWith ))
+					if (callback.onFound( a, radius - overlap, containCount, offset, radius, max, collidesWith ))
 					{
 						containCount++;
-	
+
 						if (containCount >= max)
 						{
 							break;
@@ -444,7 +447,7 @@ public class SpatialQuadNode extends LinkedList<SpatialEntity>
 			{
 				SpatialQuadNode child = children[i];
 				
-				if ( child.isContained( offset, radius ) )
+				if ( child.isIntersecting( offset, radius ) )
 				{
 					containCount = child.contains( offset, radius, max, collidesWith, callback, containCount );
 					
@@ -469,9 +472,7 @@ public class SpatialQuadNode extends LinkedList<SpatialEntity>
 			
 			if ((a.getSpatialGroups() & collidesWith) != 0)
 			{
-				float overlap = -SpatialUtility.getOverlap( a, offset, 0 );
-				
-				near = SpatialUtility.accumulateKnn( overlap, a, near, k, distance, nearest );
+				near = SpatialUtility.accumulateKnn( SpatialUtility.distance( a, offset ), a, near, k, distance, nearest );
 			}
 			
 			start = start.next;

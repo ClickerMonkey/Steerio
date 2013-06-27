@@ -99,7 +99,7 @@ public class SpatialArray implements SpatialDatabase
 
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				final float overlap = SpatialUtility.getOverlap( a, offset, radius );
+				final float overlap = SpatialUtility.overlap( a, offset, radius );
 
 				if (overlap > 0 && callback.onFound( a, overlap, intersectCount, offset, radius, max, collidesWith ))
 				{
@@ -125,15 +125,22 @@ public class SpatialArray implements SpatialDatabase
 		{
 			final SpatialEntity a = entities[j];
 
-			if ((collidesWith & a.getSpatialGroups()) != 0 && 
-				 SpatialUtility.contains( a, offset, radius ) && 
-				 callback.onFound( a, 0, containCount, offset, radius, max, collidesWith ))
+			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				containCount++;
-
-				if (containCount >= max)
+				final float aradius2 = a.getRadius() * 2;
+				final float overlap = SpatialUtility.overlap( a, offset, radius );
+				
+				if (overlap >= aradius2)
 				{
-					break;
+					if (callback.onFound( a, radius - overlap, containCount, offset, radius, max, collidesWith ))
+					{
+						containCount++;
+
+						if (containCount >= max)
+						{
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -157,9 +164,7 @@ public class SpatialArray implements SpatialDatabase
 
 			if ((collidesWith & a.getSpatialGroups()) != 0)
 			{
-				final float overlap = -SpatialUtility.getOverlap( a, offset, 0 );
-				
-				near = SpatialUtility.accumulateKnn( overlap, a, near, k, distance, nearest );
+				near = SpatialUtility.accumulateKnn( SpatialUtility.distance( a, offset ), a, near, k, distance, nearest );
 			}
 		}
 

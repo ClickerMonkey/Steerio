@@ -1,5 +1,6 @@
 package org.magnos.steer.spatial;
 
+import org.magnos.steer.SteerMath;
 import org.magnos.steer.Vector;
 
 
@@ -53,22 +54,30 @@ public class SpatialUtility
 		return near;
 	}
 	
-	public static float getOverlap( SpatialEntity a, Vector bpos, float bradius )
+	public static float overlap( SpatialEntity a, Vector bpos, float bradius )
 	{
 		final Vector apos = a.getPosition();
 		final float dx = apos.x - bpos.x;
 		final float dy = apos.y - bpos.y;
+		final float sq = dx * dx + dy * dy;
 		final float sr = a.getRadius() + bradius;
-		return (sr * sr) - (dx * dx + dy * dy);
+		final float srq = sr * sr;
+		
+		if ( sq >= srq )
+		{
+			return 0.0f;
+		}
+		
+		return sr - SteerMath.sqrt( sq );
 	}
-
-	public static boolean contains( SpatialEntity a, Vector bpos, float bradius )
+	
+	public static float distance( SpatialEntity a, Vector b )
 	{
 		final Vector apos = a.getPosition();
-		final float dx = apos.x - bpos.x;
-		final float dy = apos.y - bpos.y;
-		final float mr = bradius - a.getRadius();
-		return (dx * dx + dy * dy) <= (mr * mr);
+		final float dx = apos.x - b.x;
+		final float dy = apos.y - b.y;
+		
+		return SteerMath.sqrt( dx * dx + dy * dy ) - a.getRadius();
 	}
 
 	public static int floor( float amount, int min, int max )
@@ -97,7 +106,7 @@ public class SpatialUtility
 		if ( applicableA || applicableB )
 		{
 			// Calculate overlap
-			final float overlap = SpatialUtility.getOverlap( a, b.getPosition(), b.getRadius() );
+			final float overlap = SpatialUtility.overlap( a, b.getPosition(), b.getRadius() );
 			
 			// If they are intersecting...
 			if ( overlap > 0 )
