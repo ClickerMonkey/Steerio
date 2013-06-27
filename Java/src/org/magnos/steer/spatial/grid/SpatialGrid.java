@@ -12,6 +12,8 @@ import org.magnos.steer.util.LinkedNode;
 
 
 // A SpatialDatabase stores SpatialEntitys to be quickly searched and checked for intersections.
+// TODO KNN using the cells
+// TODO verify accuracy against brute-force method (SpatialArray)
 public class SpatialGrid implements SpatialDatabase
 {
 
@@ -443,8 +445,7 @@ public class SpatialGrid implements SpatialDatabase
 		
 		return containedCount;
 	}
-	
-	// TODO implementation that takes advantage of the cells
+
 	@Override
 	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
 	{
