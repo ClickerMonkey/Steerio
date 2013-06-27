@@ -331,43 +331,58 @@ public class SpatialGrid implements SpatialDatabase
 		{
 			for (int x = span.L; x <= span.R; x++)
 			{
-				final SpatialGridCell cell = cells[y][x];
-				final LinkedNode<SpatialGridNode> cellHead = cell.head;
-				LinkedNode<SpatialGridNode> cellNode = cellHead.next;
-
-				while (cellNode != cellHead)
+				intersectCount = intersects( offset, radius, max, collidesWith, callback, intersectCount, cells[y][x] );
+				
+				if (intersectCount == max)
 				{
-					final LinkedNode<SpatialGridNode> nextNode = cellNode.next;
-					final SpatialEntity entity = cellNode.value.entity;
-
-					if ((entity.getSpatialGroups() & collidesWith) != 0)
-					{
-						final float overlap = SpatialUtility.getOverlap( entity, offset, radius );
-						
-						if (overlap > 0)
-						{
-							if (callback.onFound( entity, overlap, intersectCount, offset, radius, max, collidesWith ))
-							{
-								intersectCount++;
-								
-								if (intersectCount >= max)
-								{
-									y = span.B + 1;
-									x = span.R + 1;
-									break;
-								}
-							}
-						}
-					}
-
-					cellNode = nextNode;
+					y = span.B + 1;
+					x = span.R + 1;
 				}
 			}
+		}
+		
+		if ( intersectCount < max && isOutsidePartially( offset, radius ) )
+		{
+			intersectCount = intersects( offset, radius, max, collidesWith, callback, intersectCount, outside );
 		}
 
 		return intersectCount;
 	}
 
+	private int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback, int intersectCount, LinkedList<SpatialGridNode> list )
+	{
+		final LinkedNode<SpatialGridNode> end = list.head;
+		LinkedNode<SpatialGridNode> start = end.next;
+
+		while (start != end)
+		{
+			final LinkedNode<SpatialGridNode> next = start.next;
+			final SpatialEntity entity = start.value.entity;
+
+			if ((entity.getSpatialGroups() & collidesWith) != 0)
+			{
+				final float overlap = SpatialUtility.getOverlap( entity, offset, radius );
+				
+				if (overlap > 0)
+				{
+					if (callback.onFound( entity, overlap, intersectCount, offset, radius, max, collidesWith ))
+					{
+						intersectCount++;
+						
+						if (intersectCount >= max)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			start = next;
+		}
+		
+		return intersectCount;
+	}
+	
 	@Override
 	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
@@ -389,7 +404,7 @@ public class SpatialGrid implements SpatialDatabase
 			}
 		}
 		
-		if ( isOutsidePartially( offset, radius ) )
+		if ( containedCount < max && isOutsidePartially( offset, radius ) )
 		{
 			containedCount = contains( offset, radius, max, collidesWith, callback, containedCount, outside );
 		}
@@ -455,17 +470,17 @@ public class SpatialGrid implements SpatialDatabase
 		
 		while (start != end)
 		{
-			final LinkedNode<SpatialGridNode> nextNode = start.next;
+			final LinkedNode<SpatialGridNode> next = start.next;
 			final SpatialEntity a = start.value.entity;
 
-			if ((collidesWith & a.getSpatialGroups()) != 0)
+			if ((a.getSpatialGroups() & collidesWith) != 0)
 			{
-				final float overlap = -SpatialUtility.getOverlap( a, offset, 0 );
+				float overlap = -SpatialUtility.getOverlap( a, offset, 0 );
 				
 				near = SpatialUtility.accumulateKnn( overlap, a, near, k, distance, nearest );
 			}
 
-			start = nextNode;
+			start = next;
 		}
 		
 		return near;
