@@ -37,9 +37,9 @@ public class SpatialArray implements SpatialDatabase
 	@Override
 	public void clear()
 	{
-		while (--count >= 0)
+		while (count > 0)
 		{
-			entities[count] = null;
+			entities[--count] = null;
 		}
 	}
 
