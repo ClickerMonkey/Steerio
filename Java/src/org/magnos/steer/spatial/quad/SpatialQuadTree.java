@@ -1,57 +1,81 @@
 package org.magnos.steer.spatial.quad;
 
+
 import org.magnos.steer.Vector;
-import org.magnos.steer.util.LinkedList;
+import org.magnos.steer.spatial.CollisionCallback;
+import org.magnos.steer.spatial.SearchCallback;
+import org.magnos.steer.spatial.SpatialDatabase;
+import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.spatial.SpatialUtility;
 
 
-public class SpatialQuadTree extends LinkedList<SpatialQuadNode>
+public class SpatialQuadTree implements SpatialDatabase
 {
 
-	public int size;
-	public int overflowRefreshes;
-	public int underflowRefreshes;
-	public SpatialQuadTree[] children;
-	public SpatialQuadTree parent;
-	public float l, t, r, b;
+	public int desiredLeafSize;
+	public int refreshThreshold;
+	public SpatialQuadNode root;
 	
-	public void resize(int desiredSize)
+	public SpatialQuadTree(float l, float t, float r, float b, int desiredLeafSize, int refreshThreshold)
 	{
+		this.root = new SpatialQuadNode( null, l, t, r, b );
+		this.desiredLeafSize = desiredLeafSize;
+		this.refreshThreshold = refreshThreshold;
+	}
+	
+	@Override
+	public void add( SpatialEntity entity )
+	{
+		root.add( entity );
+	}
+
+	@Override
+	public void clear()
+	{
+		root.destroy();
+	}
+
+	@Override
+	public int refresh()
+	{
+		int alive = root.refresh();
 		
-	}
-	
-	public boolean isContained(Vector center, float radius)
-	{
-		return isContained( center.x - radius, center.y - radius, center.x + radius, center.y + radius );
-	}
-	
-	public boolean isContained(float left, float top, float right, float bottom)
-	{
-		return (left < l || right >= r || top < t || bottom >= b);
-	}
-	
-	public boolean isLeaf()
-	{
-		return (children == null);
-	}
-	
-	public int getSize()
-	{
-		return size + getChildrenSize();
-	}
-	
-	public int getChildrenSize()
-	{
-		int size = 0;
+		root.resize( desiredLeafSize, refreshThreshold );
 		
-		if ( children != null )
+		return alive;
+	}
+
+	@Override
+	public int handleCollisions( CollisionCallback callback )
+	{
+		callback.onCollisionStart();
+		int collisionCount = root.handleCollisions( callback );
+		callback.onCollisionEnd();
+		
+		return collisionCount;
+	}
+
+	@Override
+	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	{
+		return root.intersects( offset, radius, max, collidesWith, callback, 0 );
+	}
+
+	@Override
+	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	{
+		return root.contains( offset, radius, max, collidesWith, callback, 0 );
+	}
+
+	@Override
+	public int knn( Vector point, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
+	{
+		if (!SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
-			size += children[0].getSize();
-			size += children[1].getSize();
-			size += children[2].getSize();
-			size += children[3].getSize();
+			return 0;
 		}
 		
-		return size;
+		return root.knn( point, k, collidesWith, nearest, distance, 0 );
 	}
-	
+
 }

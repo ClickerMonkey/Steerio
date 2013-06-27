@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -13,6 +15,8 @@ import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
+import org.magnos.steer.spatial.quad.SpatialQuadNode;
+import org.magnos.steer.spatial.quad.SpatialQuadTree;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -179,6 +183,11 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			rebuildDatabase( new SpatialGrid( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0 ) );
 		}
 		
+		if (input.keyUp[KeyEvent.VK_3])
+		{
+			rebuildDatabase( new SpatialQuadTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
+		}
+		
 		if (input.keyUp[KeyEvent.VK_UP])
 		{
 			ballCount <<= 1;
@@ -214,11 +223,12 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 	{
 		if ( viewDatabase )
 		{
+			gr.setColor( Color.lightGray );
+			
 			if ( database instanceof SpatialGrid )
 			{
 				SpatialGrid grid = (SpatialGrid)database;
 				
-				gr.setColor( Color.lightGray );
 				for (int y = 0; y < grid.height; y++)
 				{
 					for (int x = 0; x < grid.width; x++)
@@ -227,6 +237,30 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 						rect.setFrameFromDiagonal( cell.l, cell.t, cell.r, cell.b );
 						gr.draw( rect );
 //						gr.drawString( String.format("{%d,%d}", cell.lookbackX, cell.lookbackY ), cell.l + 2, cell.t + 14 );
+					}
+				}
+			}
+			if ( database instanceof SpatialQuadTree )
+			{
+				SpatialQuadTree quad = (SpatialQuadTree)database;
+				
+				Queue<SpatialQuadNode> nodes = new ArrayDeque<SpatialQuadNode>();
+				nodes.add( quad.root );
+				
+				while (!nodes.isEmpty())
+				{
+					SpatialQuadNode n = nodes.poll();
+
+					rect.setFrameFromDiagonal( n.l, n.t, n.r, n.b );
+					gr.draw( rect );
+					gr.drawString( String.format("%d", n.size), (n.l + n.r) * 0.5f + 2, (n.t + n.b) * 0.5f + 14 );
+					
+					if ( n.isBranch() )
+					{
+						nodes.add( n.children[0] );
+						nodes.add( n.children[1] );
+						nodes.add( n.children[2] );
+						nodes.add( n.children[3] );
 					}
 				}
 			}
@@ -288,7 +322,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
 			
 			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
-			if ( viewAccuracy && database instanceof SpatialGrid )
+			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
 				SpatialArray array = new SpatialArray( balls.size() );
 				
@@ -338,7 +372,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback
 			gr.drawString( String.format("KNN Max: %.2f", statKnnMax), 10, textY += 16 );
 			
 			// Compare SpatialGrid performance and accuracy against SpatialArray (brute-force)
-			if ( viewAccuracy && database instanceof SpatialGrid )
+			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
 				SpatialArray array = new SpatialArray( balls.size() );
 				
