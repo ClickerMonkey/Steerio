@@ -7,6 +7,7 @@ import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.quad.SpatialQuadTree;
+import org.magnos.steer.test.Timer;
 
 
 public class SpatialDatabasePerformance

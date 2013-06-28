@@ -1,5 +1,5 @@
 
-package org.magnos.steer;
+package org.magnos.steer.behavior;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -11,6 +11,11 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+
+import org.magnos.steer.Path;
+import org.magnos.steer.Steer;
+import org.magnos.steer.Vector;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameState;

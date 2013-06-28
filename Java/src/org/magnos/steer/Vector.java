@@ -425,32 +425,89 @@ public class Vector implements Target
 	/**
 	 * Rotates this vector by the given radians.
 	 */
-	public void rotate( float radians )
+	public Vector rotatei( float radians )
+	{
+		return rotate( radians, this );
+	}
+	
+	public Vector rotate( float radians, Vector out )
 	{
 		float c = SteerMath.cos( radians );
 		float s = SteerMath.sin( radians );
 
 		float xp = x * c - y * s;
 		float yp = x * s + y * c;
-
-		x = xp;
-		y = yp;
+		
+		out.x = xp;
+		out.y = yp;
+		return out;
+	}
+	
+	public Vector rotate( float radians )
+	{
+		return rotate( radians, new Vector() );
+	}
+	
+	public Vector rotatei( Vector normal )
+	{
+		return rotate( normal, this );
+	}
+	
+	public Vector rotate( Vector normal, Vector out )
+	{
+		final float ox = x, oy = y;
+		out.x = (normal.x * ox - normal.y * oy);
+		out.y = (normal.x * oy + normal.y * ox);
+		return out;
+	}
+	
+	public Vector rotate( Vector normal )
+	{
+		return rotate( normal, new Vector() );
 	}
 
 	/**
 	 * Normalizes this vector, making it a unit vector. A unit vector has a
 	 * length of 1.0.
 	 */
-	public void normalize()
+	public float normalize()
 	{
-		float lenSq = lengthSq();
+		float m = lengthSq();
 
-		if (lenSq != 0.0f)
+		if (m != 0.0f)
 		{
-			float invLen = 1.0f / SteerMath.sqrt( lenSq );
+			m = SteerMath.sqrt( m );
+			
+			float invLen = 1.0f / SteerMath.sqrt( m );
 			x *= invLen;
 			y *= invLen;
 		}
+		
+		return m;
+	}
+	
+	public Vector normali()
+	{
+		return normal(this);
+	}
+	
+	public Vector normal(Vector out)
+	{
+		float m = lengthSq();
+		
+		out.set( x, y );
+		
+		if (m != 0.0)
+		{
+			out.muli( 1.0f / SteerMath.sqrt( m ) );
+		}
+		
+		return out;
+	}
+	
+	public Vector normal()
+	{
+		return normal( new Vector() );
 	}
 
 	/**

@@ -1,13 +1,17 @@
 
-package org.magnos.steer;
+package org.magnos.steer.behavior;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.magnos.steer.SteerMath;
+import org.magnos.steer.SteerSet;
+import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerAvoid;
 import org.magnos.steer.behavior.SteerPath;
 import org.magnos.steer.contraints.ConstraintTurning;
 import org.magnos.steer.path.LinearPath;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;

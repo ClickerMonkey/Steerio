@@ -15,6 +15,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 	public float query;
 	public int max;
 	public SpatialDatabase space;
+	public SteerSubject subject;
 	
 	public AbstractSteerSpatial(SpatialDatabase space, float query, long groups, int max, boolean shared)
 	{
@@ -31,9 +32,11 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 		return shared;
 	}
 	
-	protected int search( SteerSubject subject )
+	protected int search( SteerSubject ss )
 	{
-		return space.intersects( subject.getPosition(), query, max, groups, this );
+		subject = ss;
+		
+		return space.intersects( ss.getPosition(), query, max, groups, this );
 	}
 	
 }

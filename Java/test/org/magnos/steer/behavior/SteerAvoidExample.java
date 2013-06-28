@@ -1,13 +1,14 @@
 
-package org.magnos.steer;
+package org.magnos.steer.behavior;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.magnos.steer.SteerSet;
+import org.magnos.steer.behavior.SteerAvoid;
 import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetFuture;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -17,37 +18,36 @@ import com.gameprogblog.engine.GameState;
 import com.gameprogblog.engine.Scene;
 
 
-public class TargetFutureExample extends SteerBasicExample
+public class SteerAvoidExample extends SteerBasicExample
 {
 
 	public static void main( String[] args )
 	{
-		Game game = new TargetFutureExample( DEFAULT_WIDTH, DEFAULT_HEIGHT );
+		Game game = new SteerAvoidExample( DEFAULT_WIDTH, DEFAULT_HEIGHT );
 		GameLoop loop = new GameLoopVariable( 0.1f );
 		GameScreen screen = new GameScreen( DEFAULT_WIDTH, DEFAULT_HEIGHT, true, loop, game );
 		screen.setBackground( Color.black );
-		GameScreen.showWindow( screen, "TargetFutureExample" );
+		GameScreen.showWindow( screen, "SteerAvoidExample" );
 	}
 
-	private TargetFuture future;
-	
-	public TargetFutureExample( int w, int h )
+	private SteerSprite sprite;
+	private SteerSprite scared;
+	private SteerAvoid avoid;
+
+	public SteerAvoidExample( int w, int h )
 	{
 		super( w, h );
 	}
-	
+
 	@Override
 	public void start( Scene scene )
 	{
-		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000, 
-			new SteerWander( 0, 100, 150, 80 ) 
-		);
-		
-		SteerSprite chaser = newSprite( Color.orange, 15, 280, 1000, new SteerSet( 1000,
-			new SteerTo( future = new TargetFuture( sprite ) ),
-			new SteerDrive( 0, 0, 0, 100 )
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander( 0, 100, 150, 80 ) );
+
+		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet(
+			avoid = new SteerAvoid( sprite, 200, true ),
+			new SteerDrive( 0, 0, 0, 100, true )
 		));
-		chaser.position.set( 50, 50 );
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class TargetFutureExample extends SteerBasicExample
 
 		if (drawCircles)
 		{
-			drawCircle( gr, Color.orange, future.future, 8, false );
+			drawCircle( gr, Color.red, scared.position, avoid.distance, false );
 		}
 	}
 

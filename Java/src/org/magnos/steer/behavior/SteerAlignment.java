@@ -56,9 +56,9 @@ public class SteerAlignment extends AbstractSteerSpatial
 	{
 		if ( entity instanceof SteerSubject )
 		{
-			SteerSubject steer = (SteerSubject)entity;
+			SteerSubject ss = (SteerSubject)entity;
 			
-			force.addi( steer.getDirection() ); 	
+			force.addi( ss.getDirection() ); 	
 		}
 
 		return true;

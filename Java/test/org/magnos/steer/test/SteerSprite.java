@@ -1,8 +1,12 @@
 
-package org.magnos.steer;
+package org.magnos.steer.test;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+
+import org.magnos.steer.BaseSteerSubject;
+import org.magnos.steer.Steer;
+import org.magnos.steer.behavior.SteerBasicExample;
 
 import com.gameprogblog.engine.GameState;
 import com.gameprogblog.engine.Scene;

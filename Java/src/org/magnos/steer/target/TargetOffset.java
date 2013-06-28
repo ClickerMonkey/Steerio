@@ -36,7 +36,7 @@ public class TargetOffset implements Target
 		
 		if (relative)
 		{
-			actual.rotate( direction.angle() );
+			actual.rotatei( direction.angle() );
 		}
 		
 		actual.addi( position );

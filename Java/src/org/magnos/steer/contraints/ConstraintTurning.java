@@ -33,7 +33,7 @@ public class ConstraintTurning implements Constraint
 		if (inner > radians)
 		{
 			a.set( v );
-			a.rotate( v.cross( a ) > 0 ? radians : SteerMath.PI2 - radians );
+			a.rotatei( v.cross( a ) > 0 ? radians : SteerMath.PI2 - radians );
 			a.length( alength );
 		}
 	}
