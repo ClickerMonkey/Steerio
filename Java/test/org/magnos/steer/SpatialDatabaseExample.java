@@ -18,6 +18,7 @@ import org.magnos.steer.spatial.dual.SpatialDualNode;
 import org.magnos.steer.spatial.dual.SpatialDualTree;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
+import org.magnos.steer.spatial.prunesweep.SpatialPruneSweep;
 import org.magnos.steer.spatial.quad.SpatialQuadNode;
 import org.magnos.steer.spatial.quad.SpatialQuadTree;
 
@@ -218,6 +219,11 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			rebuildDatabase( new SpatialDualTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
 		}
 		
+		if (input.keyUp[KeyEvent.VK_5])
+		{
+			rebuildDatabase( new SpatialPruneSweep( ballCount ) );
+		}
+		
 		if (input.keyUp[KeyEvent.VK_UP])
 		{
 			ballCount <<= 1;
@@ -413,7 +419,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		}
 		
 		gr.drawString( String.format("Balls [UP/DOWN]: %d", ballCount), 10, textY += 16 );
-		gr.drawString( String.format("Database [1-4]: %s", database.getClass().getSimpleName()), 10, textY += 16 );
+		gr.drawString( String.format("Database [1-5]: %s", database.getClass().getSimpleName()), 10, textY += 16 );
 		
 		if ( viewCollision )
 		{
@@ -423,6 +429,17 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			gr.drawString( String.format("One-sided: %d", statOnesideCount), 10, textY += 16 );
 			gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
 			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
+			
+			if ( database instanceof SpatialPruneSweep )
+			{
+				SpatialPruneSweep prune = (SpatialPruneSweep)database;
+
+				gr.drawString( String.format("SPS Moves: %d", prune.moves), 10, textY += 16 );
+				gr.drawString( String.format("SPS Avg. Span Max: %d", prune.averageSpanMax), 10, textY += 16 );
+				gr.drawString( String.format("SPS # X pairs: %d", prune.xpairs), 10, textY += 16 );
+				gr.drawString( String.format("SPS # Y pairs: %d", prune.ypairs), 10, textY += 16 );
+				gr.drawString( String.format("SPS # XY pairs: %d", prune.xypairs), 10, textY += 16 );
+			}
 			
 			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
@@ -445,23 +462,10 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 				double elapsed = (endTime - startTime) * 0.000000001;
 				
 				StringBuilder mismatches = new StringBuilder();
-
-				if ( unique != statUniqueCollisions )
-				{
-					mismatches.append("unique(A=").append( statUniqueCollisions ).append( ",E=" ).append( unique ).append( ") ");
-				}
-				if ( total != statTotalCollisions )
-				{
-					mismatches.append("total(A=").append( statTotalCollisions ).append( ",E=" ).append( total ).append( ") ");
-				}
-				if ( mutual != statMutualCount )
-				{
-					mismatches.append("mutual(A=").append( statMutualCount ).append( ",E=" ).append( mutual ).append( ") ");
-				}
-				if ( onesided != statOnesideCount )
-				{
-					mismatches.append("onesided(A=").append( statOnesideCount ).append( ",E=" ).append( onesided ).append( ") ");
-				}
+				mismatches.append(String.format("unique(%+3d) ", statUniqueCollisions - unique ) );
+				mismatches.append(String.format("total(%+3d) ", statTotalCollisions - total ) );
+				mismatches.append(String.format("mutual(%+3d) ", statMutualCount - mutual ) );
+				mismatches.append(String.format("onesided(%+3d) ", statOnesideCount - onesided ) );
 				
 				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
 				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statCollisionSeconds), 10, textY += 16 );
