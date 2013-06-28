@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+
+	<!-- 
+		Exclude all classes under these packages or with these names 
+		unless an inclusion is specified which overwrites a specific 
+		exclusion. These entries are whitespace delimited.
+	-->
+	<exclude>
+		java
+		org
+		sun
+		com.sun
+		com.bea
+		com.weblogic
+		weblogic
+		com.ibm
+		com.mysql
+		com.oracle		
+		oracle
+		com.microsoft
+		net.sf
+		test
+		org.magnos.prof
+		net.philsprojects
+		org.magnos.steer
+		javax
+	</exclude>
+
+	<!-- 
+		Includes the specified packages or classes. By default everything
+		NOT on the exclusion list is included, however these inclusions can
+		be used to overwrite specific excludes. For example, "org" is on the
+		exclusion list but if you add "org.magnos" than everything under that
+		will be included. These entries are whitespace delimited.
+	-->
+	<include>
+		org.magnos.steer.spatial
+	</include>
+
+	<!--
+		A specific profiler, if it's the default, and all classes/packages 
+		that use this profiler. 
+	-->
+	<profiler class="org.magnos.prof.impl.StaticProfiler" default="true">
+	</profiler>
+	<profiler class="org.magnos.prof.impl.LocalProfiler">
+		org.magnos.steer.spatial.dual.SpatialDualNode
+		org.magnos.steer.spatial.prunesweep.SpatialPruneSweep
+		org.magnos.steer.spatial.quad.SpatialQuadNode
+		org.magnos.steer.spatial.array.SpatialArray
+		org.magnos.steer.spatial.grid.SpatialGrid
+	</profiler>
+	
+</profile>
