@@ -175,6 +175,21 @@ public class SteerMath
 		return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
 				 (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
 	}
+	
+	public static boolean isCircleInView( Vector origin, Vector direction, Vector fov, Vector circle, float radius, FieldOfView fovType )
+	{
+		if ( fovType == FieldOfView.IGNORE )
+		{
+			return true;
+		}
+		
+		if ( fovType == FieldOfView.HALF )
+		{
+			radius = 0f;
+		}
+		
+		return isCircleInView( origin, direction, fov, circle, radius, fovType == FieldOfView.FULL );
+	}
 
 	public static int factorial( int x )
 	{

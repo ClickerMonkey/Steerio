@@ -57,22 +57,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 	@Override
 	public final boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		boolean inView = false;
-		
-		switch (fovType) {
-		case FULL:
-			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), true );
-			break;
-		case HALF:
-			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), 0.0f, true );
-			break;
-		case PARTIAL:
-			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), false );
-			break;
-		case IGNORE:
-			inView = true;
-			break;
-		}
+		boolean inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), fovType );
 		
 		if (inView)
 		{
