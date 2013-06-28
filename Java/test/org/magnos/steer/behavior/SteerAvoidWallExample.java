@@ -1,11 +1,12 @@
 
-package org.magnos.steer;
+package org.magnos.steer.behavior;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerAvoidWall;
 import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.spatial.SpatialDatabase;

@@ -122,6 +122,21 @@ public class SteerMath
 		
 		return height;
 	}
+	
+	public static boolean isInView( Vector origin, Vector direction, Vector fov, Vector target )
+	{
+		Vector upper = new Vector( fov.x, fov.y );
+		Vector lower = new Vector( fov.x, -fov.y );
+		
+		Vector upperRotated = upper.rotate( direction );
+		Vector lowerRotated = lower.rotate( direction );
+
+		Vector towards = target.sub( origin );
+		float ut = upperRotated.cross( towards );
+		float lt = lowerRotated.cross( towards );
+		
+		return (ut <= 0 && lt >= 0 ) || (fov.x < 0.0f && ((ut >= 0 && lt >= 0) || (ut <= 0 && lt <= 0)));
+	}
 
 	public static int factorial( int x )
 	{

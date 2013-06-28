@@ -1,4 +1,4 @@
-package org.magnos.steer;
+package org.magnos.steer.test;
 
 
 public class Timer

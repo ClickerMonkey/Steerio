@@ -1,12 +1,15 @@
 
-package org.magnos.steer;
+package org.magnos.steer.target;
 
 import java.awt.Color;
 
+import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerAway;
+import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.target.TargetFacing;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;

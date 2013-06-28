@@ -1,8 +1,13 @@
-package org.magnos.steer;
+package org.magnos.steer.behavior;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.magnos.steer.Steer;
+import org.magnos.steer.SteerMath;
+import org.magnos.steer.SteerModifier;
+import org.magnos.steer.SteerSet;
+import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerAlignment;
 import org.magnos.steer.behavior.SteerAway;
 import org.magnos.steer.behavior.SteerCohesion;
@@ -13,6 +18,7 @@ import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.target.TargetLocal;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;

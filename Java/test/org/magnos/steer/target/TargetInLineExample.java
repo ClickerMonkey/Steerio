@@ -1,12 +1,14 @@
 
-package org.magnos.steer;
+package org.magnos.steer.target;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.behavior.SteerArrive;
+import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetInterpose;
+import org.magnos.steer.target.TargetInLine;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -16,21 +18,21 @@ import com.gameprogblog.engine.GameState;
 import com.gameprogblog.engine.Scene;
 
 
-public class TargetInterposeExample extends SteerBasicExample
+public class TargetInLineExample extends SteerBasicExample
 {
 
 	public static void main( String[] args )
 	{
-		Game game = new TargetInterposeExample( DEFAULT_WIDTH, DEFAULT_HEIGHT );
+		Game game = new TargetInLineExample( DEFAULT_WIDTH, DEFAULT_HEIGHT );
 		GameLoop loop = new GameLoopVariable( 0.1f );
 		GameScreen screen = new GameScreen( DEFAULT_WIDTH, DEFAULT_HEIGHT, true, loop, game );
 		screen.setBackground( Color.black );
-		GameScreen.showWindow( screen, "TargetInterposeExample" );
+		GameScreen.showWindow( screen, "TargetInLineExample" );
 	}
 	
-	private TargetInterpose interpose;
+	private TargetInLine interpose;
 
-	public TargetInterposeExample( int w, int h )
+	public TargetInLineExample( int w, int h )
 	{
 		super( w, h );
 	}
@@ -47,7 +49,7 @@ public class TargetInterposeExample extends SteerBasicExample
 		);
 		
 		newSprite( Color.blue, 15, 300, 1000,  
-			new SteerArrive( interpose = new TargetInterpose( sprite0, sprite1, 0.25f ), 100, 0 )
+			new SteerArrive( interpose = new TargetInLine( sprite0, sprite1 ), 100, 0 )
 		);
 	}
 
@@ -58,7 +60,7 @@ public class TargetInterposeExample extends SteerBasicExample
 
 		if (drawCircles)
 		{
-			drawCircle( gr, Color.orange, interpose.interpose, 8, false );
+			drawCircle( gr, Color.orange, interpose.closest, 8, false );
 		}
 	}
 
