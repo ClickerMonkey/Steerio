@@ -1,4 +1,4 @@
-package org.magnos.steer.spatial.quad;
+package org.magnos.steer.spatial.dual;
 
 import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
@@ -9,7 +9,7 @@ import org.magnos.steer.spatial.base.LinkedListRectangle;
 import org.magnos.steer.util.LinkedNode;
 
 
-public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
+public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 {
 	
 	public static final int CHILD_COUNT = 4;
@@ -17,14 +17,17 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 	public int size;
 	public int overflowResizes;
 	public int underflowResizes;
-	public SpatialQuadNode[] children;
-	public final SpatialQuadNode parent;
+	public SpatialDualNode tl;
+	public SpatialDualNode br;
+	public final SpatialDualNode parent;
+	public final boolean hamburger;
 	
-	public SpatialQuadNode(SpatialQuadNode parent, float l, float t, float r, float b )
+	public SpatialDualNode(SpatialDualNode parent, boolean hamburger, float l, float t, float r, float b )
 	{
 		super( l, t, r, b );
 		
 		this.parent = parent;
+		this.hamburger = hamburger;
 	}
 	
 	private void internalAdd(LinkedNode<SpatialEntity> node)
@@ -47,21 +50,15 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		}
 		else
 		{
-			boolean added = false;
-			
-			for (int i = 0; i < CHILD_COUNT && !added; i++)
+			if ( tl.isContained( entity.getPosition(), entity.getRadius() ) )
 			{
-				final SpatialQuadNode child = children[i];
-				
-				if ( child.isContained( entity.getPosition(), entity.getRadius() ) )
-				{
-					child.add( entity );
-					
-					added = true;
-				}
+				tl.add( entity );
 			}
-			
-			if (!added)
+			else if ( br.isContained( entity.getPosition(), entity.getRadius() ) )
+			{
+				br.add( entity );
+			}
+			else
 			{
 				internalAdd( new LinkedNode<SpatialEntity>( entity ) );
 			}
@@ -85,7 +82,7 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 			}
 			else
 			{
-				SpatialQuadNode node = getNode( entity );
+				SpatialDualNode node = getNode( entity );
 				
 				if ( node != this )
 				{
@@ -103,18 +100,16 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		
 		if ( isBranch() )
 		{
-			alive += children[0].refresh();
-			alive += children[1].refresh();
-			alive += children[2].refresh();
-			alive += children[3].refresh();
+			alive += tl.refresh();
+			alive += br.refresh();
 		}
 		
 		return alive;
 	}
 	
-	public SpatialQuadNode getNode( SpatialEntity entity )
+	public SpatialDualNode getNode( SpatialEntity entity )
 	{
-		SpatialQuadNode node = this;
+		SpatialDualNode node = this;
 		
 		while (node.parent != null && !node.isContained( entity.getPosition(), entity.getRadius() ))
 		{
@@ -130,22 +125,24 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		
 		while (placing)
 		{
-			placing = false;
-			
 			if ( node.isBranch() )
 			{
-				for (int i = 0; i < CHILD_COUNT; i++)
+				if ( node.tl.isContained( entity.getPosition(), entity.getRadius() ) )
 				{
-					SpatialQuadNode child = node.children[i];
-					
-					if ( child.isContained( entity.getPosition(), entity.getRadius() ) )
-					{
-						node = child;
-						placing = true;
-						
-						break;
-					}
+					node = node.tl;
 				}
+				else if ( node.br.isContained( entity.getPosition(), entity.getRadius() ) )
+				{
+					node = node.br;
+				}
+				else
+				{
+					placing = false;
+				}
+			}
+			else
+			{
+				placing = false;
 			}
 		}
 		
@@ -176,12 +173,10 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		else
 		{
 			// Try to resize children
-			children[0].resize( desiredSize, resizeThreshold );
-			children[1].resize( desiredSize, resizeThreshold );
-			children[2].resize( desiredSize, resizeThreshold );
-			children[3].resize( desiredSize, resizeThreshold );
+			tl.resize( desiredSize, resizeThreshold );
+			br.resize( desiredSize, resizeThreshold );
 
-			if ( children[0].isLeaf() && children[1].isLeaf() && children[2].isLeaf() && children[3].isLeaf() )
+			if ( tl.isLeaf() && br.isLeaf() )
 			{
 				if ( getSize() < desiredSize ) 
 				{
@@ -210,12 +205,16 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		final float cx = (l + r) * 0.5f;
 		final float cy = (t + b) * 0.5f;
 		
-		children = new SpatialQuadNode[] {
-			new SpatialQuadNode(this, l, t, cx, cy), /* top left */
-			new SpatialQuadNode(this, cx, t, r, cy), /* top right */
-			new SpatialQuadNode(this, l, cy, cx, b), /* bottom left */
-			new SpatialQuadNode(this, cx, cy, r, b), /* bottom right */
-		};
+		if (hamburger)
+		{
+			tl = new SpatialDualNode( this, false, l, t, cx, b ); // left
+			br = new SpatialDualNode( this, false, cx, t, r, b ); // right
+		}
+		else
+		{
+			tl = new SpatialDualNode( this, true, l, t, r, cy ); // top
+			br = new SpatialDualNode( this, true, l, cy, r, b ); // bottom
+		}
 		
 		LinkedNode<SpatialEntity> start = head.next;
 		
@@ -224,17 +223,15 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 			final LinkedNode<SpatialEntity> next = start.next;
 			final SpatialEntity entity = start.value;
 
-			for (int i = 0; i < CHILD_COUNT; i++)
+			if ( tl.isContained( entity.getPosition(), entity.getRadius() ) )
 			{
-				final SpatialQuadNode child = children[i];
-				
-				if (child.isContained( entity.getPosition(), entity.getRadius() ))
-				{
-					internalRemove( start );
-					child.internalAdd( start );
-					
-					break;
-				}
+				internalRemove( start );
+				tl.internalAdd( start );
+			}
+			else if ( br.isContained( entity.getPosition(), entity.getRadius() ) )
+			{
+				internalRemove( start );
+				br.internalAdd( start );
 			}
 			
 			start = next;
@@ -243,33 +240,38 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 	
 	public void shrink()
 	{
-		for (int i = 0; i < CHILD_COUNT; i++)
+		final LinkedNode<SpatialEntity> endtl = tl.head;
+		LinkedNode<SpatialEntity> starttl = endtl.next;
+		
+		while (starttl != endtl)
 		{
-			final SpatialQuadNode child = children[i];
-			final LinkedNode<SpatialEntity> end = child.head;
-			LinkedNode<SpatialEntity> start = end.next;
-			
-			while (start != end)
-			{
-				final LinkedNode<SpatialEntity> next = start.next;
-				child.internalRemove( start );
-				internalAdd( start );
-				start = next;
-			}
+			final LinkedNode<SpatialEntity> next = starttl.next;
+			tl.internalRemove( starttl );
+			internalAdd( starttl );
+			starttl = next;
+		}
+
+		final LinkedNode<SpatialEntity> endbr = br.head;
+		LinkedNode<SpatialEntity> startbr = endbr.next;
+		
+		while (startbr != endbr)
+		{
+			final LinkedNode<SpatialEntity> next = startbr.next;
+			br.internalRemove( startbr );
+			internalAdd( startbr );
+			startbr = next;
 		}
 		
-		children = null;
+		tl = br = null;
 	}
 	
 	public void destroy()
 	{
 		if ( isBranch() )
 		{
-			children[0].destroy();
-			children[1].destroy();
-			children[2].destroy();
-			children[3].destroy();
-			children = null;
+			tl.destroy();
+			br.destroy();
+			tl = br = null;
 		}
 		
 		LinkedNode<SpatialEntity> start = head.next;
@@ -308,10 +310,8 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 			}
 			
 			// Handle collisions for children
-			collisionCount += children[0].handleCollisions( callback );
-			collisionCount += children[1].handleCollisions( callback );
-			collisionCount += children[2].handleCollisions( callback );
-			collisionCount += children[3].handleCollisions( callback );
+			collisionCount += tl.handleCollisions( callback );
+			collisionCount += br.handleCollisions( callback );
 		}
 		
 		return collisionCount;
@@ -319,14 +319,8 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 	
 	private int handleCollisionsWithChildren( SpatialEntity a, CollisionCallback callback )
 	{
-		int collisionCount = 0;
-		
-		for (int i = 0; i < CHILD_COUNT; i++)
-		{
-			collisionCount += children[i].handleEntityCollisionFromParent( a, callback );
-		}
-		
-		return collisionCount;
+		return tl.handleEntityCollisionFromParent( a, callback ) + 
+				 br.handleEntityCollisionFromParent( a, callback );
 	}
 	
 	private int handleEntityCollisionFromParent(SpatialEntity a, CollisionCallback callback)
@@ -389,19 +383,13 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		
 		if ( intersectCount < max && isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
+			if ( tl.isIntersecting( offset, radius ) )
 			{
-				SpatialQuadNode child = children[i];
-				
-				if ( child.isIntersecting( offset, radius ) )
-				{
-					intersectCount = child.intersects( offset, radius, max, collidesWith, callback, intersectCount );
-
-					if (intersectCount >= max)
-					{
-						break;
-					}
-				}
+				intersectCount = tl.intersects( offset, radius, max, collidesWith, callback, intersectCount );
+			}
+			if ( intersectCount < max && br.isIntersecting( offset, radius ) )
+			{
+				intersectCount = br.intersects( offset, radius, max, collidesWith, callback, intersectCount );
 			}
 		}
 		
@@ -439,19 +427,13 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		
 		if ( containCount < max && isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
+			if ( tl.isIntersecting( offset, radius ) )
 			{
-				SpatialQuadNode child = children[i];
-				
-				if ( child.isIntersecting( offset, radius ) )
-				{
-					containCount = child.contains( offset, radius, max, collidesWith, callback, containCount );
-					
-					if (containCount >= max)
-					{
-						break;
-					}
-				}
+				containCount = tl.contains( offset, radius, max, collidesWith, callback, containCount );
+			}
+			if ( containCount < max && br.isIntersecting( offset, radius ) )
+			{
+				containCount = br.contains( offset, radius, max, collidesWith, callback, containCount );
 			}
 		}
 		
@@ -476,10 +458,8 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 		
 		if ( isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
-			{
-				 near = children[i].knn( offset, k, collidesWith, nearest, distance, near );
-			}
+			near = tl.knn( offset, k, collidesWith, nearest, distance, near );
+			near = br.knn( offset, k, collidesWith, nearest, distance, near );
 		}
 		
 		return near;
@@ -487,12 +467,12 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 	
 	public boolean isLeaf()
 	{
-		return (children == null);
+		return (tl == null);
 	}
 	
 	public boolean isBranch()
 	{
-		return (children != null);
+		return (tl != null);
 	}
 	
 	public int getSize()
@@ -502,17 +482,7 @@ public class SpatialQuadNode extends LinkedListRectangle<SpatialEntity>
 	
 	public int getChildrenSize()
 	{
-		int size = 0;
-		
-		if ( children != null )
-		{
-			size += children[0].getSize();
-			size += children[1].getSize();
-			size += children[2].getSize();
-			size += children[3].getSize();
-		}
-		
-		return size;
+		return (tl != null ? tl.getSize() + br.getSize() : 0);
 	}
 	
 }

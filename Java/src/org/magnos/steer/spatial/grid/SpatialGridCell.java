@@ -1,25 +1,25 @@
 package org.magnos.steer.spatial.grid;
 
-import org.magnos.steer.util.LinkedList;
+import org.magnos.steer.spatial.base.LinkedListRectangle;
 
 // A cell is list of the entities that exist in the cell's boundaries.
-public class SpatialGridCell extends LinkedList<SpatialGridNode>
+public class SpatialGridCell extends LinkedListRectangle<SpatialGridNode>
 {
-	// The boundaries of the cell.
-	public final float t, b, r, l;
 	// The location of this cell on the grid.
 	public final int x, y;
+	
 	// The look-backs for entity's that overlap cells on the right and bottom.
 	public int lookbackX, lookbackY;
 
 	public SpatialGridCell(int cellX, int cellY, SpatialGrid db) 
 	{
+		super ( cellX * db.size.x + db.offset.x, 
+			     cellY * db.size.y + db.offset.y,
+			     cellX * db.size.x + db.offset.x + db.size.x, 
+			     cellY * db.size.y + db.offset.y + db.size.y );
+		
 		this.x = cellX; 
 		this.y = cellY;
-		this.t = (y * db.size.y) + db.offset.y;
-		this.b = t + db.size.y;
-		this.l = (x * db.size.x) + db.offset.x;
-		this.r = l + db.size.x;
 		this.lookbackX = 0;
 		this.lookbackY = 0;
 	}

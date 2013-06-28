@@ -14,6 +14,8 @@ import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
+import org.magnos.steer.spatial.dual.SpatialDualNode;
+import org.magnos.steer.spatial.dual.SpatialDualTree;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
 import org.magnos.steer.spatial.quad.SpatialQuadNode;
@@ -211,6 +213,11 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			rebuildDatabase( new SpatialQuadTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
 		}
 		
+		if (input.keyUp[KeyEvent.VK_4])
+		{
+			rebuildDatabase( new SpatialDualTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
+		}
+		
 		if (input.keyUp[KeyEvent.VK_UP])
 		{
 			ballCount <<= 1;
@@ -289,6 +296,28 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 						nodes.add( n.children[1] );
 						nodes.add( n.children[2] );
 						nodes.add( n.children[3] );
+					}
+				}
+			}
+			if ( database instanceof SpatialDualTree )
+			{
+				SpatialDualTree dual = (SpatialDualTree)database;
+				
+				Queue<SpatialDualNode> nodes = new ArrayDeque<SpatialDualNode>();
+				nodes.add( dual.root );
+				
+				while (!nodes.isEmpty())
+				{
+					SpatialDualNode n = nodes.poll();
+
+					rect.setFrameFromDiagonal( n.l, n.t, n.r, n.b );
+					gr.draw( rect );
+					gr.drawString( String.format("%d", n.size), (n.l + n.r) * 0.5f + 2, (n.t + n.b) * 0.5f + 14 );
+					
+					if ( n.isBranch() )
+					{
+						nodes.add( n.tl );
+						nodes.add( n.br );
 					}
 				}
 			}
@@ -384,7 +413,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		}
 		
 		gr.drawString( String.format("Balls [UP/DOWN]: %d", ballCount), 10, textY += 16 );
-		gr.drawString( String.format("Database [1/2]: %s", database.getClass().getSimpleName()), 10, textY += 16 );
+		gr.drawString( String.format("Database [1-4]: %s", database.getClass().getSimpleName()), 10, textY += 16 );
 		
 		if ( viewCollision )
 		{
