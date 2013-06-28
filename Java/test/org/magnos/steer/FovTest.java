@@ -38,12 +38,18 @@ public class FovTest implements Game
 	public Vector direction;
 	public Vector target;
 	public Vector fov;
+	public Vector circlePos;
+	public float circleRadius;
+	public boolean circleEntirely;
 
 	@Override
 	public void start( Scene scene )
 	{
 		origin = new Vector( WIDTH / 2, HEIGHT / 2 );
 		target = new Vector( WIDTH / 4, HEIGHT / 4 );
+		circlePos = new Vector( WIDTH / 3, HEIGHT / 2 );
+		circleRadius = 50.0f;
+		circleEntirely = false;
 		direction = new Vector( 1.0f, 0.0f );
 		fov = new Vector().angle( SteerMath.PI * 0.25f, 1.0f );
 		playing = true;
@@ -65,6 +71,10 @@ public class FovTest implements Game
 		{
 			origin.set( input.mouseX, input.mouseY );
 		}
+		if (input.keyDown[KeyEvent.VK_C])
+		{
+			circlePos.set( input.mouseX, input.mouseY );
+		}
 		if (input.keyDown[KeyEvent.VK_D])
 		{
 			direction.set( input.mouseX, input.mouseY ).subi( origin ).normali();
@@ -72,6 +82,10 @@ public class FovTest implements Game
 		if (input.keyDown[KeyEvent.VK_F])
 		{
 			fov.set( input.mouseX, input.mouseY ).subi( origin ).normali();
+		}
+		if (input.keyUp[KeyEvent.VK_E])
+		{
+			circleEntirely = !circleEntirely;
 		}
 	}
 
@@ -83,7 +97,7 @@ public class FovTest implements Game
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		float radius = 100.0f;
+		float radius = 200.0f;
 		
 		Vector upper = new Vector( fov.x, fov.y );
 		Vector lower = new Vector( fov.x, -fov.y );
@@ -97,6 +111,8 @@ public class FovTest implements Game
 		
 		boolean view = (ut <= 0 && lt >= 0 ) || (fov.x < 0.0f && ((ut >= 0 && lt >= 0) || (ut <= 0 && lt <= 0)));
 		
+		boolean circleInView = SteerMath.isCircleInView( origin, direction, fov, circlePos, circleRadius, circleEntirely );
+		
 		gr.setColor( Color.orange );
 		line.setLine( origin.x, origin.y, origin.x + upperRotated.x * radius, origin.y + upperRotated.y * radius );
 		gr.draw( line );
@@ -107,6 +123,7 @@ public class FovTest implements Game
 		drawCircle( gr, direction.mul( radius ).addi( origin ), 5, Color.gray );
 		drawCircle( gr, origin, 5, Color.white );
 		drawCircle( gr, target, 5, Color.red );
+		drawCircle( gr, circlePos, circleRadius, Color.yellow );
 
 		gr.setColor( Color.white );
 		gr.drawString( String.format( "fov: {%.2f,%.2f}", fov.x, fov.y ), 2, 12 );
@@ -115,8 +132,9 @@ public class FovTest implements Game
 		gr.drawString( String.format( "in view: %s", view ), 2, 48 );
 		gr.drawString( String.format( "upperRotated.cross( towards ): %.2f", upperRotated.cross( towards ) ), 2, 60 );
 		gr.drawString( String.format( "lowerRotated.cross( towards ): %.2f", lowerRotated.cross( towards ) ), 2, 72 );
+		gr.drawString( String.format( "isCircleInView(entirely=%s): %s", circleEntirely, circleInView ), 2, 84 );
 	}
-
+	
 	private void drawCircle( Graphics2D gr, Vector v, float size, Color color )
 	{
 		circle.setFrame( v.x - size, v.y - size, size * 2, size * 2 );

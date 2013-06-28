@@ -1,5 +1,6 @@
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.FieldOfView;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Vector;
@@ -16,7 +17,12 @@ public class SteerAvoidWall extends AbstractSteerSpatial
 	
 	public SteerAvoidWall( SpatialDatabase space, float query, long groups, int max )
 	{
-		super( space, query, groups, max, true );
+		super( space, query, groups, max, DEFAULT_FOV_ALL, FieldOfView.IGNORE, true );
+	}
+	
+	public SteerAvoidWall( SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType )
+	{
+		super( space, query, groups, max, fov, fovType, true );
 	}
 
 	@Override
@@ -33,7 +39,7 @@ public class SteerAvoidWall extends AbstractSteerSpatial
 	}
 
 	@Override
-	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		if (entity instanceof SpatialEntityWall)
 		{
@@ -48,14 +54,12 @@ public class SteerAvoidWall extends AbstractSteerSpatial
 				force.addi( normal );	
 			}
 		}
-		
-		return true;
 	}
 
 	@Override
 	public Steer clone()
 	{
-		return new SteerAvoidWall( space, query, groups, max );
+		return new SteerAvoidWall( space, query, groups, max, fov.angle(), fovType );
 	}
 
 }

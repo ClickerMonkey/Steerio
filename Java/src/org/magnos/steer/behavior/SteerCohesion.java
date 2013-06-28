@@ -1,5 +1,6 @@
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.FieldOfView;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Vector;
@@ -12,23 +13,27 @@ import org.magnos.steer.spatial.SpatialEntity;
  */
 public class SteerCohesion extends AbstractSteerSpatial
 {
-	public static int DEFAULT_MAX_RESULTS = 16;
 	
 	private final Vector center = new Vector();
 	
 	public SteerCohesion(SpatialDatabase space, float query)
 	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, true );
+		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
 	public SteerCohesion(SpatialDatabase space, float query, long groups, int max)
 	{
-		this( space, query, groups, max, true );
+		this( space, query, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
-	public SteerCohesion(SpatialDatabase space, float query, long groups, int max, boolean shared)
+	public SteerCohesion(SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType)
 	{
-		super(space, query, groups, max, shared);
+		this( space, query, groups, max, fov, fovType, DEFAULT_SHARED );
+	}
+		
+	public SteerCohesion(SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType, boolean shared)
+	{
+		super(space, query, groups, max, fov, fovType, shared);
 	}
 	
 	@Override
@@ -50,17 +55,15 @@ public class SteerCohesion extends AbstractSteerSpatial
 	}
 
 	@Override
-	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		center.addi( entity.getPosition() );
-		
-		return true;
 	}
 	
 	@Override
 	public Steer clone()
 	{
-		return new SteerCohesion( space, query, groups, max, shared );
+		return new SteerCohesion( space, query, groups, max, fov.angle(), fovType, shared );
 	}
 	
 }

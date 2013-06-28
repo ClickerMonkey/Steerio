@@ -32,7 +32,7 @@ public class SteerController
 		
 		if (!v.isZero(SteerMath.EPSILON)) 
 		{
-			d.set( v ).normalize();
+			d.set( v ).normali();
 		}
 		else if (d.isZero(SteerMath.EPSILON))
 		{

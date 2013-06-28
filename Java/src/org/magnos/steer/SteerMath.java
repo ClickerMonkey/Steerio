@@ -123,19 +123,57 @@ public class SteerMath
 		return height;
 	}
 	
-	public static boolean isInView( Vector origin, Vector direction, Vector fov, Vector target )
+	/**
+	 * Returns whether a circle is within view of an object at the origin 
+	 * facing some direction.
+	 * 
+	 * @param origin
+	 * 	The origin of the view.
+	 * @param direction
+	 * 	The direction of the view, must be a normalized vector.
+	 * @param fov
+	 * 	The vector where x=cos(FOV/2) and y=sin(FOV/2), must be normalized by definition.
+	 * @param circle
+	 * 	The center of the circle.
+	 * @param radius
+	 * 	The radius of the circle.
+	 * @param entirely
+	 * 	True if this method should return whether the circle is completely 
+	 * 	within view, or false if this method should return whether the circle 
+	 * 	is partially within view.
+	 * @return
+	 * 	True if the target is in view, otherwise false.
+	 */
+	public static boolean isCircleInView( Vector origin, Vector direction, Vector fov, Vector circle, float radius, boolean entirely )
 	{
-		Vector upper = new Vector( fov.x, fov.y );
-		Vector lower = new Vector( fov.x, -fov.y );
+		// Calculate upper and lower vectors
+		// Calculate forward vector between target and origin
+		// Rotate forward by upper, resulting vector.y is the distance from upper to target
+		// Rotate forward by lower, resulting vector.y is the distance from lower to target
+		// If it doesn't matter if it's entirely in view, add radius*2 to the distances.
 		
-		Vector upperRotated = upper.rotate( direction );
-		Vector lowerRotated = lower.rotate( direction );
-
-		Vector towards = target.sub( origin );
-		float ut = upperRotated.cross( towards );
-		float lt = lowerRotated.cross( towards );
+		float fovy = Math.abs( fov.y );
+		float dxfx = direction.x * fov.x;
+		float dxfy = direction.x * fovy;
+		float dyfx = direction.y * fov.x;
+		float dyfy = direction.y * fovy;
+		float upperX = (dxfx - dyfy);
+		float upperY = (dxfy + dyfx);
+		float lowerX = (dxfx + dyfy);
+		float lowerY = (dyfx - dxfy);
+		float forwardX = circle.x - origin.x;
+		float forwardY = circle.y - origin.y;
+		float upperDist = (upperX * forwardY + upperY * forwardX);
+		float lowerDist =-(lowerX * forwardY + lowerY * forwardX);
 		
-		return (ut <= 0 && lt >= 0 ) || (fov.x < 0.0f && ((ut >= 0 && lt >= 0) || (ut <= 0 && lt <= 0)));
+		if (!entirely)
+		{
+			upperDist += radius * 2;
+			lowerDist += radius * 2;
+		}
+		
+		return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
+				 (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
 	}
 
 	public static int factorial( int x )

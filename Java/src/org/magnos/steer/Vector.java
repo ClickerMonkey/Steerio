@@ -476,11 +476,7 @@ public class Vector implements Target
 
 		if (m != 0.0f)
 		{
-			m = SteerMath.sqrt( m );
-			
-			float invLen = 1.0f / SteerMath.sqrt( m );
-			x *= invLen;
-			y *= invLen;
+			divi( m = SteerMath.sqrt( m ) );
 		}
 		
 		return m;
@@ -569,11 +565,21 @@ public class Vector implements Target
 	/**
 	 * Returns the scalar cross between this vector and v. This is essentially
 	 * the length of the cross product if this vector were 3d. This can also
-	 * indicate which way v is facing relative to this vector.
+	 * indicate which way v is facing relative to this vector (left or right).
 	 */
 	public float cross( Vector v )
 	{
 		return cross( this, v );
+	}
+
+	/**
+	 * Returns the scalar cross between this vector and v. This is essentially
+	 * the length of the cross product if this vector were 3d. This can also
+	 * indicate which way v is facing relative to this vector (left or right).
+	 */
+	public float cross( float vx, float vy )
+	{
+		return cross( x, y, vx, vy );
 	}
 
 	@Override
@@ -663,7 +669,17 @@ public class Vector implements Target
 	{
 		return a.x * b.y - a.y * b.x;
 	}
+	
+	public static float cross( float ax, float ay, float bx, float by )
+	{
+		return ax * by - ay * bx;
+	}
 
+	public static Vector fromAngle(float angle) 
+	{
+		return new Vector( SteerMath.cos( angle ), SteerMath.sin( angle ) );
+	}
+	
 	/**
 	 * Returns an array of allocated Vec2 of the requested length.
 	 */

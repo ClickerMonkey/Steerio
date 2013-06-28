@@ -1,8 +1,12 @@
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.FieldOfView;
+import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
+import org.magnos.steer.spatial.SpatialEntity;
 
 /**
  * Abstract steering behavior that cares about other Steerables around it.
@@ -10,20 +14,38 @@ import org.magnos.steer.spatial.SpatialDatabase;
 public abstract class AbstractSteerSpatial extends AbstractSteer implements SearchCallback
 {
 	
+	public static float DEFAULT_FOV_ALL = SteerMath.PI;
+	public static FieldOfView DEFAULT_FOV_TYPE = FieldOfView.IGNORE;
+	public static int DEFAULT_MAX_RESULTS = 16;
+	public static boolean DEFAULT_SHARED = true;
+	
 	public boolean shared;
 	public long groups;
 	public float query;
 	public int max;
 	public SpatialDatabase space;
 	public SteerSubject subject;
+	public Vector fov;
+	public FieldOfView fovType;
 	
-	public AbstractSteerSpatial(SpatialDatabase space, float query, long groups, int max, boolean shared)
+	public AbstractSteerSpatial(SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType, boolean shared)
 	{
 		this.space = space;
 		this.query = query;
 		this.groups = groups;
 		this.max = max;
 		this.shared = shared;
+		this.fov = Vector.fromAngle( fov );
+		this.fovType = fovType;
+	}
+	
+	protected abstract void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups );
+	
+	protected int search( SteerSubject ss )
+	{
+		subject = ss;
+		
+		return space.intersects( ss.getPosition(), query, max, groups, this );
 	}
 	
 	@Override
@@ -32,11 +54,32 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 		return shared;
 	}
 	
-	protected int search( SteerSubject ss )
+	@Override
+	public final boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		subject = ss;
+		boolean inView = false;
 		
-		return space.intersects( ss.getPosition(), query, max, groups, this );
+		switch (fovType) {
+		case FULL:
+			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), true );
+			break;
+		case HALF:
+			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), 0.0f, true );
+			break;
+		case PARTIAL:
+			inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), false );
+			break;
+		case IGNORE:
+			inView = true;
+			break;
+		}
+		
+		if (inView)
+		{
+			onFoundInView( entity, overlap, index, queryOffset, queryRadius, queryMax, queryGroups );
+		}
+		
+		return inView;
 	}
 	
 }
