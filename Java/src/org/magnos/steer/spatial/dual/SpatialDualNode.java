@@ -294,7 +294,13 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 		LinkedNode<SpatialEntity> start = head.next;
 		while (start != head)
 		{
-			collisionCount += handleCollisionsAgainstList( start.value, start, head, callback );
+			final SpatialEntity a = start.value;
+			
+			if ( !a.isInert() )
+			{
+				collisionCount += handleCollisionsAgainstList( a, start, head, callback );	
+			}
+			
 			start = start.next;
 		}
 		
@@ -327,7 +333,7 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 	{
 		int collisionCount = 0;
 		
-		if ( isIntersecting( a.getPosition(), a.getRadius() ))
+		if ( !a.isInert() && isIntersecting( a.getPosition(), a.getRadius() ))
 		{
 			collisionCount += handleCollisionsAgainstList( a, head, head, callback );
 			
@@ -348,8 +354,19 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 		
 		while (start != end)
 		{
-			LinkedNode<SpatialEntity> next = start.next;
-			collisionCount = SpatialUtility.handleCollision( a, start.value, collisionCount, callback );
+			final LinkedNode<SpatialEntity> next = start.next;
+			final SpatialEntity b = start.value;
+			
+			if ( !b.isInert() )
+			{
+				collisionCount = SpatialUtility.handleCollision( a, start.value, collisionCount, callback );
+				
+				if ( a.isInert() )
+				{
+					break;
+				}
+			}
+			
 			start = next;
 		}
 		
@@ -364,7 +381,7 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 		{
 			final SpatialEntity a = start.value;
 			
-			if ((collidesWith & a.getSpatialGroups()) != 0)
+			if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 			{
 				final float overlap = SpatialUtility.overlap( a, offset, radius );
 
@@ -404,7 +421,7 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 		{
 			final SpatialEntity a = start.value;
 			
-			if ((collidesWith & a.getSpatialGroups()) != 0)
+			if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 			{
 				final float aradius2 = a.getRadius() * 2;
 				final float overlap = SpatialUtility.overlap( a, offset, radius );
@@ -448,7 +465,7 @@ public class SpatialDualNode extends LinkedListRectangle<SpatialEntity>
 		{
 			final SpatialEntity a = start.value;
 			
-			if ((a.getSpatialGroups() & collidesWith) != 0)
+			if (!a.isInert() && (a.getSpatialGroups() & collidesWith) != 0)
 			{
 				near = SpatialUtility.accumulateKnn( SpatialUtility.distance( a, offset ), a, near, k, distance, nearest );
 			}

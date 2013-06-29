@@ -6,7 +6,7 @@ import java.util.List;
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
-import org.magnos.steer.spatial.quad.SpatialQuadTree;
+import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.Timer;
 
 
@@ -17,9 +17,11 @@ public class SpatialDatabasePerformance
 	{
 		SpatialDatabasePerformance p = new SpatialDatabasePerformance();
 		
-//		SpatialDatabase db = new SpatialGrid( 64, 64, 20, 20, 0, 0 );
-//		SpatialDatabase db = new SpatialArray( 10000 );
-		SpatialDatabase db = new SpatialQuadTree( 0, 0, 12800, 12800, 16, 10 );
+//		SpatialDatabase db = new SpatialGrid( 64, 64, 200, 200, 0, 0 );
+		SpatialDatabase db = new SpatialArray( 10000 );
+//		SpatialDatabase db = new SpatialQuadTree( 0, 0, 12800, 12800, 16, 10 );
+//		SpatialDatabase db = new SpatialDualTree( 0, 0, 12800, 12800, 16, 10 );
+//		SpatialDatabase db = new SpatialSweepAndPrune();
 		
 		List<BouncyBall> balls = p.createBalls( 10000, 0, 12800, 0, 12800, 100, 0.5f, 2.0f, 0, 15, 5 );
 		

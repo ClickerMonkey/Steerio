@@ -18,9 +18,9 @@ import org.magnos.steer.spatial.dual.SpatialDualNode;
 import org.magnos.steer.spatial.dual.SpatialDualTree;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
-import org.magnos.steer.spatial.prunesweep.SpatialPruneSweep;
 import org.magnos.steer.spatial.quad.SpatialQuadNode;
 import org.magnos.steer.spatial.quad.SpatialQuadTree;
+import org.magnos.steer.spatial.sap.SpatialSweepAndPrune;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -221,7 +221,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		
 		if (input.keyUp[KeyEvent.VK_5])
 		{
-			rebuildDatabase( new SpatialPruneSweep( ballCount ) );
+			rebuildDatabase( new SpatialSweepAndPrune() );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_UP])
@@ -430,15 +430,14 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			gr.drawString( String.format("Collision Elapsed: %.9f", statCollisionSeconds), 10, textY += 16 );
 			gr.drawString( String.format("Collision Per-second: %d", (long)(1.0 / (statCollisionSeconds / ballCount))), 10, textY += 16 );	
 			
-			if ( database instanceof SpatialPruneSweep )
+			if ( database instanceof SpatialSweepAndPrune )
 			{
-				SpatialPruneSweep prune = (SpatialPruneSweep)database;
+				SpatialSweepAndPrune prune = (SpatialSweepAndPrune)database;
 
-				gr.drawString( String.format("SPS Moves: %d", prune.moves), 10, textY += 16 );
-				gr.drawString( String.format("SPS Avg. Span Max: %d", prune.averageSpanMax), 10, textY += 16 );
+				gr.drawString( String.format("SPS Moves: %d", prune.adjustments), 10, textY += 16 );
+				gr.drawString( String.format("SPS Average Move Distance: %d", prune.adjustmentDistance / prune.adjustments), 10, textY += 16 );
 				gr.drawString( String.format("SPS # X pairs: %d", prune.xpairs), 10, textY += 16 );
 				gr.drawString( String.format("SPS # Y pairs: %d", prune.ypairs), 10, textY += 16 );
-				gr.drawString( String.format("SPS # XY pairs: %d", prune.xypairs), 10, textY += 16 );
 			}
 			
 			// Compare performance and accuracy against SpatialArray (brute-force)
