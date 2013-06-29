@@ -1,8 +1,8 @@
 package org.magnos.steer.spatial.sap;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
@@ -120,19 +120,19 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		int collisionCount = 0;
 
 		Set<Pair> pairsX = getOverlappingPairs( tailX );
-		Set<Pair> pairsY = getOverlappingPairs( tailY );
+//		Set<Pair> pairsY = getOverlappingPairs( tailY );
+//		
+//		xpairs = pairsX.size();
+//		ypairs = pairsY.size();
+//		
+//		pairsX.retainAll( pairsY );
+//		
+//		for (Pair p : pairsX)
+//		{
+//			collisionCount = SpatialUtility.handleCollision( p.a, p.b, collisionCount, callback );
+//		}
 		
-		xpairs = pairsX.size();
-		ypairs = pairsY.size();
-		
-		pairsX.retainAll( pairsY );
-		
-		for (Pair p : pairsX)
-		{
-			collisionCount = SpatialUtility.handleCollision( p.a, p.b, collisionCount, callback );
-		}
-		
-		/*
+		/**/
 		xpairs = pairsX.size();
 		
 		Pair pairY = new Pair( null, null );
@@ -149,11 +149,11 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 				
 				while (prevY != null && prevY.entity != currY.entity)
 				{
-					ypairs++;
 					pairY.b = prevY.entity;
 					
 					if ( pairsX.remove( pairY ) )
 					{
+						ypairs++;
 						collisionCount = SpatialUtility.handleCollision( pairY.a, pairY.b, collisionCount, callback );
 					}
 					
@@ -163,7 +163,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 
 			currY = currY.prev;
 		}
-		*/
+		/**/
 		
 		return collisionCount;
 	}
@@ -348,7 +348,12 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	
 	public void sort( Edge e, Edge next )
 	{
-		Stack<Edge> stack = new Stack<Edge>();
+		if ( e == null )
+		{
+			return;
+		}
+		
+		ArrayDeque<Edge> stack = new ArrayDeque<Edge>( alive );
 		
 		while ( next.prev.prev != null )
 		{
@@ -395,7 +400,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	
 	public Set<Pair> getOverlappingPairs( Edge tail )
 	{
-		Set<Pair> pairs = new HashSet<Pair>( );
+		Set<Pair> pairs = new HashSet<Pair>( alive );
 		
 		Edge curr = tail.prev;
 		
