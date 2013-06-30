@@ -55,9 +55,11 @@ public class SteerCohesion extends AbstractSteerSpatial
 	}
 
 	@Override
-	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		center.addi( entity.getPosition() );
+		
+		return true;
 	}
 	
 	@Override

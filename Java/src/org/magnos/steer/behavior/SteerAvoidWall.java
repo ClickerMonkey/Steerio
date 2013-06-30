@@ -39,9 +39,11 @@ public class SteerAvoidWall extends AbstractSteerSpatial
 	}
 
 	@Override
-	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		if (entity instanceof SpatialEntityWall)
+		boolean applicable = (entity instanceof SpatialEntityWall);
+		
+		if (applicable)
 		{
 			SpatialEntityWall wall = (SpatialEntityWall)entity;
 			
@@ -54,6 +56,8 @@ public class SteerAvoidWall extends AbstractSteerSpatial
 				force.addi( normal );	
 			}
 		}
+		
+		return applicable;
 	}
 
 	@Override

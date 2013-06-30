@@ -39,7 +39,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 		this.fovType = fovType;
 	}
 	
-	protected abstract void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups );
+	protected abstract boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups );
 	
 	protected int search( SteerSubject ss )
 	{
@@ -61,7 +61,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
 		
 		if (inView)
 		{
-			onFoundInView( entity, overlap, index, queryOffset, queryRadius, queryMax, queryGroups );
+			inView = onFoundInView( entity, overlap, index, queryOffset, queryRadius, queryMax, queryGroups );
 		}
 		
 		return inView;

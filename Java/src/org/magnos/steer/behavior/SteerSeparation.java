@@ -52,12 +52,14 @@ public class SteerSeparation extends AbstractSteerSpatial
 	}
 
 	@Override
-	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		towards.directi( entity.getPosition(), queryOffset );
 		towards.normalize();
 		
 		force.addi( towards );
+		
+		return true;
 	}
 	
 	@Override

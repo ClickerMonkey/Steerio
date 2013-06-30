@@ -56,14 +56,18 @@ public class SteerAlignment extends AbstractSteerSpatial
 	}
 
 	@Override
-	public void onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups)
+	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups)
 	{
-		if ( entity instanceof SteerSubject )
+		boolean applicable = (entity instanceof SteerSubject);
+		
+		if ( applicable )
 		{
 			SteerSubject ss = (SteerSubject)entity;
 			
 			force.addi( ss.getDirection() ); 	
 		}
+		
+		return applicable;
 	}
 	
 }
