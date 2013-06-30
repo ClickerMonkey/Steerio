@@ -25,10 +25,10 @@ public class ConstraintTurning implements Constraint
 	
 	public void constrain(float elapsed, SteerSubject subject)
 	{
-		final Vector v = subject.getVelocity();
+		final Vector v = subject.getDirection();
 		final Vector a = subject.getAcceleration();
 		float alength = a.length();
-		float inner = (float)Math.acos( v.dot(a) / (alength * v.length()) );
+		float inner = (float)Math.acos( v.dot(a) / alength );
 		
 		if (inner > radians)
 		{

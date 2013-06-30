@@ -64,31 +64,65 @@ public class SteerMath
 		return out;
 	}
 
-	public static float intersectionTime( Vector pos1, Vector vel1, Vector pos2, Vector vel2 )
+	public static float interceptTime( Vector shooter, float shooterSpeed, Vector targetPosition, Vector targetVelocity)
 	{
-		float dx = pos1.x - pos2.x;
-		float dy = pos1.y - pos2.y;
-		float a = sqr( vel1.x ) + sqr( vel1.y ) - sqr( vel2.length() );
-		float b = 2 * (vel1.x * dx + vel1.y * dy);
-		float c = sqr( dx ) + sqr( dy );
-		float disc = sqr( b ) - 4 * a * c;
+		 float tx = targetPosition.x - shooter.x;
+		 float ty = targetPosition.y - shooter.y;
+		 
+		 float a = sqr( targetVelocity.x ) + sqr( targetVelocity.y ) - sqr( shooterSpeed );
+		 float b = 2 * (targetVelocity.x * tx + targetVelocity.y * ty);
+		 float c = sqr( tx ) + sqr( ty );    
 
-		if (disc < 0)
-		{
-			return -1;
-		}
+		 float t0 = Float.MIN_VALUE;
+		 float t1 = Float.MIN_VALUE;
 
-		float t1 = (-b + SteerMath.sqrt( disc )) / (2 * a);
-		float t2 = (-b - SteerMath.sqrt( disc )) / (2 * a);
-
-		if (t1 < 0.0 && t2 < 0.0)
-		{
-			return -1;
-		}
-
-		return (t1 < 0 ? t2 : (t2 < 0 ? t1 : Math.min( t1, t2 )));
+		 if (Math.abs(a) < EPSILON) 
+		 {
+			 if (Math.abs(b) < EPSILON) 
+			 {
+				 if (Math.abs(c) < EPSILON) 
+				 {
+					 t0 = 0.0f;
+					 t1 = 0.0f;
+				 }
+			 } 
+			 else 
+			 {
+				 t0 = -c / b;
+				 t1 = -c / b;
+			 }
+		 }
+		 else 
+		 {
+			 float disc = sqr( b ) - 4 * a * c;
+			 
+			 if (disc >= 0) 
+			 {
+				 disc = sqrt(disc);
+				 a = 2 * a;
+				 t0 = (-b - disc) / a;
+				 t1 = (-b + disc) / a;
+			 }
+		 }
+		 
+		 if ( t0 != Float.MIN_VALUE )
+		 {
+			 float t = Math.min( t0, t1 );
+			 
+			 if (t < 0)
+			 {
+				 t = Math.max(t0, t1);    
+			 }
+			 
+			 if (t > 0) 
+			 {
+				 return t;
+			 }
+		 }
+		 
+		 return -1;
 	}
-
+	
 	public static float sqr( float x )
 	{
 		return x * x;

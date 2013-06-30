@@ -11,6 +11,7 @@ public class SteerController
 	public SteerSubject subject;
 	public Steer force;
 	public Constraint constraint;
+	public boolean immediate;
 	
 	public SteerController(SteerSubject subject, Steer force )
 	{
@@ -22,6 +23,7 @@ public class SteerController
 		this.subject = subject;
 		this.force = force;
 		this.constraint = constraint;
+		this.immediate = false;
 		this.updateDirection();
 	}
 	
@@ -48,6 +50,11 @@ public class SteerController
 		float amax = subject.getAccelerationMax();
 		float vmax = subject.getVelocityMax();
 		
+		if ( immediate )
+		{
+			v.clear();	
+		}
+		
 		a.set( force.getForce( elapsed, subject ) );
 		
 		if (amax != Steer.INFINITE)
@@ -60,7 +67,7 @@ public class SteerController
 			constraint.constrain( elapsed, subject );
 		}
 		
-		v.addsi( a, elapsed );
+		v.addsi( a, immediate ? 1.0f : elapsed );
 		
 		if (vmax != Steer.INFINITE)
 		{

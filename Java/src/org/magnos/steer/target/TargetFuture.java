@@ -31,7 +31,7 @@ public class TargetFuture implements Target
 	{
 		future.set( position );
 		
-		float time = SteerMath.intersectionTime( position, velocity, subject.getPosition(), subject.getVelocity() );
+		float time = SteerMath.interceptTime( subject.getPosition(), subject.getVelocity().length(), position, velocity );
 		
 		if (time > 0)
 		{

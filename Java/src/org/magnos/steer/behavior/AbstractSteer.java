@@ -65,7 +65,7 @@ public abstract class AbstractSteer implements Steer
 	
 	public static float intersectionTime(SteerSubject bullet, SteerSubject target)
 	{
-		return SteerMath.intersectionTime( bullet.getPosition(), bullet.getVelocity(), target.getPosition(), target.getVelocity() );
+		return SteerMath.interceptTime( target.getPosition(), target.getVelocity().length(), bullet.getPosition(), bullet.getVelocity() );
 	}
 	
 }
