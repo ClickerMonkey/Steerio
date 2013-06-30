@@ -47,14 +47,11 @@ public class SteerFlowFieldExample extends SteerBasicExample
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		super.draw( state, gr, scene );
-		
-		drawCircle( gr, Color.red, flow.lookaheadPoint, 5.0f, false );
-		
 		final Vector s = new Vector();
 		final Vector e = new Vector();
 		final Vector p = new Vector();
 		final Vector q = new Vector();
+		final Color colorVector = new Color( 80, 80, 80 );
 		
 		for (int y = 0; y < flow.cellsHigh; y++)
 		{
@@ -70,11 +67,15 @@ public class SteerFlowFieldExample extends SteerBasicExample
 				// bottom arrow of vector
 				q.angle( (float)Math.toRadians( 220 ), 3.0f ).rotatei( flow.field[y][x] ).addi( e );
 				
-				drawLine( gr, Color.lightGray, s, e, false );
-				drawLine( gr, Color.lightGray, p, e, false );
-				drawLine( gr, Color.lightGray, q, e, false );
+				drawLine( gr, colorVector, s, e, false );
+				drawLine( gr, colorVector, p, e, false );
+				drawLine( gr, colorVector, q, e, false );
 			}
 		}
+		
+		drawCircle( gr, Color.red, flow.lookaheadPoint, 5.0f, false );
+
+		super.draw( state, gr, scene );
 	}
 
 	private Vector[][] generateSineField(int rows, int columns, float xradians, float xoffset, float yradians, float yoffset)
