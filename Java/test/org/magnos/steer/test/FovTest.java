@@ -1,10 +1,13 @@
-package org.magnos.steer;
+package org.magnos.steer.test;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+
+import org.magnos.steer.SteerMath;
+import org.magnos.steer.Vector;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;

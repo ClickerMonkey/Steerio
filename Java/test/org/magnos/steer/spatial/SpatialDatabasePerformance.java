@@ -1,11 +1,10 @@
-package org.magnos.steer;
+package org.magnos.steer.spatial;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.magnos.steer.spatial.CollisionCallback;
-import org.magnos.steer.spatial.SpatialDatabase;
-import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.SteerMath;
+import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.Timer;
 
@@ -25,22 +24,22 @@ public class SpatialDatabasePerformance
 		
 		List<BouncyBall> balls = p.createBalls( 10000, 0, 12800, 0, 12800, 100, 0.5f, 2.0f, 0, 15, 5 );
 		
-		p.testSeveral( db, balls, 0.01f, 100, 10 );
+		p.testSeveral( db, balls, 0.01f, 100, 10, 1000 );
 	}
 
-	public void testSeveral( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int iterations, int warmup)
+	public void testSeveral( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int iterations, int warmupIterations, int warmupRefreshes)
 	{
 		Timer refreshTimer = new Timer();
 		Timer collisionTimer = new Timer();
 		
-		for (int i = 0; i < warmup; i++)
+		for (int i = 0; i < warmupIterations; i++)
 		{
 			refreshTimer.reset();
 			collisionTimer.reset();
 			
 			database.clear();
 			
-			testSingle( database, balls, elapsed, iterations, refreshTimer, collisionTimer );
+			testSingle( database, balls, elapsed, warmupRefreshes, iterations, refreshTimer, collisionTimer );
 		}
 		
 		System.out.println( "Refresh Statistics" );
@@ -49,11 +48,16 @@ public class SpatialDatabasePerformance
 		collisionTimer.print();
 	}
 	
-	public void testSingle( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int iterations, Timer refreshTimer, Timer collisionTimer )
+	public void testSingle( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int warmupRefreshes, int iterations, Timer refreshTimer, Timer collisionTimer )
 	{
 		for ( BouncyBall ball : balls )
 		{
 			database.add( ball );
+		}
+		
+		for ( int i = 0; i < warmupRefreshes; i++ )
+		{
+			database.refresh();
 		}
 		
 		CollisionCallback callback = new EmptyCollisionCallback();
