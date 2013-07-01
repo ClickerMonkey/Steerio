@@ -4,6 +4,7 @@ package org.magnos.steer.target;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.magnos.steer.FieldOfView;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerBasicExample;
@@ -48,7 +49,7 @@ public class TargetClosestExample extends SteerBasicExample
 		database = new SpatialArray( 32 );
 		
 		newSprite( Color.red, 15, 190, 500, new SteerTo( 
-			closest = new TargetClosest( database, 400, 1L )
+			closest = new TargetClosest( database, 400, 1L, 1.6f, FieldOfView.PARTIAL, 8 )
 		));
 
 		for (int i = 0; i < 16; i++)
@@ -66,11 +67,15 @@ public class TargetClosestExample extends SteerBasicExample
 		super.draw( state, gr, scene );
 
 		Vector a = new Vector(), b = new Vector();
-		Vector v = closest.closest[0].getPosition();
 		
-		drawCircle( gr, Color.red, v, 20, false );
-		drawLine( gr, Color.red, a.set( v.x, v.y - 20 ), b.set( v.x, v.y + 20), false );
-		drawLine( gr, Color.red, a.set( v.x - 20, v.y ), b.set( v.x + 20, v.y), false );
+		if ( closest.chosen != null )
+		{
+			Vector v = closest.chosen.getPosition();
+			
+			drawCircle( gr, Color.red, v, 20, false );
+			drawLine( gr, Color.red, a.set( v.x, v.y - 20 ), b.set( v.x, v.y + 20), false );
+			drawLine( gr, Color.red, a.set( v.x - 20, v.y ), b.set( v.x + 20, v.y), false );
+		}
 	}
 	
 }
