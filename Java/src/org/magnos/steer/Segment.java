@@ -1,6 +1,7 @@
 package org.magnos.steer;
 
-public class Wall
+
+public class Segment
 {
 
 	public static final int FRONT = 1;
@@ -14,16 +15,16 @@ public class Wall
 	public float a, b, c;
 	public float length, invLength, lengthSq;
 	
-	public Wall()
+	public Segment()
 	{
 	}
 
-	public Wall( Vector s, Vector e )
+	public Segment( Vector s, Vector e )
 	{
 		this( s.x, s.y, e.x, e.y );
 	}
 	
-	public Wall(float x0, float y0, float x1, float y1)
+	public Segment(float x0, float y0, float x1, float y1)
 	{
 		set( x0, y0, x1, y1 );
 	}
@@ -65,6 +66,41 @@ public class Wall
 		return (a * x + b * y + c);
 	}
 	
+	public boolean intersects( Vector circle, float radius, boolean withinPoints )
+	{
+		Vector v = closest( circle, withinPoints, new Vector() );
+		
+		return ( v.distanceSq( circle ) < radius * radius );
+	}
+	
+	public boolean intersection(Segment p, boolean withinPoints, Vector out)
+	{
+		float div = (a * p.b - b * p.a);
+		
+		if ( div == 0 ) {
+			return false;
+		}
+		
+		div = 1 / div;
+		out.x = (-c * p.b + b * p.c) * div;
+		out.y = (-a * p.c + c * p.a) * div;
+		
+		return ( !withinPoints ? true : intersection( out ) && p.intersection( out ) );
+	}
+	
+	public boolean intersection( Vector p )
+	{
+		if ( x0 == x1 ) 
+		{
+			return ( p.x == x0 && p.y >= Math.min( y0, y1 ) && p.y <= Math.max( y0, y1 ) );
+		}
+		else if ( y0 == y1 )
+		{
+			return ( p.y == y0 && p.x >= Math.min( x0, x1 ) && p.x <= Math.max( x0, x1 ) );
+		}
+		
+		return (p.x - x0) / (x1 - x0) == (p.y - y0) / (y1 - y0);
+	}
 
 	public int sign(Vector v)
 	{
@@ -87,7 +123,7 @@ public class Wall
 		return TOP;
 	}
 
-	public boolean isParallel(Wall w)
+	public boolean isParallel(Segment w)
 	{
 		return ((a * w.b) - (b * w.a)) == 0.0f;
 	}

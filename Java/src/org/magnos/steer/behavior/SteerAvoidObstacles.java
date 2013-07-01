@@ -5,7 +5,7 @@ import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Vector;
-import org.magnos.steer.Wall;
+import org.magnos.steer.Segment;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 
@@ -20,7 +20,7 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	
 	protected float lookaheadRadius;
 	protected float lookaheadVelocity;
-	protected final Wall lookaheadWall = new Wall();
+	protected final Segment lookaheadWall = new Segment();
 	protected final Vector lookaheadPoint = new Vector();
 	protected final Vector lookaheadCenter = new Vector();
 	protected final Vector lookaheadClosest = new Vector();
@@ -99,6 +99,17 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 			{
 				p.addsi( v, intersectionTime );
 			}	
+		}
+		
+		// If it's a wall, avoid it!
+		if ( entity instanceof Segment )
+		{
+			Segment ss = (Segment)entity;
+			
+			if ( !ss.intersection( lookaheadWall, true, p ) )
+			{
+				return false;
+			}
 		}
 		
 		lookaheadWall.closest( p, true, lookaheadClosest );

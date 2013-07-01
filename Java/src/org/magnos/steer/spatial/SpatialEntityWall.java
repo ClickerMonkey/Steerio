@@ -1,10 +1,10 @@
 package org.magnos.steer.spatial;
 
 import org.magnos.steer.Vector;
-import org.magnos.steer.Wall;
+import org.magnos.steer.Segment;
 
 
-public class SpatialEntityWall extends Wall implements SpatialEntity
+public class SpatialEntityWall extends Segment implements SpatialEntity
 {
 
 	public final Vector center = new Vector();

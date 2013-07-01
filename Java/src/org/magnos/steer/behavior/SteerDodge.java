@@ -5,7 +5,7 @@ import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Vector;
-import org.magnos.steer.Wall;
+import org.magnos.steer.Segment;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 
@@ -74,7 +74,7 @@ public class SteerDodge extends AbstractSteerSpatial
 			
 			if ( applicable = ( intersectionTime > 0 ) )
 			{
-				Wall wall = new Wall( pos.x, pos.y, pos.x + vel.x * intersectionTime, pos.y + vel.y * intersectionTime );
+				Segment wall = new Segment( pos.x, pos.y, pos.x + vel.x * intersectionTime, pos.y + vel.y * intersectionTime );
 				
 				Vector closest = wall.closest( org, true, new Vector() );
 				

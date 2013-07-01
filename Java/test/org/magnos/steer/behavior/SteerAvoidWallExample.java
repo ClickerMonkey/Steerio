@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerAvoidWall;
-import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntityWall;
 import org.magnos.steer.spatial.array.SpatialArray;
@@ -60,7 +58,7 @@ public class SteerAvoidWallExample extends SteerBasicExample
 		}
 		
 		newSprite( Color.blue, 15, 300, 1000, new SteerSet( 
-			new SteerAvoidWall( database, 20, GROUP_WALL, 4 ),
+			new SteerAvoidObstacles( database, 0.8f ),
 			new SteerWander( 0, 100, 150, 80 )
 		));
 	}
