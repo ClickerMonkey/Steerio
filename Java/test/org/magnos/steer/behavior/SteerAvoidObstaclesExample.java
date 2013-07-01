@@ -3,6 +3,7 @@ package org.magnos.steer.behavior;
 import java.awt.Color;
 
 import org.magnos.steer.SteerMath;
+import org.magnos.steer.SteerModifier;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -43,7 +44,7 @@ public class SteerAvoidObstaclesExample extends SteerBasicExample
 		for (int i = 0; i < 16; i++) 
 		{
 			SteerSprite lamb = newSprite( Color.green, 15, 200, 2000, new SteerSet(
-				new SteerAvoidObstacles( database, 0.8f ),
+				new SteerModifier( new SteerAvoidObstacles( database, 0.8f ), 0.8f ),
 				new SteerFixed( new Vector( SteerMath.randomFloat( -300, 300 ), SteerMath.randomFloat( -300, 300 ) ) )	
 			));
 			

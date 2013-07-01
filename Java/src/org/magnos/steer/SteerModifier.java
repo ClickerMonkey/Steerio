@@ -12,7 +12,7 @@ public class SteerModifier implements Steer
 	public float maximum;
 	public float weight;
 	public float update;
-	public boolean enabled = true;
+	public boolean enabled;
 	
 	protected Vector force = new Vector();
 	protected float time;
@@ -33,6 +33,7 @@ public class SteerModifier implements Steer
 		this.maximum = maximum;
 		this.weight = weight;
 		this.update = update;
+		this.enabled = true;
 	}
 	
 	@Override
@@ -49,7 +50,7 @@ public class SteerModifier implements Steer
 			
 			if (maximum != INFINITE)
 			{
-				force.clamp( 0, maximum );	
+				force.max( maximum );
 			}
 			
 			time = Math.max(0, time - update);
