@@ -17,6 +17,11 @@ public class Wall
 	public Wall()
 	{
 	}
+
+	public Wall( Vector s, Vector e )
+	{
+		this( s.x, s.y, e.x, e.y );
+	}
 	
 	public Wall(float x0, float y0, float x1, float y1)
 	{
