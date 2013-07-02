@@ -1,5 +1,4 @@
-
-![](http://i1150.photobucket.com/albums/o604/ClickerMonkey/Steerio_zps8c0d940a.png)
+![](http://i1150.photobucket.com/albums/o604/ClickerMonkey/Steerio1_zpsebbab7bb.png)
 =======
 
 Steerio is a steering behavior, spatial database, and path library for games.
@@ -33,23 +32,23 @@ The following performance scenarios involved 10,000 objects (~5% stationary, ~95
 
 **Refresh Statistics** (a refresh is done once per frame after all entity positions have been updated)  
 
-|                                 | Average (s) | Min (s)     | Max (s)     |
-|:------------------------------- | -----------:| -----------:| -----------:|
-| SpatialQuadTree                 | 0.000198237 | 0.000188351 | 0.000236043 |
-| SpatialDualTree                 | 0.000189507 | 0.000177183 | 0.000221253 |
-| SpatialSweepAndPrune            | 0.001039657 | 0.000827961 | 0.001866308 |
-| SpatialGrid                     | 0.000423223 | 0.000407793 | 0.000469973 |
-| SpatialArray (brute force)      | 0.000029937 | 0.000025355 | 0.000036826 |
+|                                 | Average (s)               |
+|:------------------------------- |:------------------------- |
+| SpatialQuadTree                 | 0.000198237 ± 0.000047692 |
+| SpatialDualTree                 | 0.000189507 ± 0.000044070 |
+| SpatialSweepAndPrune            | 0.001039657 ± 0.001038347 |
+| SpatialGrid                     | 0.000423223 ± 0.000062180 |
+| SpatialArray (brute force)      | 0.000029937 ± 0.000011471 |
 
 **Collision Statistics** (the amount of time it takes to determine all collided entities)  
 
-|                                 | Average (s) | Min (s)     | Max (s)     |
-|:------------------------------- | -----------:| -----------:| -----------:|
-| SpatialQuadTree                 | 0.000616374 | 0.000590107 | 0.000739823 |
-| SpatialDualTree                 | 0.000636301 | 0.000607010 | 0.000730767 |
-| SpatialSweepAndPrune            | 0.002738293 | 0.002565079 | 0.005157022 |
-| SpatialGrid                     | 0.000676963 | 0.000627838 | 0.000769102 |
-| SpatialArray (brute force)      | 0.538688420 | 0.531306765 | 0.548827362 |
+|                                 | Average (s)               |
+|:------------------------------- |:------------------------- |
+| SpatialQuadTree                 | 0.000616374 ± 0.000149716 |
+| SpatialDualTree                 | 0.000636301 ± 0.000123757 |
+| SpatialSweepAndPrune            | 0.002738293 ± 0.002591943 |
+| SpatialGrid                     | 0.000676963 ± 0.000141264 |
+| SpatialArray (brute force)      | 0.538688420 ± 0.017520597 |
 
 **TODO**  
 Things I need to explain: Targets, Steering Behavior, SteerSet, SteerModifier, SpatialDatabase queries, SpatialDatabase geometries, Path implementations  
