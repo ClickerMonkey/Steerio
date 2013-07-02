@@ -1,6 +1,5 @@
 package org.magnos.steer;
 
-
 public class Segment
 {
 
@@ -85,23 +84,48 @@ public class Segment
 		out.x = (-c * p.b + b * p.c) * div;
 		out.y = (-a * p.c + c * p.a) * div;
 		
-		return ( !withinPoints ? true : intersection( out ) && p.intersection( out ) );
+		return !withinPoints || (insideBox( out ) && p.insideBox( out ));
 	}
 	
-	public boolean intersection( Vector p )
+	public float distanceSq(Segment p, Vector closest, Vector pclosest)
 	{
-		if ( x0 == x1 ) 
+		float denom = (dx * p.dy) - (dy * p.dx);
+		
+		if ( denom == 0.0f ) 
 		{
-			return ( p.x == x0 && p.y >= Math.min( y0, y1 ) && p.y <= Math.max( y0, y1 ) );
-		}
-		else if ( y0 == y1 )
-		{
-			return ( p.y == y0 && p.x >= Math.min( x0, x1 ) && p.x <= Math.max( x0, x1 ) );
+			return -1.0f;
 		}
 		
-		return (p.x - x0) / (x1 - x0) == (p.y - y0) / (y1 - y0);
+		float cx = p.x0 - x0;
+		float cy = p.y0 - y0;
+		float t = SteerMath.clamp( (cx * p.dy - cy * p.dx) / denom, 0f, 1f );
+		float u = SteerMath.clamp( (cx * dy - cy * dx) / denom, 0f, 1f );
+		float tx = x0 + t * dx;
+		float ty = y0 + t * dy;
+		float ux = p.x0 + u * p.dx;
+		float uy = p.y0 + u * p.dy;
+		float tux = tx - ux;
+		float tuy = ty - uy;
+		
+		if ( closest != null) {
+			closest.set( tx, ty );
+		}
+		
+		if ( pclosest != null ) { 
+			pclosest.set( ux, uy );
+		}
+		
+		return (tux * tux + tuy * tuy);
 	}
-
+	
+	public boolean insideBox( Vector p )
+	{
+		return (p.x >= Math.min( x0, x1 ) && 
+			     p.x <= Math.max( x0, x1 ) && 
+			     p.y >= Math.min( y0, y1 ) && 
+			     p.y <= Math.max( y0, y1 ));
+	}
+	
 	public int sign(Vector v)
 	{
 		return sign( v.x, v.y );

@@ -106,7 +106,14 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 		{
 			Segment ss = (Segment)entity;
 			
-			if ( !ss.intersection( lookaheadWall, true, p ) )
+			float distSq = ss.distanceSq( lookaheadWall, p, null );
+			
+			if ( distSq == -1 )
+			{
+				return false;
+			}
+			
+			if ( distSq >= r * r )
 			{
 				return false;
 			}
