@@ -16,7 +16,7 @@ import org.magnos.steer.spatial.SpatialEntity;
 public class SteerAvoidObstacles extends AbstractSteerSpatial
 {
 
-	public float lookaheadTime;
+	public float lookahead;
 	
 	protected float lookaheadRadius;
 	protected float lookaheadVelocity;
@@ -25,26 +25,26 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	protected final Vector lookaheadCenter = new Vector();
 	protected final Vector lookaheadClosest = new Vector();
 
-	public SteerAvoidObstacles(SpatialDatabase space, float lookaheadTime)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead)
 	{
-		this( space, lookaheadTime, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, lookahead, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookaheadTime, long groups, int max)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max)
 	{
-		this( space, lookaheadTime, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, lookahead, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookaheadTime, long groups, int max, float fov, FieldOfView fovType)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max, float fov, FieldOfView fovType)
 	{
-		this( space, lookaheadTime, groups, max, fov, fovType, DEFAULT_SHARED );
+		this( space, lookahead, groups, max, fov, fovType, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookaheadTime, long groups, int max, float fov, FieldOfView fovType, boolean shared)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max, float fov, FieldOfView fovType, boolean shared)
 	{
 		super(space, 0f, groups, max, fov, fovType, shared);
 		
-		this.lookaheadTime = lookaheadTime;
+		this.lookahead = lookahead;
 	}
 	
 	@Override
@@ -52,15 +52,16 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	{
 		final Vector p = ss.getPosition();
 		final Vector v = ss.getVelocity();
+		final Vector d = ss.getDirection();
 		final float r = ss.getRadius();
 		
 		subject = ss;
 		
 		lookaheadPoint.set( p );
-		lookaheadPoint.addsi( v, lookaheadTime );
+		lookaheadPoint.addsi( d, lookahead );
 		lookaheadCenter.interpolate( p, lookaheadPoint, 0.5f );
 		lookaheadVelocity = v.length();
-		lookaheadRadius = ( lookaheadVelocity * lookaheadTime * 0.5f ) + r;
+		lookaheadRadius = ( lookahead * 0.5f ) + r;
 		lookaheadWall.set( p.x, p.y, lookaheadPoint.x, lookaheadPoint.y );
 		
 		return space.intersects( lookaheadCenter, lookaheadRadius, max, groups, this );
@@ -113,10 +114,20 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 				return false;
 			}
 			
-			if ( distSq >= r * r )
+			if ( distSq >= subject.getRadius() * subject.getRadius() )
 			{
 				return false;
 			}
+			
+			lookaheadClosest.set( ss.a, ss.b );
+			maximize( subject, lookaheadClosest );
+			force.addi( lookaheadClosest );
+			
+//			
+//			away( subject, p, lookaheadClosest );
+//			force.addi( lookaheadClosest );
+			
+			return true;
 		}
 		
 		lookaheadWall.closest( p, true, lookaheadClosest );
@@ -137,7 +148,7 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	@Override
 	public Steer clone()
 	{
-		return new SteerAvoidObstacles( space, lookaheadTime, groups, max, fov.angle(), fovType, shared );
+		return new SteerAvoidObstacles( space, lookahead, groups, max, fov.angle(), fovType, shared );
 	}
 
 }

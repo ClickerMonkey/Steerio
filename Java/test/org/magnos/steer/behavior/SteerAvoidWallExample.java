@@ -10,6 +10,7 @@ import org.magnos.steer.SteerSet;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntityWall;
 import org.magnos.steer.spatial.array.SpatialArray;
+import org.magnos.steer.test.SteerSprite;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -35,6 +36,8 @@ public class SteerAvoidWallExample extends SteerBasicExample
 
 	private List<SpatialEntityWall> walls;
 	private SpatialDatabase database;
+	private SteerAvoidObstacles obstacles;
+	private SteerSprite sprite;
 
 	public SteerAvoidWallExample( int w, int h )
 	{
@@ -57,8 +60,8 @@ public class SteerAvoidWallExample extends SteerBasicExample
 			database.add( w );
 		}
 		
-		newSprite( Color.blue, 15, 300, 1000, new SteerSet( 
-			new SteerAvoidObstacles( database, 0.8f ),
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerSet( 
+			obstacles = new SteerAvoidObstacles( database, 80.0f ),
 			new SteerWander( 0, 100, 150, 80 )
 		));
 	}
@@ -72,6 +75,8 @@ public class SteerAvoidWallExample extends SteerBasicExample
 		{
 			drawLine( gr, Color.white, w.getStart(), w.getEnd(), false );
 		}
+		
+		drawLine( gr, Color.blue, sprite.getPosition(), obstacles.lookaheadPoint, false );
 	}
 
 }
