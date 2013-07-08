@@ -44,7 +44,7 @@ public class SteerAvoidObstaclesExample extends SteerBasicExample
 		for (int i = 0; i < 16; i++) 
 		{
 			SteerSprite lamb = newSprite( Color.green, 15, 200, 2000, new SteerSet(
-				new SteerModifier( new SteerAvoidObstacles( database, 0.8f ), 0.8f ),
+				new SteerModifier( new SteerAvoidObstacles( database, 80.0f, 4.0f ), 0.8f ),
 				new SteerFixed( new Vector( SteerMath.randomFloat( -300, 300 ), SteerMath.randomFloat( -300, 300 ) ) )	
 			));
 			

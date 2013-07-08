@@ -8,6 +8,7 @@ import org.magnos.steer.Vector;
 import org.magnos.steer.Segment;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.spatial.SpatialEntityWall;
 
 /**
  * A steering behavior that avoids obstacles in space by using a feeler (query)
@@ -17,6 +18,7 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 {
 
 	public float lookahead;
+	public float buffer;
 	
 	protected float lookaheadRadius;
 	protected float lookaheadVelocity;
@@ -25,26 +27,27 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	protected final Vector lookaheadCenter = new Vector();
 	protected final Vector lookaheadClosest = new Vector();
 
-	public SteerAvoidObstacles(SpatialDatabase space, float lookahead)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, float buffer)
 	{
-		this( space, lookahead, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, lookahead, buffer, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, float buffer, long groups, int max)
 	{
-		this( space, lookahead, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, lookahead, buffer, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max, float fov, FieldOfView fovType)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, float buffer, long groups, int max, float fov, FieldOfView fovType)
 	{
-		this( space, lookahead, groups, max, fov, fovType, DEFAULT_SHARED );
+		this( space, lookahead, buffer, groups, max, fov, fovType, DEFAULT_SHARED );
 	}
 	
-	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, long groups, int max, float fov, FieldOfView fovType, boolean shared)
+	public SteerAvoidObstacles(SpatialDatabase space, float lookahead, float buffer, long groups, int max, float fov, FieldOfView fovType, boolean shared)
 	{
 		super(space, 0f, groups, max, fov, fovType, shared);
 		
 		this.lookahead = lookahead;
+		this.buffer = buffer;
 	}
 	
 	@Override
@@ -85,58 +88,63 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	@Override
 	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		final float r = subject.getRadius() + entity.getRadius();
-		final Vector p = new Vector( entity.getPosition() );
-		
-		// If it's a steer subject, use the intercept position as the point to stay away from.
 		if ( entity instanceof SteerSubject )
 		{
-			final SteerSubject ss = (SteerSubject)entity;
-			final Vector v = ss.getVelocity();
-			final float intersectionTime = SteerMath.interceptTime( subject.getPosition(), lookaheadVelocity, p, v );
-			
-			// If an intersection may occur, use the time!
-			if (intersectionTime > 0)
-			{
-				p.addsi( v, intersectionTime );
-			}	
+			return handleSteerSubject( (SteerSubject)entity );
 		}
 		
-		// If it's a wall, avoid it!
-		if ( entity instanceof Segment )
+		if ( entity instanceof SpatialEntityWall )
 		{
-			Segment ss = (Segment)entity;
-			
-			float distSq = ss.distanceSq( lookaheadWall, p, null );
-			
-			if ( distSq == -1 )
-			{
-				return false;
-			}
-			
-			if ( distSq >= subject.getRadius() * subject.getRadius() )
-			{
-				return false;
-			}
-			
-			lookaheadClosest.set( ss.a, ss.b );
-			maximize( subject, lookaheadClosest );
-			force.addi( lookaheadClosest );
-			
-//			
-//			away( subject, p, lookaheadClosest );
-//			force.addi( lookaheadClosest );
-			
-			return true;
+			return handleWall( (SpatialEntityWall)entity );
+		}
+
+		return steerAway( entity.getPosition(), entity.getRadius() );
+	}
+	
+	protected boolean handleSteerSubject( SteerSubject entity )
+	{
+		// If it's a steer subject, use the intercept position as the point to stay away from.
+		Vector p = entity.getPosition();
+		Vector v = entity.getVelocity();
+		float intersectionTime = SteerMath.interceptTime( subject.getPosition(), lookaheadVelocity, p, v );
+	
+		if (intersectionTime > 0)
+		{
+			p = p.adds( v, intersectionTime );
 		}
 		
-		lookaheadWall.closest( p, true, lookaheadClosest );
-
-		boolean applicable = ( lookaheadClosest.distanceSq( p ) <= r * r );
+		return steerAway( p, entity.getRadius() );
+	}
+	
+	protected boolean handleWall( SpatialEntityWall wall )
+	{
+		float r = subject.getRadius() + buffer;
+		float distSq = wall.distanceSq( lookaheadWall, wall.getPosition(), null );
+		
+		boolean applicable = ( distSq != -1 && distSq < r * r );
 		
 		if ( applicable )
 		{
-			lookaheadClosest.subi( p );
+			lookaheadClosest.set( wall.a, wall.b );
+			maximize( subject, lookaheadClosest );
+			
+			force.addi( lookaheadClosest );
+		}
+		
+		return applicable;
+	}
+	
+	protected boolean steerAway( Vector from, float fromRadius )
+	{
+		float r = subject.getRadius() + fromRadius + buffer;
+		
+		lookaheadWall.closest( from, true, lookaheadClosest );
+
+		boolean applicable = ( lookaheadClosest.distanceSq( from ) <= r * r );
+		
+		if ( applicable )
+		{
+			lookaheadClosest.subi( from );
 			maximize( subject, lookaheadClosest );
 			
 			force.addi( lookaheadClosest );
@@ -148,7 +156,7 @@ public class SteerAvoidObstacles extends AbstractSteerSpatial
 	@Override
 	public Steer clone()
 	{
-		return new SteerAvoidObstacles( space, lookahead, groups, max, fov.angle(), fovType, shared );
+		return new SteerAvoidObstacles( space, lookahead, buffer, groups, max, fov.angle(), fovType, shared );
 	}
 
 }

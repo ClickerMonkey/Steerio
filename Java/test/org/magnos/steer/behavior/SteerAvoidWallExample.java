@@ -61,7 +61,7 @@ public class SteerAvoidWallExample extends SteerBasicExample
 		}
 		
 		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerSet( 
-			obstacles = new SteerAvoidObstacles( database, 80.0f ),
+			obstacles = new SteerAvoidObstacles( database, 80.0f, 5.0f ),
 			new SteerWander( 0, 100, 150, 80 )
 		));
 	}
