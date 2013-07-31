@@ -1,6 +1,8 @@
 ![](http://i1150.photobucket.com/albums/o604/ClickerMonkey/Steerio1_zpsebbab7bb.png)
 =======
 
+![Development](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_development.png)
+
 Steerio is a steering behavior, spatial database, and path library for games.
 
 **What's a steering behavior you ask?**  
