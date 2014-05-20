@@ -35,6 +35,18 @@ public interface Steer
 	public boolean isShared();
 	
 	/**
+	 * TODO
+	 * @return
+	 */
+	public boolean isMaximized();
+	
+	/**
+	 * TODO
+	 * @param maximize
+	 */
+	public void setMaximized(boolean maximize);
+	
+	/**
 	 * Returns a clone of this steering behavior. A behavior would be cloned
 	 * if it can not be shared ({@link #isShared()} returns false).
 	 * 

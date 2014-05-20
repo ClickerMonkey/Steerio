@@ -42,7 +42,7 @@ public class SteerFollower extends AbstractSteer
 		
 		if (distanceSq <= distance * distance)
 		{
-			away( subject, closest, force );
+			away( subject, closest, force, this );
 		}
 		
 		return force;

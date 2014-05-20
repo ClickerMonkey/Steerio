@@ -80,7 +80,7 @@ public class SteerDodge extends AbstractSteerSpatial
 				
 				if ( applicable = ( closest.distanceSq( org ) < rad * rad ) )
 				{
-					away( subject, closest, closest );
+					away( subject, closest, closest, this );
 					
 					force.addi( closest );
 				}

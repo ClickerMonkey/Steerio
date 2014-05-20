@@ -13,7 +13,7 @@ public class SteerDirection extends AbstractSteer
 	{
 		force.clear();
 		
-		forward( subject, subject.getDirection(), force );
+		forward( subject, subject.getDirection(), force, this );
 		
 		return force;
 	}

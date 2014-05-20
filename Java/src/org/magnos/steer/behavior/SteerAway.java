@@ -35,7 +35,7 @@ public class SteerAway extends AbstractSteer
 		
 		if (targetPosition != null)
 		{
-			away(subject, targetPosition, force );
+			away(subject, targetPosition, force, this );
 		}
 		
 		return force;

@@ -35,7 +35,7 @@ public class SteerTo extends AbstractSteer
 		
 		if (targetPosition != null)
 		{
-			towards(subject, targetPosition, force );
+			towards(subject, targetPosition, force, this );
 		}
 		
 		return force;

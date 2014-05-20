@@ -13,6 +13,7 @@ public class SteerSet implements Steer
 	public float maximum;
 	public Steer[] steerings;
 	
+	protected boolean maximized = false;
 	protected Vector force = new Vector();
 	
 	public SteerSet()
@@ -85,6 +86,18 @@ public class SteerSet implements Steer
 		
 		return true;
 	}
+	
+    @Override
+    public boolean isMaximized()
+    {
+        return maximized;
+    }
+    
+    @Override
+    public void setMaximized(boolean maximize)
+    {
+        this.maximized = maximize;
+    }
 
 	@Override
 	public Steer clone()

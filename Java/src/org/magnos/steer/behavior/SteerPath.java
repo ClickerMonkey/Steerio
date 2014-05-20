@@ -92,7 +92,7 @@ public class SteerPath extends AbstractSteer
 		
 		target.addi( ahead );
 		
-		towards( subject, target, force );
+		towards( subject, target, force, this );
 		
 		return force;
 	}

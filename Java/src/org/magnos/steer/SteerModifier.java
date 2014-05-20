@@ -14,6 +14,7 @@ public class SteerModifier implements Steer
 	public float update;
 	public boolean enabled;
 	
+	protected boolean maximized = true;
 	protected Vector force = new Vector();
 	protected float time;
 	
@@ -64,6 +65,18 @@ public class SteerModifier implements Steer
 	{
 		return false;
 	}
+	
+    @Override
+    public boolean isMaximized()
+    {
+        return maximized;
+    }
+    
+    @Override
+    public void setMaximized(boolean maximize)
+    {
+        this.maximized = maximize;
+    }
 
 	@Override
 	public Steer clone()

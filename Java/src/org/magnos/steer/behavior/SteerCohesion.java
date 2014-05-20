@@ -48,7 +48,7 @@ public class SteerCohesion extends AbstractSteerSpatial
 		{
 			center.divi( total );
 			
-			towards( subject, center, force );
+			towards( subject, center, force, this );
 		}
 		
 		return force;

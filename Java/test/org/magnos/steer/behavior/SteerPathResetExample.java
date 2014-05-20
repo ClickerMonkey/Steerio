@@ -30,16 +30,17 @@ public class SteerPathResetExample extends SteerBasicExample
 		GameLoop loop = new GameLoopVariable( 0.1f );
 		GameScreen screen = new GameScreen( DEFAULT_WIDTH, DEFAULT_HEIGHT, true, loop, game );
 		screen.setBackground( Color.black );
-		GameScreen.showWindow( screen, "SteerPathExample" );
+		GameScreen.showWindow( screen, "SteerPathResetExample" );
 	}
 	
 	private LinearPath path = new LinearPath(
 		new Vector( 100, 100 ),
 		new Vector( 500, 100 ),
 		new Vector( 400, 300 ),
-		new Vector( 200, 200 ),
+		new Vector( 600, 400 ),
 		new Vector( 100, 400 ),
-		new Vector( 600, 400 )
+		new Vector( 200, 200 ),
+		new Vector( 100, 100 )
 	);
 	
 	private SteerPath steerRed;
