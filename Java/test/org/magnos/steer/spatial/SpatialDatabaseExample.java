@@ -12,20 +12,13 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
-import org.magnos.steer.spatial.CollisionCallback;
-import org.magnos.steer.spatial.CollisionPair;
-import org.magnos.steer.spatial.SearchCallback;
-import org.magnos.steer.spatial.SpatialDatabase;
-import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.spatial.dual.SpatialDualNode;
 import org.magnos.steer.spatial.dual.SpatialDualTree;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
-import org.magnos.steer.spatial.quad.SpatialQuadNode;
-import org.magnos.steer.spatial.quad.SpatialQuadTree;
 import org.magnos.steer.spatial.sap.SpatialSweepAndPrune;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -38,7 +31,7 @@ import com.gameprogblog.engine.core.EntityList;
 import com.gameprogblog.engine.input.GameInput;
 
 
-public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCallback
+public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, SearchCallback<Vec2>
 {
 
 	public static void main( String[] args )
@@ -66,13 +59,13 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 	public static final Rectangle2D.Float rect = new Rectangle2D.Float();
 	
 	public EntityList<BouncyBall> balls;
-	public SpatialDatabase database;
+	public SpatialDatabase<Vec2> database;
 	public int ballCount;
 	public int knn;
-	public SpatialEntity[] knnNeighbors;
+	public SpatialEntity<Vec2>[] knnNeighbors;
 	public float[] knnOverlap;
 	public boolean playing;
-	public Vector mouse = new Vector();
+	public Vec2 mouse = new Vec2();
 	
 	public boolean viewDatabase = true;
 	public boolean viewCollision = true;
@@ -83,7 +76,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 	public boolean viewContains = false;
 	public boolean viewIntersections = false;
 	
-	public Set<CollisionPair> statCollisionPairs = new HashSet<CollisionPair>();
+	public Set<CollisionPair<Vec2>> statCollisionPairs = new HashSet<CollisionPair<Vec2>>();
 	public int statUniqueCollisions;
 	public int statMutualCount;
 	public int statOnesideCount;
@@ -98,13 +91,13 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 	public int statKnnFound;
 	public float statKnnMax;
 
-	public Set<SpatialEntity> statContainsEntities = new HashSet<SpatialEntity>();
+	public Set<SpatialEntity<Vec2>> statContainsEntities = new HashSet<SpatialEntity<Vec2>>();
 	public long statContainsStartNanos;
 	public long statContainsEndNanos;
 	public double statContainsSeconds;
 	public int statContainsCount;
 
-	public Set<SpatialEntity> statIntersectEntities = new HashSet<SpatialEntity>();
+	public Set<SpatialEntity<Vec2>> statIntersectEntities = new HashSet<SpatialEntity<Vec2>>();
 	public long statIntersectStartNanos;
 	public long statIntersectEndNanos;
 	public double statIntersectSeconds;
@@ -120,7 +113,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		knnOverlap = new float[ knn ];
 		
 		balls = new EntityList<BouncyBall>();
-		database = new SpatialArray( ballCount );
+		database = new SpatialArray<Vec2>( ballCount );
 		
 		fill();
 		
@@ -154,7 +147,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		}
 	}
 	
-	private void rebuildDatabase(SpatialDatabase newDatabase)
+	private void rebuildDatabase(SpatialDatabase<Vec2> newDatabase)
 	{
 		database = newDatabase;
 		
@@ -209,22 +202,22 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		
 		if (input.keyUp[KeyEvent.VK_1])
 		{
-			rebuildDatabase( new SpatialArray( ballCount ) );
+			rebuildDatabase( new SpatialArray<Vec2>( ballCount ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_2])
 		{
-			rebuildDatabase( new SpatialGrid( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0 ) );
+			rebuildDatabase( new SpatialGrid<Vec2>( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0 ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_3])
 		{
-			rebuildDatabase( new SpatialQuadTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
+//			rebuildDatabase( new SpatialQuadTree<Vec2>( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_4])
 		{
-			rebuildDatabase( new SpatialDualTree( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
+			rebuildDatabase( new SpatialDualTree<Vec2>( new Vec2( 0, 0 ), new Vec2( WIDTH, HEIGHT ), 8, 30 ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_5])
@@ -272,24 +265,25 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			
 			if ( database instanceof SpatialGrid )
 			{
-				SpatialGrid grid = (SpatialGrid)database;
+				SpatialGrid<Vec2> grid = (SpatialGrid<Vec2>)database;
 				
 				for (int y = 0; y < grid.height; y++)
 				{
 					for (int x = 0; x < grid.width; x++)
 					{
-						SpatialGridCell cell = grid.cells[y][x];
+						SpatialGridCell<Vec2> cell = grid.cells[y][x];
 						
-						rect.setFrameFromDiagonal( cell.l, cell.t, cell.r, cell.b );
+						rect.setFrameFromDiagonal( cell.min.x, cell.min.y, cell.max.x, cell.max.y );
 						gr.draw( rect );
 						
-						if ( cell.lookbackX != 0 || cell.lookbackY != 0 )
+						if ( cell.lookback.x != 0 || cell.lookback.y != 0 )
 						{
-							gr.drawString( String.format("{%d,%d}", cell.lookbackX, cell.lookbackY ), cell.l + 2, cell.t + 14 );	
+							gr.drawString( String.format("{%d,%d}", cell.lookback.x, cell.lookback.x ), cell.index.x + 2, cell.index.y + 14 );	
 						}
 					}
 				}
 			}
+			/* TODO 
 			if ( database instanceof SpatialQuadTree )
 			{
 				SpatialQuadTree quad = (SpatialQuadTree)database;
@@ -314,25 +308,26 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 					}
 				}
 			}
+			*/
 			if ( database instanceof SpatialDualTree )
 			{
-				SpatialDualTree dual = (SpatialDualTree)database;
+				SpatialDualTree<Vec2> dual = (SpatialDualTree<Vec2>)database;
 				
-				Queue<SpatialDualNode> nodes = new ArrayDeque<SpatialDualNode>();
+				Queue<SpatialDualNode<Vec2>> nodes = new ArrayDeque<SpatialDualNode<Vec2>>();
 				nodes.add( dual.root );
 				
 				while (!nodes.isEmpty())
 				{
-					SpatialDualNode n = nodes.poll();
+					SpatialDualNode<Vec2> n = nodes.poll();
 
-					rect.setFrameFromDiagonal( n.l, n.t, n.r, n.b );
+					rect.setFrameFromDiagonal( n.min.x, n.min.y, n.max.x, n.max.y );
 					gr.draw( rect );
-					gr.drawString( String.format("%d", n.size), (n.l + n.r) * 0.5f + 2, (n.t + n.b) * 0.5f + 14 );
+					gr.drawString( String.format("%d", n.size), n.center.x + 2, n.center.y * 0.5f + 14 );
 					
 					if ( n.isBranch() )
 					{
-						nodes.add( n.tl );
-						nodes.add( n.br );
+						nodes.add( n.minNode );
+						nodes.add( n.maxNode );
 					}
 				}
 			}
@@ -358,7 +353,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			
 			for (int i = 0; i < statKnnFound; i++)
 			{
-				SpatialEntity se = knnNeighbors[i];
+				SpatialEntity<Vec2> se = knnNeighbors[i];
 				statKnnMax = Math.max( statKnnMax, knnOverlap[i] );
 				
 				line.x2 = se.getPosition().x;
@@ -378,8 +373,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			
 			statContainsEntities.clear();
 			statContainsStartNanos = System.nanoTime();
-			statContainsCount = database.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
-				public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+			statContainsCount = database.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback<Vec2>() {
+				public boolean onFound( SpatialEntity<Vec2> entity, float overlap, int index, Vec2 queryOffset, float queryRadius, int queryMax, long queryGroups ) {
 					statContainsEntities.add( entity );
 					line.x2 = entity.getPosition().x;
 					line.y2 = entity.getPosition().y;
@@ -402,8 +397,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			
 			statIntersectEntities.clear();
 			statIntersectStartNanos = System.nanoTime();
-			statIntersectCount = database.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
-				public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+			statIntersectCount = database.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback<Vec2>() {
+				public boolean onFound( SpatialEntity<Vec2> entity, float overlap, int index, Vec2 queryOffset, float queryRadius, int queryMax, long queryGroups ) {
 					statIntersectEntities.add( entity );
 					line.x2 = entity.getPosition().x;
 					line.y2 = entity.getPosition().y;
@@ -456,7 +451,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
-				SpatialArray array = new SpatialArray( balls.size() );
+				SpatialArray<Vec2> array = new SpatialArray<Vec2>( balls.size() );
 				
 				for (int i = 0; i < balls.size(); i++)
 				{
@@ -467,7 +462,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 				int total = statTotalCollisions;
 				int mutual = statMutualCount;
 				int onesided = statOnesideCount;
-				Set<CollisionPair> pairs = new HashSet<CollisionPair>( statCollisionPairs );
+				Set<CollisionPair<Vec2>> pairs = new HashSet<CollisionPair<Vec2>>( statCollisionPairs );
 
 				statCollisionPairs.clear();
 				long startTime = System.nanoTime();
@@ -484,29 +479,29 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 				gr.drawString( String.format( "Mismatches: %s", mismatches ), 10, textY += 16 );
 				gr.drawString( String.format( "%.2f times faster than brute-force ", elapsed / statCollisionSeconds), 10, textY += 16 );
 				
-				Set<CollisionPair> collisionsMissed = new HashSet<CollisionPair>();
+				Set<CollisionPair<Vec2>> collisionsMissed = new HashSet<CollisionPair<Vec2>>();
 				collisionsMissed.addAll( statCollisionPairs );
 				collisionsMissed.removeAll( pairs );
 				
-				Set<CollisionPair> collisionsExtra = new HashSet<CollisionPair>();
+				Set<CollisionPair<Vec2>> collisionsExtra = new HashSet<CollisionPair<Vec2>>();
 				collisionsExtra.addAll( pairs );
 				collisionsExtra.removeAll( statCollisionPairs );
 
 				gr.setColor( Color.red );
-				for ( CollisionPair cp : collisionsMissed )
+				for ( CollisionPair<Vec2> cp : collisionsMissed )
 				{
-					final Vector p = cp.a.getPosition();
-					final Vector q = cp.b.getPosition();
+					final Vec2 p = cp.a.getPosition();
+					final Vec2 q = cp.b.getPosition();
 					
 					line.setLine( p.x, p.y, q.x, q.y );
 					gr.draw( line );
 				}
 				
 				gr.setColor( Color.green );
-				for ( CollisionPair cp : collisionsExtra )
+				for ( CollisionPair<Vec2> cp : collisionsExtra )
 				{
-					final Vector p = cp.a.getPosition();
-					final Vector q = cp.b.getPosition();
+					final Vec2 p = cp.a.getPosition();
+					final Vec2 q = cp.b.getPosition();
 					
 					line.setLine( p.x, p.y, q.x, q.y );
 					gr.draw( line );
@@ -523,14 +518,14 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
-				SpatialArray array = new SpatialArray( balls.size() );
+				SpatialArray<Vec2> array = new SpatialArray<Vec2>( balls.size() );
 				
 				for (int i = 0; i < balls.size(); i++)
 				{
 					array.add( balls.get(i) );
 				}
 				
-				SpatialEntity[] neighbors = new SpatialEntity[knn];
+				SpatialEntity<Vec2>[] neighbors = new SpatialEntity[knn];
 				float[] overlap = new float[knn];
 				
 				long startTime = System.nanoTime();
@@ -579,7 +574,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
-				SpatialArray array = new SpatialArray( balls.size() );
+				SpatialArray<Vec2> array = new SpatialArray<Vec2>( balls.size() );
 				
 				for (int i = 0; i < balls.size(); i++)
 				{
@@ -587,8 +582,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 				}
 				
 				long startTime = System.nanoTime();
-				int intersectCount = array.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
-					public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+				int intersectCount = array.intersects( mouse, INTERSECT_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback<Vec2>() {
+					public boolean onFound( SpatialEntity<Vec2> entity, float overlap, int index, Vec2 queryOffset, float queryRadius, int queryMax, long queryGroups ) {
 						return true;
 					}
 				});
@@ -615,7 +610,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			// Compare performance and accuracy against SpatialArray (brute-force)
 			if ( viewAccuracy && !(database instanceof SpatialArray) )
 			{
-				SpatialArray array = new SpatialArray( balls.size() );
+				SpatialArray<Vec2> array = new SpatialArray<Vec2>( balls.size() );
 				
 				for (int i = 0; i < balls.size(); i++)
 				{
@@ -623,8 +618,8 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 				}
 				
 				long startTime = System.nanoTime();
-				int containCount = array.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback() {
-					public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups ) {
+				int containCount = array.contains( mouse, CONTAIN_RADIUS, Integer.MAX_VALUE, SpatialDatabase.ALL_GROUPS, new SearchCallback<Vec2>() {
+					public boolean onFound( SpatialEntity<Vec2> entity, float overlap, int index, Vec2 queryOffset, float queryRadius, int queryMax, long queryGroups ) {
 						return true;
 					}
 				});
@@ -665,7 +660,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 	}
 
 	@Override
-	public void onCollision( SpatialEntity entity, SpatialEntity collidedWith, float overlap, int index, boolean second )
+	public void onCollision( SpatialEntity<Vec2> entity, SpatialEntity<Vec2> collidedWith, float overlap, int index, boolean second )
 	{
 		if (second)
 		{
@@ -675,7 +670,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		else
 		{
 			statOnesideCount++;
-			statCollisionPairs.add( new CollisionPair( entity, collidedWith, overlap, false ) );
+			statCollisionPairs.add( new CollisionPair<Vec2>( entity, collidedWith, overlap, false ) );
 		}
 		
 		statTotalCollisions++;
@@ -687,17 +682,17 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		
 	}
 	
-	public class BouncyBall implements SpatialEntity, Entity
+	public class BouncyBall implements SpatialEntity<Vec2>, Entity
 	{
-		public final Vector position = new Vector();
-		public final Vector velocity = new Vector();
+		public final Vec2 position = new Vec2();
+		public final Vec2 velocity = new Vec2();
 		public final float radius;
 		public final long spatialGroups;
 		public final long spatialCollisionGroups;
 		public boolean inert;
 		public boolean dynamic;
 		
-		public BouncyBall(float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic)
+		public BouncyBall( float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic )
 		{
 			this.radius = radius;
 			this.spatialGroups = spatialGroups;
@@ -705,12 +700,18 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 			this.inert = false;
 			this.dynamic = dynamic;
 		}
-		
-		@Override
-		public Vector getPosition()
-		{
-			return position;
-		}
+        
+        @Override
+        public Vec2 getPosition()
+        {
+            return position;
+        }
+        
+        @Override
+        public Vec2 getPosition( Vec2 out )
+        {
+            return out.set( position );
+        }
 
 		@Override
 		public float getRadius()
@@ -797,13 +798,18 @@ public class SpatialDatabaseExample implements Game, CollisionCallback, SearchCa
 		{
 			
 		}
+
+        @Override
+        public float getDistanceAndNormal( Vec2 origin, Vec2 lookahead, Vec2 outNormal )
+        {
+            return 0;
+        }
 		
 	}
 
 	@Override
-	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFound( SpatialEntity<Vec2> entity, float overlap, int index, Vec2 queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 

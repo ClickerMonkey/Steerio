@@ -1,29 +1,30 @@
+
 package org.magnos.steer.contraints;
 
 import org.magnos.steer.Constraint;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-public class ConstraintZeroVelocityThreshold implements Constraint
+public class ConstraintZeroVelocityThreshold<V extends Vec<V>> implements Constraint<V>
 {
-	
-	public float threshold;
 
-	public ConstraintZeroVelocityThreshold(float threshold)
-	{
-		this.threshold = threshold;
-	}
-	
-	@Override
-	public void constrain( float elapsed, SteerSubject subject )
-	{
-		final Vector v = subject.getVelocity();
-		
-		if ( v.lengthSq() < threshold * threshold )
-		{
-			v.clear();
-		}
-	}
+    public float threshold;
+
+    public ConstraintZeroVelocityThreshold( float threshold )
+    {
+        this.threshold = threshold;
+    }
+
+    @Override
+    public void constrain( float elapsed, SteerSubject<V> subject )
+    {
+        final V v = subject.getVelocity();
+
+        if ( v.lengthSq() < threshold * threshold )
+        {
+            v.clear();
+        }
+    }
 
 }

@@ -7,12 +7,13 @@ import java.awt.Graphics2D;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive;
+import org.magnos.steer.behavior.SteerDrive2;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -34,8 +35,8 @@ public class TargetAverageExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetAverageExample" );
 	}
 
-	private TargetAverage average;
-	private SpatialDatabase database;
+	private TargetAverage<Vec2> average;
+	private SpatialDatabase<Vec2> database;
 
 	public TargetAverageExample( int w, int h )
 	{
@@ -45,16 +46,16 @@ public class TargetAverageExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		database = new SpatialArray( 32 );
+		database = new SpatialArray<Vec2>( 32 );
 		
-		newSprite( Color.red, 15, 190, 500, new SteerSet(  
-			new SteerTo( average = new TargetAverage( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS ) ),
-			new SteerDrive( 0, 0, 0, 100 )
+		newSprite( Color.red, 15, 190, 500, new SteerSet<Vec2>(  
+			new SteerTo<Vec2>( average = new TargetAverage<Vec2>( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) ),
+			new SteerDrive2( 0, 0, 0, 100 )
 		));
 
 		for (int i = 0; i < 16; i++)
 		{
-			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander( 0, 100, 150, 80 ) );
+			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 			lamb.position.set( SteerMath.randomFloat( width ), SteerMath.randomFloat( height ) );
 			database.add( lamb );
 		}

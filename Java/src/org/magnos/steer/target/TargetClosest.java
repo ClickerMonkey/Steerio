@@ -1,53 +1,47 @@
 package org.magnos.steer.target;
 
-import org.magnos.steer.FieldOfView;
-import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.SteerSubjectFilter;
 import org.magnos.steer.Target;
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.vec.Vec;
 
 
-public class TargetClosest implements Target
+public class TargetClosest<V extends Vec<V>> implements Target<V>
 {
-	public static float DEFAULT_FOV_ALL = SteerMath.PI;
-	public static FieldOfView DEFAULT_FOV_TYPE = FieldOfView.IGNORE;
-	public static int DEFAULT_FOV_CHECK = 1;
+    
+	public static int DEFAULT_CHECK = 1;
 	
-	public SpatialDatabase space;
+	public SpatialDatabase<V> space;
+	public SteerSubjectFilter<V, SpatialEntity<V>> filter;
 	public float maximum;
 	public long groups;
-	public int fovCheck;
-	public Vector fov;
-	public FieldOfView fovType;
-	public SpatialEntity chosen;
-	public SpatialEntity[] closest;
+	public SpatialEntity<V> chosen;
+	public SpatialEntity<V>[] closest;
 	public float[] closestDistance;
 	
-	public TargetClosest(SpatialDatabase space, float maximum, long groups)
+	public TargetClosest(SpatialDatabase<V> space, SteerSubjectFilter<V, SpatialEntity<V>> filter, float maximum, long groups)
 	{
-		this( space, maximum, groups, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_FOV_CHECK );
+		this( space, filter, maximum, groups, DEFAULT_CHECK );
 	}
 	
-	public TargetClosest(SpatialDatabase space, float maximum, long groups, float fov, FieldOfView fovType, int fovCheck)
+	public TargetClosest(SpatialDatabase<V> space, SteerSubjectFilter<V, SpatialEntity<V>> filter, float maximum, long groups, int check)
 	{
 		this.space = space;
+		this.filter = filter;
 		this.maximum = maximum;
 		this.groups = groups;
-		this.fov = Vector.fromAngle( fov );
-		this.fovType = fovType;
-		this.fovCheck = fovCheck;
-		this.closest = new SpatialEntity[ fovCheck ];
-		this.closestDistance = new float[ fovCheck ];
+		this.closest = new SpatialEntity[ check ];
+		this.closestDistance = new float[ check ];
 	}
 	
 	@Override
-	public Vector getTarget( SteerSubject subject )
+	public V getTarget( SteerSubject<V> subject )
 	{
 		chosen = null;
 		
-		int found = space.knn( subject.getPosition(), fovCheck, groups, closest, closestDistance );
+		int found = space.knn( subject.getPosition(), closest.length, groups, closest, closestDistance );
 
 		if ( found == 0 )
 		{
@@ -56,13 +50,13 @@ public class TargetClosest implements Target
 		
 		for (int i = 0; i < found; i++)
 		{
-			SpatialEntity c = closest[i];
+			SpatialEntity<V> c = closest[i];
 			
-			if ( SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, c.getPosition(), c.getRadius(), fovType ) )
+			if (filter.isValid( subject, c ))
 			{
-				chosen = c;
-				
-				break;
+			    chosen = c;
+			    
+			    break;
 			}
 		}
 		

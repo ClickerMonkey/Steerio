@@ -1,11 +1,13 @@
 
 package org.magnos.steer;
 
+import org.magnos.steer.vec.Vec;
+
 /**
  * A steering constraint on a subject after the acceleration is calculated
  * but not yet applied to the velocity, and not yet applied to the position.
  */
-public interface Constraint
+public interface Constraint<V extends Vec<V>>
 {
 
     /**
@@ -16,6 +18,6 @@ public interface Constraint
      * @param subject
      *      The subject to constrain.
      */
-    public void constrain( float elapsed, SteerSubject subject );
+    public void constrain( float elapsed, SteerSubject<V> subject );
     
 }

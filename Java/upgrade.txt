@@ -1,0 +1,4 @@
+SteerWander         v.angle(theta,radius)            Split into 2d and 3d version
+TargetOffset        v.rotatei(v.angle())             Change to use Vector method
+ConstraintTurning   v.rotatei(radians)               Split into 2d and 3d version
+ConstraintTurning   v.cross(vector)                  ^

@@ -1,72 +1,73 @@
 
 package org.magnos.steer.behavior;
 
-import org.magnos.steer.FieldOfView;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.SteerSubjectFilter;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.vec.Vec;
 
-public class SteerMatchVelocity extends AbstractSteerSpatial
+
+public class SteerMatchVelocity<V extends Vec<V>> extends AbstractSteerSpatial<V>
 {
 
-	public SteerMatchVelocity( SpatialDatabase space, float query )
-	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
-	}
+    protected V force;
 
-	public SteerMatchVelocity( SpatialDatabase space, float query, long groups, int max )
-	{
-		this( space, query, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
-	}
+    public SteerMatchVelocity( SpatialDatabase<V> space, float query )
+    {
+        this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED );
+    }
 
-	public SteerMatchVelocity( SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType )
-	{
-		this( space, query, groups, max, fov, fovType, DEFAULT_SHARED );
-	}
+    public SteerMatchVelocity( SpatialDatabase<V> space, float query, long groups, int max )
+    {
+        this( space, query, groups, max, null, DEFAULT_SHARED );
+    }
 
-	public SteerMatchVelocity( SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType, boolean shared )
-	{
-		super( space, query, groups, max, fov, fovType, shared );
-	}
+    public SteerMatchVelocity( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter )
+    {
+        this( space, query, groups, max, filter, DEFAULT_SHARED );
+    }
 
-	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
-	{
-		force.clear();
+    public SteerMatchVelocity( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared )
+    {
+        super( space, query, groups, max, filter, shared );
+    }
 
-		int total = search( subject );
+    @Override
+    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    {
+        force = out;
 
-		if (total > 0)
-		{
-			force.divi( total );
+        int total = search( subject );
 
-			maximize( subject, force );
-		}
+        if ( total > 0 )
+        {
+            force.divi( total );
 
-		return force;
-	}
+            maximize( subject, force );
+        }
+    }
 
-	@Override
-	public Steer clone()
-	{
-		return new SteerMatchVelocity( space, query, groups, max, fov.angle(), fovType, shared );
-	}
+    @Override
+    public Steer<V> clone()
+    {
+        return new SteerMatchVelocity<V>( space, query, groups, max, filter, shared );
+    }
 
-	@Override
-	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
-	{
-		boolean applicable = (entity instanceof SteerSubject);
+    @Override
+    public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
+    {
+        boolean applicable = (entity instanceof SteerSubject);
 
-		if (applicable)
-		{
-			SteerSubject ss = (SteerSubject)entity;
+        if ( applicable )
+        {
+            SteerSubject<V> ss = (SteerSubject<V>)entity;
 
-			force.addi( ss.getVelocity() );
-		}
+            force.addi( ss.getVelocity() );
+        }
 
-		return applicable;
-	}
+        return applicable;
+    }
 
 }

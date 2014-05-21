@@ -1,7 +1,6 @@
 
 package org.magnos.steer.spatial.grid;
 
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -9,32 +8,40 @@ import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.SpatialUtility;
 import org.magnos.steer.util.LinkedList;
 import org.magnos.steer.util.LinkedNode;
-
+import org.magnos.steer.vec.Vec;
 
 // A SpatialDatabase stores SpatialEntitys to be quickly searched and checked for intersections.
 // TODO KNN using the cells
 // TODO verify accuracy against brute-force method (SpatialArray)
-public class SpatialGrid implements SpatialDatabase
+public class SpatialGrid<V extends Vec<V>> implements SpatialDatabase<V>
 {
 
 	// A grid of cells, which are a linked list of entities.
-	public final SpatialGridCell[][] cells;
+	public final SpatialGridCell<V>[][] cells;
+	
 	// The number of cells wide the database is.
 	public final int width;
+	
 	// The number of cells high the database is.
 	public final int height;
+	
 	// The offset of the database grid, typically at {0,0}
-	public final Vector offset;
+	public final V offset;
+	
 	// The size of each cell in the database.
-	public final Vector size;
+	public final V size;
+	
 	// The inverse of size.
-	public final Vector sizeInversed;
+	public final V sizeInversed;
+	
 	// The list of entities outside the grid.
-	public final SpatialGridCell outside;
+	public final SpatialGridCell<V> outside;
+	
 	// The list of entities in the database.
-	public final LinkedList<SpatialGridNode> entities;
+	public final LinkedList<SpatialGridNode<V>> entities;
+	
 	// The boundaries of this database.
-	public final float t, b, r, l;
+	public final V min, max;
 
 	public int collisionChecks;
 	public int collisionMatches;
@@ -43,13 +50,13 @@ public class SpatialGrid implements SpatialDatabase
 
 	public SpatialGrid( int cellsWide, int cellsHigh, float cellWidth, float cellHeight, float offsetX, float offsetY )
 	{
-		this.offset = new Vector( offsetX, offsetY );
-		this.size = new Vector( cellWidth, cellHeight );
-		this.sizeInversed = new Vector( 1 / cellWidth, 1 / cellHeight );
+		this.offset = new Vec( offsetX, offsetY );
+		this.size = new Vec( cellWidth, cellHeight );
+		this.sizeInversed = new Vec( 1 / cellWidth, 1 / cellHeight );
 		this.width = cellsWide;
 		this.height = cellsHigh;
-		this.outside = new SpatialGridCell( -1, -1, this );
-		this.entities = new LinkedList<SpatialGridNode>();
+		this.outside = new SpatialGridCell<V>( -1, -1, this );
+		this.entities = new LinkedList<SpatialGridNode<V>>();
 		this.t = offset.y;
 		this.b = offset.y + cellsHigh * cellHeight;
 		this.l = offset.x;
@@ -60,7 +67,7 @@ public class SpatialGrid implements SpatialDatabase
 		{
 			for (int x = 0; x < cellsWide; x++)
 			{
-				this.cells[y][x] = new SpatialGridCell( x, y, this );
+				this.cells[y][x] = new SpatialGridCell<V>( x, y, this );
 			}
 		}
 	}
@@ -170,7 +177,7 @@ public class SpatialGrid implements SpatialDatabase
 		final SpatialEntity entity = node.entity;
 		final LinkedNode<SpatialGridNode> cellNode = node.cellNode;
 		final SpatialGridCell cell = node.cell;
-		final Vector pos = entity.getPosition();
+		final Vec pos = entity.getPosition();
 		final float rad = entity.getRadius();
 		
 		final int cx = getCellX( pos.x - rad, -1, -1 );
@@ -199,7 +206,7 @@ public class SpatialGrid implements SpatialDatabase
 		return false;
 	}
 	
-	private void updateLookback( Vector pos, float rad )
+	private void updateLookback( Vec pos, float rad )
 	{
 		final int actualX = getCellX( pos.x - rad );
 		final int actualY = getCellY( pos.y - rad );
@@ -230,7 +237,7 @@ public class SpatialGrid implements SpatialDatabase
 		{
 			final SpatialGridNode node = linkedNode.value;
 			final SpatialEntity entity = node.entity;
-			final Vector pos = entity.getPosition();
+			final Vec pos = entity.getPosition();
 			final float rad = entity.getRadius();
 			final LinkedNode<SpatialGridNode> nextNode = linkedNode.next;
 			
@@ -308,7 +315,7 @@ public class SpatialGrid implements SpatialDatabase
 	}
 
 	@Override
-	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int intersects( Vec offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
 		final CellSpan span = getCellSpan( offset, radius, true, new CellSpan() );
 		
@@ -336,7 +343,7 @@ public class SpatialGrid implements SpatialDatabase
 		return intersectCount;
 	}
 
-	private int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback, int intersectCount, LinkedList<SpatialGridNode> list )
+	private int intersects( Vec offset, float radius, int max, long collidesWith, SearchCallback callback, int intersectCount, LinkedList<SpatialGridNode> list )
 	{
 		final LinkedNode<SpatialGridNode> end = list.head;
 		LinkedNode<SpatialGridNode> start = end.next;
@@ -370,7 +377,7 @@ public class SpatialGrid implements SpatialDatabase
 	}
 	
 	@Override
-	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int contains( Vec offset, float radius, int max, long collidesWith, SearchCallback callback )
 	{
 		final CellSpan span = getCellSpan( offset, radius, true, new CellSpan() );
 		
@@ -398,7 +405,7 @@ public class SpatialGrid implements SpatialDatabase
 		return containCount;
 	}
 
-	private int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback, int containCount, LinkedList<SpatialGridNode> list )
+	private int contains( Vec offset, float radius, int max, long collidesWith, SearchCallback callback, int containCount, LinkedList<SpatialGridNode> list )
 	{
 		final LinkedNode<SpatialGridNode> end = list.head;
 		LinkedNode<SpatialGridNode> start = end.next;
@@ -434,7 +441,7 @@ public class SpatialGrid implements SpatialDatabase
 	}
 
 	@Override
-	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
+	public int knn( Vec offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
 	{
 		if (!SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
@@ -451,7 +458,7 @@ public class SpatialGrid implements SpatialDatabase
 		return near;
 	}
 	
-	private int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance, int near, LinkedList<SpatialGridNode> list )
+	private int knn( Vec offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance, int near, LinkedList<SpatialGridNode> list )
 	{
 		final LinkedNode<SpatialGridNode> end = list.head;
 		LinkedNode<SpatialGridNode> start = end.next;
@@ -494,7 +501,7 @@ public class SpatialGrid implements SpatialDatabase
 		return (cy < 0 ? outsideTop : (cy >= height ? outsideBottom : cy));
 	}
 	
-	private CellSpan getCellSpan(Vector center, float radius, boolean lookback, CellSpan out)
+	private CellSpan getCellSpan(Vec center, float radius, boolean lookback, CellSpan out)
 	{
 		return getCellSpan( center.x - radius, center.y - radius, center.x + radius, center.y + radius, lookback, out );
 	}
@@ -528,7 +535,7 @@ public class SpatialGrid implements SpatialDatabase
 		return out;
 	}
 	
-	public boolean isOutsidePartially(Vector center, float radius)
+	public boolean isOutsidePartially(Vec center, float radius)
 	{
 		return (center.x - radius < l || 
 				  center.x + radius >= r ||

@@ -5,10 +5,10 @@ import java.awt.Color;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerModifier;
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -29,7 +29,7 @@ public class SteerAvoidObstaclesExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerAvoidObstaclesExample" );
 	}
 	
-	public SpatialDatabase database;
+	public SpatialDatabase<Vec2> database;
 	
 	public SteerAvoidObstaclesExample( int w, int h )
 	{
@@ -39,13 +39,13 @@ public class SteerAvoidObstaclesExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		database = new SpatialArray( 32 );
+		database = new SpatialArray<Vec2>( 32 );
 		
 		for (int i = 0; i < 16; i++) 
 		{
-			SteerSprite lamb = newSprite( Color.green, 15, 200, 2000, new SteerSet(
-				new SteerModifier( new SteerAvoidObstacles( database, 80.0f, 4.0f ), 0.8f ),
-				new SteerFixed( new Vector( SteerMath.randomFloat( -300, 300 ), SteerMath.randomFloat( -300, 300 ) ) )	
+			SteerSprite lamb = newSprite( Color.green, 15, 200, 2000, new SteerSet<Vec2>(
+				new SteerModifier<Vec2>( new SteerAvoidObstacles<Vec2>( database, 80.0f, 4.0f, Vec2.FACTORY ), 0.8f ),
+				new SteerConstant<Vec2>( new Vec2( SteerMath.randomFloat( -300, 300 ), SteerMath.randomFloat( -300, 300 ) ) )	
 			));
 			
 			lamb.position.set( SteerMath.randomFloat( width ), SteerMath.randomFloat( height ) );

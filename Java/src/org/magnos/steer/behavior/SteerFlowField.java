@@ -1,30 +1,30 @@
 package org.magnos.steer.behavior;
 
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 
-public class SteerFlowField extends AbstractSteer
+public class SteerFlowField extends AbstractSteer<Vec2>
 {
 
-	public Vector[][] field;
-	public Vector fieldMin;
-	public Vector fieldMax;
+	public Vec2[][] field;
+	public Vec2 fieldMin;
+	public Vec2 fieldMax;
 	public float lookahead;
 	protected int cellsWide;
 	protected int cellsHigh;
 	protected float cellWidth;
 	protected float cellHeight;
-	protected final Vector lookaheadPoint = new Vector();
-	private final Vector temp0 = new Vector();
-	private final Vector temp1 = new Vector();
+	protected final Vec2 lookaheadPoint = new Vec2();
+	private final Vec2 temp0 = new Vec2();
+	private final Vec2 temp1 = new Vec2();
 	
-	public SteerFlowField(float lookahead, Vector fieldMin, Vector fieldMax, Vector[][] field)
+	public SteerFlowField(float lookahead, Vec2 fieldMin, Vec2 fieldMax, Vec2[][] field)
 	{
 		setField( lookahead, fieldMin, fieldMax, field );
 	}
 	
-	public void setField(float lookahead, Vector fieldMin, Vector fieldMax, Vector[][] field)
+	public void setField(float lookahead, Vec2 fieldMin, Vec2 fieldMax, Vec2[][] field)
 	{
 		this.lookahead = lookahead;
 		this.fieldMin = fieldMin;
@@ -37,39 +37,33 @@ public class SteerFlowField extends AbstractSteer
 	}
 	
 	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
+	public void getForce( float elapsed, SteerSubject<Vec2> subject, Vec2 out )
 	{
 		lookaheadPoint.set( subject.getPosition() );
 		lookaheadPoint.addsi( subject.getDirection(), lookahead );
 		
 		if ( lookaheadPoint.x >= fieldMin.x && 
-			  lookaheadPoint.x < fieldMax.x && 
-			  lookaheadPoint.y >= fieldMin.y && 
-			  lookaheadPoint.y < fieldMax.y)
+			 lookaheadPoint.x < fieldMax.x && 
+			 lookaheadPoint.y >= fieldMin.y && 
+			 lookaheadPoint.y < fieldMax.y)
 		{
 			int x = (int)Math.floor( lookaheadPoint.x / cellWidth );
 			int y = (int)Math.floor( lookaheadPoint.y / cellHeight );
 			float dx = (lookaheadPoint.x - (x * cellWidth)) / cellWidth;
 			float dy = (lookaheadPoint.y - (y * cellHeight)) / cellHeight;
 
-			Vector TL = field[y][x];
-			Vector TR = field[y][x+1];
-			Vector BL = field[y+1][x];
-			Vector BR = field[y+1][x+1];
+			Vec2 TL = field[y][x];
+			Vec2 TR = field[y][x+1];
+			Vec2 BL = field[y+1][x];
+			Vec2 BR = field[y+1][x+1];
 			
 			temp0.interpolate( TL, TR, dx );
 			temp1.interpolate( BL, BR, dx );
 			
-			force.interpolate( temp0, temp1, dy );
+			out.interpolate( temp0, temp1, dy );
 			
-			maximize( subject, force );
+			maximize( subject, out );
 		}
-		else
-		{
-			force.clear();
-		}
-		
-		return force;
 	}
 
 	@Override

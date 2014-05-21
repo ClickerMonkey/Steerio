@@ -3,7 +3,7 @@ package com.gameprogblog.engine;
 
 import java.awt.Graphics2D;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 
 public class Scene
@@ -31,12 +31,12 @@ public class Scene
 		camera.update();
 	}
 
-	public Vector getWorldCoordinate( Vector mouse, Vector out )
+	public Vec2 getWorldCoordinate( Vec2 mouse, Vec2 out )
 	{
 		return getWorldCoordinate( mouse.x, mouse.y, out );
 	}
 
-	public Vector getWorldCoordinate( float mouseX, float mouseY, Vector out )
+	public Vec2 getWorldCoordinate( float mouseX, float mouseY, Vec2 out )
 	{
 		out.x = getWorldCoordinateX( mouseX );
 		out.y = getWorldCoordinateY( mouseY );

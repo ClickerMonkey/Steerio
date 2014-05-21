@@ -1,21 +1,21 @@
 package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-public class PointPath implements Path
+public class PointPath<V extends Vec<V>> implements Path<V>
 {
 	
-	public Vector value;
+	public V value;
 	
-	public PointPath(Vector value)
+	public PointPath(V value)
 	{
 		this.value = value;
 	}
 
 	@Override
-	public Vector set( Vector subject, float delta )
+	public V set( V subject, float delta )
 	{
 		subject.set( value );
 		

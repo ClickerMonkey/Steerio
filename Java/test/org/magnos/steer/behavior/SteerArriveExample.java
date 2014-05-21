@@ -4,8 +4,8 @@ package org.magnos.steer.behavior;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.magnos.steer.behavior.SteerArrive;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -27,7 +27,7 @@ public class SteerArriveExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerArriveExample" );
 	}
 	
-	private SteerArrive arrive;
+	private SteerArrive<Vec2> arrive;
 	private SteerSprite sprite;
 	
 	public SteerArriveExample(int w, int h)
@@ -39,7 +39,7 @@ public class SteerArriveExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		sprite = newSprite( Color.blue, 15, 300, 1000, 
-			arrive = new SteerArrive( mouse, 100, 0, false )
+			arrive = new SteerArrive<Vec2>( mouse, 100, 0, false )
 		);
 	}
 	

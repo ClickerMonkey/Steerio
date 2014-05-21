@@ -5,10 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerDrive;
+import org.magnos.steer.behavior.SteerDrive2;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -31,7 +32,7 @@ public class SteerToExample extends SteerBasicExample
 	}
 
 	private SteerSprite sprite;
-	private TargetLocal targetLocal;
+	private TargetLocal<Vec2> targetLocal;
 
 	public SteerToExample( int w, int h )
 	{
@@ -41,9 +42,9 @@ public class SteerToExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerSet( 
-			new SteerTo( targetLocal = new TargetLocal( mouse, 200 ), false ), 
-			new SteerDrive( 0, 0, 0, 100, false )
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerSet<Vec2>( 
+			new SteerTo<Vec2>( targetLocal = new TargetLocal<Vec2>( mouse, 200 ), false ), 
+			new SteerDrive2( 0, 0, 0, 100, false )
 		));
 	}
 

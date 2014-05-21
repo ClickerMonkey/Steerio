@@ -4,12 +4,11 @@ package org.magnos.steer.target;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetOffset;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -31,8 +30,8 @@ public class TargetOffsetExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetOffsetExample" );
 	}
 
-	private TargetOffset targetRelative;
-	private TargetOffset targetAbsolute;
+	private TargetOffset<Vec2> targetRelative;
+	private TargetOffset<Vec2> targetAbsolute;
 
 	public TargetOffsetExample( int w, int h )
 	{
@@ -43,16 +42,16 @@ public class TargetOffsetExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite = newSprite( Color.blue, 15, 200, 1000, 
-			new SteerWander( 0, 100, 150, 80 )
+			new SteerWander2( 0, 100, 150, 80 )
 		);
 
 		SteerSprite offsetRelative = newSprite( Color.green, 15, 300, 1000, 
-			new SteerTo( targetRelative = new TargetOffset( sprite, new Vector( -50, 0 ), true ) ) 
+			new SteerTo<Vec2>( targetRelative = new TargetOffset<Vec2>( sprite, new Vec2( -50, 0 ), true ) ) 
 		);
 		offsetRelative.position.set( 50, 50 );
 
 		SteerSprite offsetAbsolute = newSprite( Color.orange, 15, 300, 1000, 
-			new SteerTo( targetAbsolute = new TargetOffset( sprite, new Vector( -50, 0 ), false ) ) 
+			new SteerTo<Vec2>( targetAbsolute = new TargetOffset<Vec2>( sprite, new Vec2( -50, 0 ), false ) ) 
 		);
 		offsetAbsolute.position.set( 50, 50 );
 	}

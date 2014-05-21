@@ -1,13 +1,13 @@
 package org.magnos.steer.spatial;
 
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 public class SpatialUtility
 {
 
-	public static boolean prepareKnn( int k, SpatialEntity[] nearest, float[] distance )
+	public static <V extends Vec<V>> boolean prepareKnn( int k, SpatialEntity<V>[] nearest, float[] distance )
 	{
 		if (k == 0 || k > nearest.length || k > distance.length)
 		{
@@ -23,7 +23,7 @@ public class SpatialUtility
 		return true;
 	}
 
-	public static int accumulateKnn(float overlap, SpatialEntity a, int near, int k, float[] distance, SpatialEntity[] nearest)
+	public static <V extends Vec<V>> int accumulateKnn(float overlap, SpatialEntity<V> a, int near, int k, float[] distance, SpatialEntity<V>[] nearest)
 	{
 		int place = 0;
 
@@ -54,12 +54,10 @@ public class SpatialUtility
 		return near;
 	}
 	
-	public static float overlap( SpatialEntity a, Vector bpos, float bradius )
+	public static <V extends Vec<V>> float overlap( SpatialEntity<V> a, V bpos, float bradius )
 	{
-		final Vector apos = a.getPosition();
-		final float dx = apos.x - bpos.x;
-		final float dy = apos.y - bpos.y;
-		final float sq = dx * dx + dy * dy;
+		final V apos = a.getPosition();
+		final float sq = bpos.distanceSq( apos );
 		final float sr = a.getRadius() + bradius;
 		final float srq = sr * sr;
 		
@@ -71,13 +69,9 @@ public class SpatialUtility
 		return sr - SteerMath.sqrt( sq );
 	}
 	
-	public static float distance( SpatialEntity a, Vector b )
+	public static <V extends Vec<V>> float distance( SpatialEntity<V> a, V b )
 	{
-		final Vector apos = a.getPosition();
-		final float dx = apos.x - b.x;
-		final float dy = apos.y - b.y;
-		
-		return SteerMath.sqrt( dx * dx + dy * dy ) - a.getRadius();
+		return a.getPosition().distance( b ) - a.getRadius();
 	}
 
 	public static int floor( float amount, int min, int max )
@@ -96,7 +90,7 @@ public class SpatialUtility
 		return v;
 	}
 	
-	public static int handleCollision( SpatialEntity a, SpatialEntity b, int index, CollisionCallback callback )
+	public static <V extends Vec<V>> int handleCollision( SpatialEntity<V> a, SpatialEntity<V> b, int index, CollisionCallback<V> callback )
 	{
 		// Based on their groups, determine if they are applicable for collision
 		final boolean applicableA = (a.getSpatialCollisionGroups() & b.getSpatialGroups()) != 0;

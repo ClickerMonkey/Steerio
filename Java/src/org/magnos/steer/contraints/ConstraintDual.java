@@ -1,26 +1,28 @@
+
 package org.magnos.steer.contraints;
 
 import org.magnos.steer.Constraint;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.vec.Vec;
 
 
-public class ConstraintDual implements Constraint
+public class ConstraintDual<V extends Vec<V>> implements Constraint<V>
 {
-	
-	public Constraint first;
-	public Constraint second;
 
-	public ConstraintDual(Constraint first, Constraint second)
-	{
-		this.first = first;
-		this.second = second;
-	}
-	
-	@Override
-	public void constrain( float elapsed, SteerSubject subject )
-	{
-		first.constrain( elapsed, subject );
-		second.constrain( elapsed, subject );
-	}
+    public Constraint<V> first;
+    public Constraint<V> second;
+
+    public ConstraintDual( Constraint<V> first, Constraint<V> second )
+    {
+        this.first = first;
+        this.second = second;
+    }
+
+    @Override
+    public void constrain( float elapsed, SteerSubject<V> subject )
+    {
+        first.constrain( elapsed, subject );
+        second.constrain( elapsed, subject );
+    }
 
 }

@@ -6,13 +6,13 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -34,9 +34,9 @@ public class TargetWeakestExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetWeakestExample" );
 	}
 
-	private SteerSubject subject;
-	private TargetWeakest weakest;
-	private SpatialDatabase database;
+	private SteerSubject<Vec2> subject;
+	private TargetWeakest<Vec2> weakest;
+	private SpatialDatabase<Vec2> database;
 
 	public TargetWeakestExample( int w, int h )
 	{
@@ -46,15 +46,15 @@ public class TargetWeakestExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		database = new SpatialArray( 32 );
+		database = new SpatialArray<Vec2>( 32 );
 		
 		subject = newSprite( Color.red, 15, 190, 500,  
-			new SteerTo( weakest = new TargetWeakest( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS ) 
+			new SteerTo<Vec2>( weakest = new TargetWeakest<Vec2>( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) 
 		));
 
 		for (int i = 0; i < 16; i++)
 		{
-			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander( 0, 100, 150, 80 ) );
+			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 			lamb.position.set( SteerMath.randomFloat( width ), SteerMath.randomFloat( height ) );
 			database.add( lamb );
 		}
@@ -70,7 +70,7 @@ public class TargetWeakestExample extends SteerBasicExample
 			drawCircle( gr, Color.yellow, weakest.weakest.getPosition(), 5, false );	
 		}
 		
-		Vector target = weakest.getTarget( subject );
+		Vec2 target = weakest.getTarget( subject );
 		
 		if ( target != null )
 		{

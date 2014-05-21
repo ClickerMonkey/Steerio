@@ -6,11 +6,12 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerAway;
-import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerDrive2;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.target.TargetFuture;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -32,8 +33,8 @@ public class SteerEvadeExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerEvadeExample" );
 	}
 	
-	private TargetFuture future;
-	private TargetLocal local;
+	private TargetFuture<Vec2> future;
+	private TargetLocal<Vec2> local;
 	private SteerSprite scared;
 	private SteerSprite sprite;
 	
@@ -45,14 +46,14 @@ public class SteerEvadeExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander( 0, 100, 150, 80 ) );
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 
-		future = new TargetFuture( sprite );
-		local = new TargetLocal( future, 400 );
+		future = new TargetFuture<Vec2>( sprite );
+		local = new TargetLocal<Vec2>( future, 400 );
 		
-		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet(
-			new SteerAway( local ),
-			new SteerDrive( 0, 0, 0, 100, true )
+		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
+			new SteerAway<Vec2>( local ),
+			new SteerDrive2( 0, 0, 0, 100, true )
 		));
 	}
 	

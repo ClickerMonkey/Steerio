@@ -1,54 +1,52 @@
+
 package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-
-public class TargetInterpose implements Target
+public class TargetInterpose<V extends Vec<V>> implements Target<V>
 {
 
-	public static final float DEFAULT_DELTA = 0.5f;
-	
-	public Target target0;
-	public Target target1;
-	public float delta;
-	
-	public final Vector interpose = new Vector();
-	
-	public TargetInterpose(Target target0, Target target1)
-	{
-		this( target0, target1, DEFAULT_DELTA );
-	}
-	
-	public TargetInterpose(Target target0, Target target1, float delta)
-	{
-		this.target0 = target0;
-		this.target1 = target1;
-		this.delta = delta;
-	}
-	
-	@Override
-	public Vector getTarget( SteerSubject subject )
-	{
-		Vector t0 = target0.getTarget( subject );
-		
-		if ( t0 == null )
-		{
-			return null;
-		}
-		
-		Vector t1 = target1.getTarget( subject );
-		
-		if ( t1 == null )
-		{
-			return null;
-		}
-		
-		interpose.interpolate( t0, t1, delta );
-		
-		return interpose;
-	}
+    public static final float DEFAULT_DELTA = 0.5f;
+
+    public Target<V> target0;
+    public Target<V> target1;
+    public float delta;
+    public final V interpose;
+
+    public TargetInterpose( Target<V> target0, Target<V> target1, V template )
+    {
+        this( target0, target1, DEFAULT_DELTA, template );
+    }
+
+    public TargetInterpose( Target<V> target0, Target<V> target1, float delta, V template )
+    {
+        this.target0 = target0;
+        this.target1 = target1;
+        this.delta = delta;
+        this.interpose = template.create();
+    }
+
+    @Override
+    public V getTarget( SteerSubject<V> subject )
+    {
+        V t0 = target0.getTarget( subject );
+
+        if ( t0 == null )
+        {
+            return null;
+        }
+
+        V t1 = target1.getTarget( subject );
+
+        if ( t1 == null )
+        {
+            return null;
+        }
+
+        return interpose.interpolatei( t0, t1, delta );
+    }
 
 }

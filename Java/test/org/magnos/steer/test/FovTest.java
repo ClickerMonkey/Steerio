@@ -7,7 +7,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -37,24 +37,24 @@ public class FovTest implements Game
 	private static final Line2D.Float line = new Line2D.Float();
 	
 	public boolean playing;
-	public Vector origin;
-	public Vector direction;
-	public Vector target;
-	public Vector fov;
-	public Vector circlePos;
+	public Vec2 origin;
+	public Vec2 direction;
+	public Vec2 target;
+	public Vec2 fov;
+	public Vec2 circlePos;
 	public float circleRadius;
 	public boolean circleEntirely;
 
 	@Override
 	public void start( Scene scene )
 	{
-		origin = new Vector( WIDTH / 2, HEIGHT / 2 );
-		target = new Vector( WIDTH / 4, HEIGHT / 4 );
-		circlePos = new Vector( WIDTH / 3, HEIGHT / 2 );
+		origin = new Vec2( WIDTH / 2, HEIGHT / 2 );
+		target = new Vec2( WIDTH / 4, HEIGHT / 4 );
+		circlePos = new Vec2( WIDTH / 3, HEIGHT / 2 );
 		circleRadius = 50.0f;
 		circleEntirely = false;
-		direction = new Vector( 1.0f, 0.0f );
-		fov = new Vector().angle( SteerMath.PI * 0.25f, 1.0f );
+		direction = new Vec2( 1.0f, 0.0f );
+		fov = new Vec2().angle( SteerMath.PI * 0.25f, 1.0f );
 		playing = true;
 	}
 
@@ -102,13 +102,13 @@ public class FovTest implements Game
 	{
 		float radius = 200.0f;
 		
-		Vector upper = new Vector( fov.x, fov.y );
-		Vector lower = new Vector( fov.x, -fov.y );
+		Vec2 upper = new Vec2( fov.x, fov.y );
+		Vec2 lower = new Vec2( fov.x, -fov.y );
 		
-		Vector upperRotated = upper.rotate( direction );
-		Vector lowerRotated = lower.rotate( direction );
+		Vec2 upperRotated = upper.rotate( direction );
+		Vec2 lowerRotated = lower.rotate( direction );
 
-		Vector towards = target.sub( origin );
+		Vec2 towards = target.sub( origin );
 		float ut = upperRotated.cross( towards );
 		float lt = lowerRotated.cross( towards );
 		
@@ -138,7 +138,7 @@ public class FovTest implements Game
 		gr.drawString( String.format( "isCircleInView(entirely=%s): %s", circleEntirely, circleInView ), 2, 84 );
 	}
 	
-	private void drawCircle( Graphics2D gr, Vector v, float size, Color color )
+	private void drawCircle( Graphics2D gr, Vec2 v, float size, Color color )
 	{
 		circle.setFrame( v.x - size, v.y - size, size * 2, size * 2 );
 		

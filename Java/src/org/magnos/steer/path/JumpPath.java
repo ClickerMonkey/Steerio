@@ -2,7 +2,7 @@ package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  *                                     delta
@@ -15,22 +15,22 @@ import org.magnos.steer.Vector;
  * 
  * @param <T>
  */
-public class JumpPath implements Path 
+public class JumpPath<V extends Vec<V>> implements Path<V>
 {
 	
-	public Vector[] points;
+	public V[] points;
 	
 	public JumpPath()
 	{
 	}
 	
-	public JumpPath( Vector ... jumps ) 
+	public JumpPath( V ... jumps ) 
 	{
 		this.points = jumps;
 	}
 	
 	@Override
-	public Vector set(Vector subject, float delta) 
+	public V set(V subject, float delta) 
 	{
 		float a = delta * points.length;
 		int index = SteerMath.clamp( (int)a, 0, points.length - 1 );

@@ -1,14 +1,14 @@
 
 package org.magnos.steer.spatial;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * A data structure which stores entities that exist in 2d space for querying
  * and collision handling.
  */
-public interface SpatialDatabase
+public interface SpatialDatabase<V extends Vec<V>>
 {
 
 	public static final long ALL_GROUPS = 0xFFFFFFFFFFFFFFFFL;
@@ -16,7 +16,7 @@ public interface SpatialDatabase
 	/**
 	 * Adds an entity to the database.
 	 */
-	public void add( SpatialEntity entity );
+	public void add( SpatialEntity<V> entity );
 	
 	/**
 	 * Clears all entities from the database.
@@ -40,7 +40,7 @@ public interface SpatialDatabase
 	 * @return
 	 * 		The number of collisions detected.
 	 */
-	public int handleCollisions( CollisionCallback callback );
+	public int handleCollisions( CollisionCallback<V> callback );
 
 	/**
 	 * Notifies the given callback of a maximum number of entities that are in
@@ -60,7 +60,7 @@ public interface SpatialDatabase
 	 *        query.
 	 * @return The number of intersections accepted.
 	 */
-	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback );
+	public int intersects( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback );
 
 	/**
 	 * Notifies the given callback of a maximum number of entities that are in
@@ -80,7 +80,7 @@ public interface SpatialDatabase
 	 *        query.
 	 * @return The number of containments accepted.
 	 */
-	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback );
+	public int contains( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback );
 
 	/**
 	 * Performs a K-nearest-neighbor search around the given point on entities
@@ -104,6 +104,6 @@ public interface SpatialDatabase
 	 * @return The number of neighbors found. If the output arrays are not big
 	 *         enough then zero is returned immediately.
 	 */
-	public int knn( Vector point, int k, long collidesWith, SpatialEntity[] nearest, float[] distance );
+	public int knn( V point, int k, long collidesWith, SpatialEntity<V>[] nearest, float[] distance );
 
 }

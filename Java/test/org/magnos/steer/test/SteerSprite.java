@@ -7,13 +7,14 @@ import java.awt.Graphics2D;
 import org.magnos.steer.BaseSteerSubject;
 import org.magnos.steer.Steer;
 import org.magnos.steer.behavior.SteerBasicExample;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.GameState;
 import com.gameprogblog.engine.Scene;
 import com.gameprogblog.engine.core.Entity;
 
 
-public class SteerSprite extends BaseSteerSubject implements Entity
+public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
 {
 
 	public Color color;
@@ -28,9 +29,9 @@ public class SteerSprite extends BaseSteerSubject implements Entity
 		this( color, radius, velocityMax, accelerationMax, null );
 	}
 
-	public SteerSprite( Color color, float radius, float velocityMax, float accelerationMax, Steer steer )
+	public SteerSprite( Color color, float radius, float velocityMax, float accelerationMax, Steer<Vec2> steer )
 	{
-		super( radius, velocityMax, accelerationMax, steer );
+		super( Vec2.ZERO, radius, velocityMax, accelerationMax, steer );
 
 		this.color = color;
 	}

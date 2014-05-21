@@ -1,124 +1,150 @@
+
 package org.magnos.steer;
 
 import org.magnos.steer.spatial.SpatialDatabase;
+import org.magnos.steer.vec.Vec;
 
 
-public class BaseSteerSubject implements SteerSubject
+public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
 {
 
-	public Vector position = new Vector();
-	public Vector direction = new Vector(1, 0);
-	public Vector velocity = new Vector();
-	public float velocityMax;
-	public Vector acceleration = new Vector();
-	public float accelerationMax;
-	public float radius;
-	public long groups = SpatialDatabase.ALL_GROUPS;
-	public long collisionGroups = SpatialDatabase.ALL_GROUPS;
-	public boolean dynamic = true;
-	public boolean inert = false;
-	public SteerController controller;
-	
-	public BaseSteerSubject(float radius, float max)
-	{
-		this( radius, max, max, null );
-	}
-	
-	public BaseSteerSubject(float radius, float velocityMax, float accelerationMax)
-	{
-		this( radius, velocityMax, accelerationMax, null );
-	}
-	
-	public BaseSteerSubject(float radius, float velocityMax, float accelerationMax, Steer steer)
-	{
-		this.radius = radius;
-		this.velocityMax = velocityMax;
-		this.accelerationMax = accelerationMax;
-		
-		if (steer != null)
-		{
-			this.controller = new SteerController( this, steer );	
-		}
-	}
-	
-	public void update(float elapsed)
-	{
-		if (controller != null)
-		{
-			controller.update( elapsed );
-		}
-	}
-	
-	@Override
-	public Vector getTarget( SteerSubject subject )
-	{
-		return position;
-	}
+    public V position;
+    public V direction;
+    public V velocity;
+    public float velocityMax;
+    public V acceleration;
+    public float accelerationMax;
+    public float radius;
+    public long groups = SpatialDatabase.ALL_GROUPS;
+    public long collisionGroups = SpatialDatabase.ALL_GROUPS;
+    public boolean dynamic = true;
+    public boolean inert = false;
+    public SteerController<V> controller;
 
-	@Override
-	public float getRadius()
-	{
-		return radius;
-	}
+    public BaseSteerSubject( V template, float radius, float max )
+    {
+        this( template, radius, max, max, null );
+    }
 
-	@Override
-	public long getSpatialGroups()
-	{
-		return groups;
-	}
+    public BaseSteerSubject( V template, float radius, float velocityMax, float accelerationMax )
+    {
+        this( template, radius, velocityMax, accelerationMax, null );
+    }
 
-	@Override
-	public long getSpatialCollisionGroups()
-	{
-		return collisionGroups;
-	}
-	
-	@Override
-	public boolean isStatic()
-	{
-		return !dynamic;
-	}
+    public BaseSteerSubject( V template, float radius, float velocityMax, float accelerationMax, Steer<V> steer )
+    {
+        this.position = template.create();
+        this.position.clear();
 
-	@Override
-	public boolean isInert()
-	{
-		return inert;
-	}
+        this.direction = template.create();
+        this.direction.defaultUnit();
 
-	@Override
-	public Vector getPosition()
-	{
-		return position;
-	}
+        this.velocity = template.create();
+        this.velocity.clear();
 
-	@Override
-	public Vector getDirection()
-	{
-		return direction;
-	}
+        this.acceleration = template.create();
+        this.acceleration.clear();
 
-	@Override
-	public Vector getVelocity()
-	{
-		return velocity;
-	}
+        this.radius = radius;
+        this.velocityMax = velocityMax;
+        this.accelerationMax = accelerationMax;
 
-	@Override
-	public float getVelocityMax()
-	{
-		return velocityMax;
-	}
+        if ( steer != null )
+        {
+            this.controller = new SteerController<V>( this, steer );
+        }
+    }
 
-	@Override
-	public Vector getAcceleration()
-	{
-		return acceleration;
-	}
+    public void update( float elapsed )
+    {
+        if ( controller != null )
+        {
+            controller.update( elapsed );
+        }
+    }
 
-	@Override
-	public float getAccelerationMax()
-	{
-		return accelerationMax;
-	}
+    @Override
+    public float getDistanceAndNormal( V origin, V lookahead, V outNormal )
+    {
+        return SteerMath.closest( origin, lookahead, position, outNormal ).subi( position ).normalize() - radius;
+    }
+
+    @Override
+    public V getTarget( SteerSubject<V> subject )
+    {
+        return position;
+    }
+
+    @Override
+    public float getRadius()
+    {
+        return radius;
+    }
+
+    @Override
+    public long getSpatialGroups()
+    {
+        return groups;
+    }
+
+    @Override
+    public long getSpatialCollisionGroups()
+    {
+        return collisionGroups;
+    }
+
+    @Override
+    public boolean isStatic()
+    {
+        return !dynamic;
+    }
+
+    @Override
+    public boolean isInert()
+    {
+        return inert;
+    }
+
+    @Override
+    public V getPosition()
+    {
+        return position;
+    }
+
+    @Override
+    public V getPosition( V out )
+    {
+        return out.set( position );
+    }
+
+    @Override
+    public V getDirection()
+    {
+        return direction;
+    }
+
+    @Override
+    public V getVelocity()
+    {
+        return velocity;
+    }
+
+    @Override
+    public float getVelocityMax()
+    {
+        return velocityMax;
+    }
+
+    @Override
+    public V getAcceleration()
+    {
+        return acceleration;
+    }
+
+    @Override
+    public float getAccelerationMax()
+    {
+        return accelerationMax;
+    }
 
 }

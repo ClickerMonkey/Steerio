@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.sap.SpatialSweepAndPrune;
 import org.magnos.steer.test.Timer;
+import org.magnos.steer.vec.Vec2;
 
 
 public class SpatialDatabasePerformance
@@ -20,14 +20,14 @@ public class SpatialDatabasePerformance
 //		SpatialDatabase db = new SpatialArray( 10000 );
 //		SpatialDatabase db = new SpatialQuadTree( 0, 0, 12800, 12800, 16, 10 );
 //		SpatialDatabase db = new SpatialDualTree( 0, 0, 12800, 12800, 16, 10 );
-		SpatialDatabase db = new SpatialSweepAndPrune();
+		SpatialDatabase<Vec2> db = new SpatialSweepAndPrune();
 		
 		List<BouncyBall> balls = p.createBalls( 10000, 0, 12800, 0, 12800, 100, 0.5f, 2.0f, 0, 15, 95 );
 		
 		p.testSeveral( db, balls, 0.01f, 100, 10, 1000 );
 	}
 
-	public void testSeveral( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int iterations, int warmupIterations, int warmupRefreshes)
+	public void testSeveral( SpatialDatabase<Vec2> database, List<BouncyBall> balls, float elapsed, int iterations, int warmupIterations, int warmupRefreshes)
 	{
 		Timer refreshTimer = new Timer();
 		Timer collisionTimer = new Timer();
@@ -48,7 +48,7 @@ public class SpatialDatabasePerformance
 		collisionTimer.print();
 	}
 	
-	public void testSingle( SpatialDatabase database, List<BouncyBall> balls, float elapsed, int warmupRefreshes, int iterations, Timer refreshTimer, Timer collisionTimer )
+	public void testSingle( SpatialDatabase<Vec2> database, List<BouncyBall> balls, float elapsed, int warmupRefreshes, int iterations, Timer refreshTimer, Timer collisionTimer )
 	{
 		for ( BouncyBall ball : balls )
 		{
@@ -60,7 +60,7 @@ public class SpatialDatabasePerformance
 			database.refresh();
 		}
 		
-		CollisionCallback callback = new EmptyCollisionCallback();
+		CollisionCallback<Vec2> callback = new EmptyCollisionCallback();
 		
 		for (int i = 0; i < iterations; i++)
 		{
@@ -82,8 +82,8 @@ public class SpatialDatabasePerformance
 	public List<BouncyBall> createBalls( int count, float minX, float maxX, float minY, float maxY, float maxVelocity, float minRadius, float maxRadius, long minGroups, long maxGroups, int percentStatic )
 	{
 		List<BouncyBall> balls = new ArrayList<BouncyBall>();
-		Vector min = new Vector( minX, minY );
-		Vector max = new Vector( maxX, maxY );
+		Vec2 min = new Vec2( minX, minY );
+		Vec2 max = new Vec2( maxX, maxY );
 		
 		for (int i = 0; i < count; i++)
 		{
@@ -104,18 +104,18 @@ public class SpatialDatabasePerformance
 		return balls;
 	}
 	
-	public class BouncyBall implements SpatialEntity
+	public class BouncyBall implements SpatialEntity<Vec2>
 	{
-		public final Vector position = new Vector();
-		public final Vector velocity = new Vector();
-		public final Vector min, max;
+		public final Vec2 position = new Vec2();
+		public final Vec2 velocity = new Vec2();
+		public final Vec2 min, max;
 		public final float radius;
 		public final long spatialGroups;
 		public final long spatialCollisionGroups;
 		public boolean inert;
 		public boolean dynamic;
 		
-		public BouncyBall(float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic, Vector min, Vector max)
+		public BouncyBall(float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic, Vec2 min, Vec2 max)
 		{
 			this.radius = radius;
 			this.spatialGroups = spatialGroups;
@@ -127,7 +127,7 @@ public class SpatialDatabasePerformance
 		}
 		
 		@Override
-		public Vector getPosition()
+		public Vec2 getPosition()
 		{
 			return position;
 		}
@@ -190,9 +190,21 @@ public class SpatialDatabasePerformance
 				}
 			}
 		}
+
+        @Override
+        public float getDistanceAndNormal( Vec2 origin, Vec2 lookahead, Vec2 outNormal )
+        {
+            return 0;
+        }
+
+        @Override
+        public Vec2 getPosition( Vec2 out )
+        {
+            return out.set( position );
+        }
 	}
 	
-	public class EmptyCollisionCallback implements CollisionCallback
+	public class EmptyCollisionCallback implements CollisionCallback<Vec2>
 	{
 		@Override
 		public void onCollisionStart()
@@ -201,7 +213,7 @@ public class SpatialDatabasePerformance
 		}
 
 		@Override
-		public void onCollision( SpatialEntity entity, SpatialEntity collidedWith, float overlap, int index, boolean second )
+		public void onCollision( SpatialEntity<Vec2> entity, SpatialEntity<Vec2> collidedWith, float overlap, int index, boolean second )
 		{
 			
 		}

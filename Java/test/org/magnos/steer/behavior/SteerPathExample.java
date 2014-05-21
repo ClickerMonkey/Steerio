@@ -6,12 +6,10 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.Vector;
-import org.magnos.steer.behavior.SteerAvoid;
-import org.magnos.steer.behavior.SteerPath;
-import org.magnos.steer.contraints.ConstraintTurning;
+import org.magnos.steer.contraints.ConstraintTurning2;
 import org.magnos.steer.path.LinearPath;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -33,16 +31,16 @@ public class SteerPathExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerPathExample" );
 	}
 	
-	private LinearPath path = new LinearPath(
-		new Vector( 100, 100 ),
-		new Vector( 500, 100 ),
-		new Vector( 400, 300 ),
-		new Vector( 200, 200 ),
-		new Vector( 100, 400 ),
-		new Vector( 600, 400 )
+	private LinearPath<Vec2> path = new LinearPath<Vec2>(
+		new Vec2( 100, 100 ),
+		new Vec2( 500, 100 ),
+		new Vec2( 400, 300 ),
+		new Vec2( 200, 200 ),
+		new Vec2( 100, 400 ),
+		new Vec2( 600, 400 )
 	);
 	
-	private SteerPath steerRed;
+	private SteerPath<Vec2> steerRed;
 	private SteerSprite sprite;
 	
 	public SteerPathExample( int w, int h )
@@ -53,16 +51,16 @@ public class SteerPathExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		steerRed = new SteerPath( path, 0.01f, 0.05f, 15, 40, 60, 1, true, false );
+		steerRed = new SteerPath<Vec2>( path, 0.01f, 0.05f, 15, 40, 60, 1, true, false, Vec2.FACTORY );
 		
 		sprite = newSprite( Color.blue, 15, 300, 1000, steerRed );
 		sprite.position.set( 100, 110 );
 
-		SteerSprite quicker = newSprite( Color.orange, 15, 300, 10000, new SteerSet(
-			new SteerPath( path, 0.01f, 0.025f, 0, 10, 20, 1, true, false ),
-			new SteerAvoid( sprite, 100, true )
+		SteerSprite quicker = newSprite( Color.orange, 15, 300, 10000, new SteerSet<Vec2>(
+			new SteerPath<Vec2>( path, 0.01f, 0.025f, 0, 10, 20, 1, true, false, Vec2.FACTORY ),
+			new SteerAvoid<Vec2>( sprite, 100, true )
 		));
-		quicker.controller.constraint = new ConstraintTurning( 1.8f );
+		quicker.controller.constraint = new ConstraintTurning2( 1.8f );
 	}
 
 	@Override
@@ -79,7 +77,7 @@ public class SteerPathExample extends SteerBasicExample
 			drawCircle( gr, Color.gray, steerRed.ahead, 6, true );
 			drawLine( gr, Color.magenta, steerRed.future, steerRed.target, true );
 			
-			Vector next = new Vector();
+			Vec2 next = new Vec2();
 
 			path.set( next, SteerMath.clamp( steerRed.delta + (steerRed.lookahead * steerRed.direction), 0, 1 ) );
 			drawCircle( gr, Color.blue, next, 6, true );

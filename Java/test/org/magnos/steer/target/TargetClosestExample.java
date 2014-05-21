@@ -4,16 +4,16 @@ package org.magnos.steer.target;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.magnos.steer.FieldOfView;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerWander2;
+import org.magnos.steer.filter.FilterView2;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
-import org.magnos.steer.target.TargetClosest;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.util.FieldOfView;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -35,8 +35,8 @@ public class TargetClosestExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetClosestExample" );
 	}
 
-	private TargetClosest closest;
-	private SpatialDatabase database;
+	private TargetClosest<Vec2> closest;
+	private SpatialDatabase<Vec2> database;
 
 	public TargetClosestExample( int w, int h )
 	{
@@ -46,15 +46,15 @@ public class TargetClosestExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		database = new SpatialArray( 32 );
+		database = new SpatialArray<Vec2>( 32 );
 		
-		newSprite( Color.red, 15, 190, 500, new SteerTo( 
-			closest = new TargetClosest( database, 400, 1L, 1.6f, FieldOfView.PARTIAL, 8 )
+		newSprite( Color.red, 15, 190, 500, new SteerTo<Vec2>( 
+			closest = new TargetClosest<Vec2>( database, new FilterView2( 1.6f, FieldOfView.PARTIAL ), 1L, 8 )
 		));
 
 		for (int i = 0; i < 16; i++)
 		{
-			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander( 0, 100, 150, 80 ) );
+			SteerSprite lamb = newSprite( Color.white, 10, 200, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 			lamb.position.set( SteerMath.randomFloat( width ), SteerMath.randomFloat( height ) );
 			database.add( lamb );
 		}
@@ -66,11 +66,11 @@ public class TargetClosestExample extends SteerBasicExample
 	{
 		super.draw( state, gr, scene );
 
-		Vector a = new Vector(), b = new Vector();
+		Vec2 a = new Vec2(), b = new Vec2();
 		
 		if ( closest.chosen != null )
 		{
-			Vector v = closest.chosen.getPosition();
+			Vec2 v = closest.chosen.getPosition();
 			
 			drawCircle( gr, Color.red, v, 20, false );
 			drawLine( gr, Color.red, a.set( v.x, v.y - 20 ), b.set( v.x, v.y + 20), false );

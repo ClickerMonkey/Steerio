@@ -1,11 +1,13 @@
 package org.magnos.steer.spatial;
 
+import org.magnos.steer.vec.Vec;
 
-public class CollisionPair
+
+public class CollisionPair<V extends Vec<V>>
 {
 	
-	public SpatialEntity a;
-	public SpatialEntity b;
+	public SpatialEntity<V> a;
+	public SpatialEntity<V> b;
 	public float overlap;
 	public boolean mutual;
 	
@@ -13,12 +15,12 @@ public class CollisionPair
 	{
 	}
 	
-	public CollisionPair(SpatialEntity a, SpatialEntity b, float overlap, boolean mutual)
+	public CollisionPair(SpatialEntity<V> a, SpatialEntity<V> b, float overlap, boolean mutual)
 	{
 		set( a, b, overlap, mutual );
 	}
 	
-	public void set(SpatialEntity a, SpatialEntity b, float overlap, boolean mutual)
+	public void set(SpatialEntity<V> a, SpatialEntity<V> b, float overlap, boolean mutual)
 	{
 		this.a = a;
 		this.b = b;
@@ -38,7 +40,7 @@ public class CollisionPair
 	@Override
 	public boolean equals( Object obj )
 	{
-		CollisionPair pair = (CollisionPair)obj;
+		CollisionPair<V> pair = (CollisionPair<V>)obj;
 		
 		return (a == pair.a && b == pair.b) ||
 			    (a == pair.b && b == pair.a);

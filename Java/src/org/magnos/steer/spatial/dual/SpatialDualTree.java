@@ -1,30 +1,30 @@
 package org.magnos.steer.spatial.dual;
 
 
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.SpatialUtility;
+import org.magnos.steer.vec.Vec;
 
 
-public class SpatialDualTree implements SpatialDatabase
+public class SpatialDualTree<V extends Vec<V>> implements SpatialDatabase<V>
 {
 
 	public int desiredLeafSize;
 	public int refreshThreshold;
-	public SpatialDualNode root;
+	public SpatialDualNode<V> root;
 	
-	public SpatialDualTree(float l, float t, float r, float b, int desiredLeafSize, int refreshThreshold)
+	public SpatialDualTree(V min, V max, int desiredLeafSize, int refreshThreshold)
 	{
-		this.root = new SpatialDualNode( null, false, l, t, r, b );
+		this.root = new SpatialDualNode<V>( null, 0, min, max );
 		this.desiredLeafSize = desiredLeafSize;
 		this.refreshThreshold = refreshThreshold;
 	}
 	
 	@Override
-	public void add( SpatialEntity entity )
+	public void add( SpatialEntity<V> entity )
 	{
 		root.add( entity );
 	}
@@ -46,7 +46,7 @@ public class SpatialDualTree implements SpatialDatabase
 	}
 
 	@Override
-	public int handleCollisions( CollisionCallback callback )
+	public int handleCollisions( CollisionCallback<V> callback )
 	{
 		callback.onCollisionStart();
 		int collisionCount = root.handleCollisions( callback );
@@ -56,19 +56,19 @@ public class SpatialDualTree implements SpatialDatabase
 	}
 
 	@Override
-	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int intersects( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback )
 	{
 		return root.intersects( offset, radius, max, collidesWith, callback, 0 );
 	}
 
 	@Override
-	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int contains( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback )
 	{
 		return root.contains( offset, radius, max, collidesWith, callback, 0 );
 	}
 
 	@Override
-	public int knn( Vector point, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
+	public int knn( V point, int k, long collidesWith, SpatialEntity<V>[] nearest, float[] distance )
 	{
 		if (!SpatialUtility.prepareKnn( k, nearest, distance ))
 		{

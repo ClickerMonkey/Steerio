@@ -3,19 +3,19 @@ package org.magnos.steer.spatial.array;
 
 import java.util.Arrays;
 
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.SpatialUtility;
+import org.magnos.steer.vec.Vec;
 
 
 // A SpatialDatabase that uses Brute-Force
-public class SpatialArray implements SpatialDatabase
+public class SpatialArray<V extends Vec<V>> implements SpatialDatabase<V>
 {
 
-	private SpatialEntity[] entities;
+	private SpatialEntity<V>[] entities;
 	private int count;
 
 	public SpatialArray( int initialCapacity )
@@ -24,7 +24,7 @@ public class SpatialArray implements SpatialDatabase
 	}
 
 	@Override
-	public void add( SpatialEntity entity )
+	public void add( SpatialEntity<V> entity )
 	{
 		if (count == entities.length)
 		{
@@ -50,7 +50,7 @@ public class SpatialArray implements SpatialDatabase
 
 		for (int i = 0; i < count; i++)
 		{
-			final SpatialEntity e = entities[i];
+			final SpatialEntity<V> e = entities[i];
 
 			if (!e.isInert())
 			{
@@ -67,7 +67,7 @@ public class SpatialArray implements SpatialDatabase
 	}
 
 	@Override
-	public int handleCollisions( CollisionCallback callback )
+	public int handleCollisions( CollisionCallback<V> callback )
 	{
 		int collisionCount = 0;
 		
@@ -75,7 +75,7 @@ public class SpatialArray implements SpatialDatabase
 		
 		for (int j = 0; j < count - 1; j++)
 		{
-			final SpatialEntity a = entities[j];
+			final SpatialEntity<V> a = entities[j];
 			
 			if ( a.isInert() )
 			{
@@ -84,7 +84,7 @@ public class SpatialArray implements SpatialDatabase
 			
 			for (int k = j + 1; k < count; k++)
 			{
-				final SpatialEntity b = entities[k];
+				final SpatialEntity<V> b = entities[k];
 				
 				if ( b.isInert() )
 				{
@@ -106,13 +106,13 @@ public class SpatialArray implements SpatialDatabase
 	}
 	
 	@Override
-	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int intersects( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback )
 	{
 		int intersectCount = 0;
 
 		for (int j = 0; j < count; j++)
 		{
-			final SpatialEntity a = entities[j];
+			final SpatialEntity<V> a = entities[j];
 
 			if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 			{
@@ -134,13 +134,13 @@ public class SpatialArray implements SpatialDatabase
 	}
 
 	@Override
-	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int contains( V offset, float radius, int max, long collidesWith, SearchCallback<V> callback )
 	{
 		int containCount = 0;
 
 		for (int j = 0; j < count; j++)
 		{
-			final SpatialEntity a = entities[j];
+			final SpatialEntity<V> a = entities[j];
 
 			if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 			{
@@ -166,7 +166,7 @@ public class SpatialArray implements SpatialDatabase
 	}
 
 	@Override
-	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
+	public int knn( V offset, int k, long collidesWith, SpatialEntity<V>[] nearest, float[] distance )
 	{
 		if (count == 0 || !SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
@@ -177,7 +177,7 @@ public class SpatialArray implements SpatialDatabase
 
 		for (int j = 0; j < count; j++)
 		{
-			final SpatialEntity a = entities[j];
+			final SpatialEntity<V> a = entities[j];
 
 			if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 			{

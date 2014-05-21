@@ -3,16 +3,16 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * A steering behavior that moves the subject away when a target is within a given distance and the target is facing the subject.
  */
-public class SteerAvoid extends AbstractSteer
+public class SteerAvoid<V extends Vec<V>> extends AbstractSteer<V>
 {
 
-    public SteerSubject target;
+    public SteerSubject<V> target;
     public float distance;
     public boolean shared;
 
@@ -20,11 +20,11 @@ public class SteerAvoid extends AbstractSteer
      * Instantiates a new SteerAvoid that can be shared.
      * 
      * @param target
-     *      The target to be avoided.
+     *        The target to be avoided.
      * @param distance
-     *      The radius of the circle around the subject which determines whether this
+     *        The radius of the circle around the subject which determines whether this
      */
-    public SteerAvoid( SteerSubject target, float distance )
+    public SteerAvoid( SteerSubject<V> target, float distance )
     {
         this( target, distance, true );
     }
@@ -35,7 +35,7 @@ public class SteerAvoid extends AbstractSteer
      * @param distance
      * @param shared
      */
-    public SteerAvoid( SteerSubject target, float distance, boolean shared )
+    public SteerAvoid( SteerSubject<V> target, float distance, boolean shared )
     {
         this.target = target;
         this.distance = distance;
@@ -43,24 +43,20 @@ public class SteerAvoid extends AbstractSteer
     }
 
     @Override
-    public Vector getForce( float elapsed, SteerSubject subject )
+    public void getForce( float elapsed, SteerSubject<V> subject, V out )
     {
-        force.clear();
-
-        SteerSubject target = getTarget();
-        Vector targetPosition = target.getPosition();
-        Vector targetDirection = target.getDirection();
-        Vector subjectPosition = subject.getPosition();
+        SteerSubject<V> target = getTarget();
+        V targetPosition = target.getPosition();
+        V targetDirection = target.getDirection();
+        V subjectPosition = subject.getPosition();
 
         if ( distance == INFINITE || targetPosition.distanceSq( subjectPosition ) < distance * distance )
         {
             if ( inFront( targetPosition, targetDirection, subjectPosition ) )
             {
-                away( subject, targetPosition, force, this );
+                away( subject, targetPosition, out, this );
             }
         }
-
-        return force;
     }
 
     @Override
@@ -69,15 +65,15 @@ public class SteerAvoid extends AbstractSteer
         return shared;
     }
 
-    public SteerSubject getTarget()
+    public SteerSubject<V> getTarget()
     {
         return target;
     }
 
     @Override
-    public Steer clone()
+    public Steer<V> clone()
     {
-        return new SteerAvoid( target, distance, shared );
+        return new SteerAvoid<V>( target, distance, shared );
     }
 
 }

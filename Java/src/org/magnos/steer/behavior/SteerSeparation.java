@@ -1,58 +1,60 @@
 package org.magnos.steer.behavior;
 
-import org.magnos.steer.FieldOfView;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.SteerSubjectFilter;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.vec.Vec;
 
 /**
  * A steering behavior that moves the subject away from the subjects around it.
  * The resulting force is normalized.
  */
-public class SteerSeparation extends AbstractSteerSpatial
+public class SteerSeparation<V extends Vec<V>> extends AbstractSteerSpatial<V>
 {
+
+    protected V towards;
+    protected V force;
 	
-	private final Vector towards = new Vector();
-	
-	public SteerSeparation(SpatialDatabase space, float query)
+	public SteerSeparation(SpatialDatabase<V> space, float query, V template)
 	{
-		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED, template );
 	}
 	
-	public SteerSeparation(SpatialDatabase space, float query, long groups, int max)
+	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, V template)
 	{
-		this( space, query, groups, max, DEFAULT_FOV_ALL, DEFAULT_FOV_TYPE, DEFAULT_SHARED );
+		this( space, query, groups, max, null, DEFAULT_SHARED, template );
 	}
 	
-	public SteerSeparation(SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType)
+	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, V template)
 	{
-		this( space, query, groups, max, fov, fovType, DEFAULT_SHARED );
+		this( space, query, groups, max, filter, DEFAULT_SHARED, template );
 	}
 		
-	public SteerSeparation(SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType, boolean shared)
+	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared, V template)
 	{
-		super(space, query, groups, max, fov, fovType, shared);
+		super(space, query, groups, max, filter, shared);
+
+        this.towards = template.create();
+        this.force = template.create();
 	}
 	
 	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
+	public void getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		force.clear();
-		
+	    force = out;
+	    
 		int total = search( subject );
 		
 		if (total > 0)
 		{
 			maximize( subject, force );
 		}
-		
-		return force;
 	}
 
 	@Override
-	public boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		towards.directi( entity.getPosition(), queryOffset );
 		towards.normalize();
@@ -63,9 +65,9 @@ public class SteerSeparation extends AbstractSteerSpatial
 	}
 	
 	@Override
-	public Steer clone()
+	public Steer<V> clone()
 	{
-		return new SteerSeparation( space, query, groups, max, fov.angle(), fovType, shared );
+		return new SteerSeparation<V>( space, query, groups, max, filter, shared, force );
 	}
 	
 }

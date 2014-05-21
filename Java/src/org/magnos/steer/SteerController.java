@@ -1,24 +1,26 @@
 package org.magnos.steer;
 
+import org.magnos.steer.vec.Vec;
+
 
 /**
  * A controller which applies the force from a steering behavior to a
  * subject and updates the acceleration, velocity, position, and direction
  * of the subject.
  */
-public class SteerController
+public class SteerController<V extends Vec<V>>
 {
-	public SteerSubject subject;
-	public Steer force;
-	public Constraint constraint;
+	public SteerSubject<V> subject;
+	public Steer<V> force;
+	public Constraint<V> constraint;
 	public boolean immediate;
 	
-	public SteerController(SteerSubject subject, Steer force )
+	public SteerController(SteerSubject<V> subject, Steer<V> force )
 	{
 		this( subject, force, null );
 	}
 	
-	public SteerController(SteerSubject subject, Steer force, Constraint constraint )
+	public SteerController(SteerSubject<V> subject, Steer<V> force, Constraint<V> constraint )
 	{
 		this.subject = subject;
 		this.force = force;
@@ -29,8 +31,8 @@ public class SteerController
 	
 	public void updateDirection()
 	{
-		Vector v = subject.getVelocity();
-		Vector d = subject.getDirection();
+		V v = subject.getVelocity();
+		V d = subject.getDirection();
 		
 		if (!v.isZero(SteerMath.EPSILON)) 
 		{
@@ -38,15 +40,15 @@ public class SteerController
 		}
 		else if (d.isZero(SteerMath.EPSILON))
 		{
-			d.set( 1, 0 );
+		    d.defaultUnit();
 		}
 	}
 	
 	public void update( float elapsed )
 	{
-		Vector a = subject.getAcceleration();
-		Vector v = subject.getVelocity();
-		Vector p = subject.getPosition();
+		V a = subject.getAcceleration();
+		V v = subject.getVelocity();
+		V p = subject.getPosition();
 		float amax = subject.getAccelerationMax();
 		float vmax = subject.getVelocityMax();
 		
@@ -55,7 +57,8 @@ public class SteerController
 			v.clear();	
 		}
 		
-		a.set( force.getForce( elapsed, subject ) );
+		a.clear();
+		force.getForce( elapsed, subject, a );
 		
 		if (amax != Steer.INFINITE)
 		{

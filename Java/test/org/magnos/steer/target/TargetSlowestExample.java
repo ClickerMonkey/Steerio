@@ -8,10 +8,11 @@ import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -33,8 +34,8 @@ public class TargetSlowestExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetAverageExample" );
 	}
 
-	private TargetSlowest slowest;
-	private SpatialDatabase database;
+	private TargetSlowest<Vec2> slowest;
+	private SpatialDatabase<Vec2> database;
 
 	public TargetSlowestExample( int w, int h )
 	{
@@ -44,16 +45,16 @@ public class TargetSlowestExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		database = new SpatialArray( 32 );
+		database = new SpatialArray<Vec2>( 32 );
 		
-		newSprite( Color.red, 15, 190, 500, new SteerSet(  
-			new SteerTo( slowest = new TargetSlowest( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS ) ),
-			new SteerWander( 0, 100, 150, 80 )
+		newSprite( Color.red, 15, 190, 500, new SteerSet<Vec2>(  
+			new SteerTo<Vec2>( slowest = new TargetSlowest<Vec2>( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) ),
+			new SteerWander2( 0, 100, 150, 80 )
 		));
 
 		for (int i = 0; i < 24; i++)
 		{
-			SteerSprite lamb = newSprite( Color.white, 10, SteerMath.randomFloat( 150, 250 ), 1000, new SteerWander( 0, 100, 150, 80 ) );
+			SteerSprite lamb = newSprite( Color.white, 10, SteerMath.randomFloat( 150, 250 ), 1000, new SteerWander2( 0, 100, 150, 80 ) );
 			lamb.position.set( SteerMath.randomFloat( width ), SteerMath.randomFloat( height ) );
 			database.add( lamb );
 		}

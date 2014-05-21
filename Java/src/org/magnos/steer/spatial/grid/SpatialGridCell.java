@@ -1,27 +1,39 @@
+
 package org.magnos.steer.spatial.grid;
 
-import org.magnos.steer.spatial.base.LinkedListRectangle;
+import org.magnos.steer.spatial.base.LinkedListBounds;
+import org.magnos.steer.vec.Vec;
+
 
 // A cell is list of the entities that exist in the cell's boundaries.
-public class SpatialGridCell extends LinkedListRectangle<SpatialGridNode>
+public class SpatialGridCell<V extends Vec<V>> extends LinkedListBounds<V, SpatialGridNode<V>>
 {
-	// The location of this cell on the grid.
-	public final int x, y;
-	
-	// The look-backs for entity's that overlap cells on the right and bottom.
-	public int lookbackX, lookbackY;
 
-	public SpatialGridCell(int cellX, int cellY, SpatialGrid db) 
-	{
-		super ( cellX * db.size.x + db.offset.x, 
-			     cellY * db.size.y + db.offset.y,
-			     cellX * db.size.x + db.offset.x + db.size.x, 
-			     cellY * db.size.y + db.offset.y + db.size.y );
-		
-		this.x = cellX; 
-		this.y = cellY;
-		this.lookbackX = 0;
-		this.lookbackY = 0;
-	}
-	
+    // The location of this cell on the grid.
+    public final V index;
+
+    // The look-backs for entity's that overlap cells on the right and bottom.
+    public V lookback;
+
+    public SpatialGridCell( V index, SpatialGrid<V> db )
+    {
+        super( calculateMin( index, db ), calculateMax( index, db ) );
+        
+        this.index = index;
+        this.lookback = index.create();
+    }
+    
+    public static <V extends Vec<V>> V calculateMin( V index, SpatialGrid<V> db )
+    {
+        V min = index.clone();
+        min.muli( db.size );
+        min.addi( db.offset );
+        return min;
+    }
+    
+    public static <V extends Vec<V>> V calculateMax( V index, SpatialGrid<V> db )
+    {
+        return calculateMin( index, db ).addi( db.size );
+    }
+
 }

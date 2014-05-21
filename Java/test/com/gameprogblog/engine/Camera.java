@@ -4,7 +4,7 @@ package com.gameprogblog.engine;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.core.Bound2;
 
@@ -13,14 +13,14 @@ public class Camera
 {
 
 	public final Bound2 extents = new Bound2();
-	public final Vector center = new Vector();
-	public final Vector scale = new Vector( 1.0f, 1.0f );
+	public final Vec2 center = new Vec2();
+	public final Vec2 scale = new Vec2( 1.0f, 1.0f );
 	public final Bound2 bounds = new Bound2();
 	public final Bound2 world = new Bound2();
 	public final AffineTransform transform = new AffineTransform();
 	public boolean containedInWorld = false;
-	private final Vector lastCenter = new Vector();
-	public final Vector actualCenter = new Vector();
+	private final Vec2 lastCenter = new Vec2();
+	public final Vec2 actualCenter = new Vec2();
 
 	// TODO rotation
 

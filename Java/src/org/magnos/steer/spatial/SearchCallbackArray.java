@@ -1,16 +1,16 @@
 
 package org.magnos.steer.spatial;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  * A search callback which keeps track of found entities in a bounded array.
  */
-public class SearchCallbackArray implements SearchCallback
+public class SearchCallbackArray<V extends Vec<V>> implements SearchCallback<V>
 {
 
 	public final int capacity;
-	public final SpatialEntity[] entity;
+	public final SpatialEntity<V>[] entity;
 	public final float[] overlap;
 	public int count;
 
@@ -21,7 +21,7 @@ public class SearchCallbackArray implements SearchCallback
 		this.overlap = new float[capacity];
 	}
 
-	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+	public boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
 		if (index >= capacity)
 		{

@@ -1,11 +1,13 @@
 
 package org.magnos.steer.spatial;
 
-public class CollisionCallbackArray implements CollisionCallback
+import org.magnos.steer.vec.Vec;
+
+public class CollisionCallbackArray<V extends Vec<V>> implements CollisionCallback<V>
 {
 
 	public final int capacity;
-	public final CollisionPair[] pairs;
+	public final CollisionPair<V>[] pairs;
 	public int count;
 
 	public CollisionCallbackArray( int capacity )
@@ -15,7 +17,7 @@ public class CollisionCallbackArray implements CollisionCallback
 
 		for (int i = 0; i < capacity; i++)
 		{
-			pairs[i] = new CollisionPair();
+			pairs[i] = new CollisionPair<V>();
 		}
 	}
 
@@ -24,7 +26,7 @@ public class CollisionCallbackArray implements CollisionCallback
 		count = 0;
 	}
 
-	public void onCollision( SpatialEntity entity, SpatialEntity collidedWith, float overlap, int index, boolean second )
+	public void onCollision( SpatialEntity<V> entity, SpatialEntity<V> collidedWith, float overlap, int index, boolean second )
 	{
 		if (index < capacity)
 		{

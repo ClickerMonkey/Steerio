@@ -2,23 +2,23 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 
-public class TargetLocal implements Target
+public class TargetLocal<V extends Vec<V>> implements Target<V>
 {
 
-	public Target target;
+	public Target<V> target;
 	public float minimum;
 	public float maximum;
 	
-	public TargetLocal(Target target, float maximum)
+	public TargetLocal(Target<V> target, float maximum)
 	{
 		this( target, 0, maximum );
 	}
 	
-	public TargetLocal(Target target, float minimum, float maximum)
+	public TargetLocal(Target<V> target, float minimum, float maximum)
 	{
 		this.target = target;
 		this.minimum = minimum;
@@ -26,9 +26,9 @@ public class TargetLocal implements Target
 	}
 	
 	@Override
-	public Vector getTarget( SteerSubject subject )
+	public V getTarget( SteerSubject<V> subject )
 	{
-		Vector actual = target.getTarget( subject );
+		V actual = target.getTarget( subject );
 		
 		if ( actual == null )
 		{

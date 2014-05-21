@@ -2,31 +2,31 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  * A steering behavior with a constant force.
  */
-public class SteerConstant extends AbstractSteer
+public class SteerConstant<V extends Vec<V>> extends AbstractSteer<V>
 {
-	public final Vector force;
+	public final V force;
 	public boolean shared;
 	
-	public SteerConstant(Vector force)
+	public SteerConstant(V force)
 	{
 		this( force, true );
 	}
 	
-	public SteerConstant(Vector force, boolean shared)
+	public SteerConstant(V force, boolean shared)
 	{
 		this.force = force;
 		this.shared = shared;
 	}
 	
 	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
+	public void getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		return force;
+	    out.set( force );
 	}
 
 	@Override
@@ -36,9 +36,9 @@ public class SteerConstant extends AbstractSteer
 	}
 
 	@Override
-	public Steer clone()
+	public Steer<V> clone()
 	{
-		return new SteerConstant( shared ? force : force.clone(), shared );
+		return new SteerConstant<V>( shared ? force : force.clone(), shared );
 	}
 
 }

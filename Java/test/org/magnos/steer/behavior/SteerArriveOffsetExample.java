@@ -3,10 +3,9 @@ package org.magnos.steer.behavior;
 
 import java.awt.Color;
 
-import org.magnos.steer.Vector;
-import org.magnos.steer.behavior.SteerArrive;
 import org.magnos.steer.target.TargetOffset;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -38,13 +37,13 @@ public class SteerArriveOffsetExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000,
-			new SteerArrive( mouse, 100, 0, false )
+			new SteerArrive<Vec2>( mouse, 100, 0, false )
 		);
 		
 		for (int i = 0; i < colors.length; i++)
 		{
 			newSprite( colors[i], 15, 300, 1000,
-				new SteerArrive( new TargetOffset( sprite, new Vector( -60 - i * 60, 0 ), true ), 100, 0 )
+				new SteerArrive<Vec2>( new TargetOffset<Vec2>( sprite, new Vec2( -60 - i * 60, 0 ), true ), 100, 0 )
 			);
 		}
 	}

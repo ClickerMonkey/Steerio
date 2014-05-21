@@ -1,29 +1,30 @@
+
 package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-public class SubPath<T> implements Path
+public class SubPath<V extends Vec<V>> implements Path<V>
 {
 
-	public float start;
-	public float end;
-	public Path path;
-	
-	public SubPath( float start, float end, Path path )
-	{
-		this.start = start;
-		this.end = end;
-		this.path = path;
-	}
+    public float start;
+    public float end;
+    public Path<V> path;
 
-	@Override
-	public Vector set( Vector subject, float delta )
-	{
-		path.set( subject, (end - start) * delta + start );
-		
-		return subject;
-	}
-	
+    public SubPath( float start, float end, Path<V> path )
+    {
+        this.start = start;
+        this.end = end;
+        this.path = path;
+    }
+
+    @Override
+    public V set( V subject, float delta )
+    {
+        path.set( subject, (end - start) * delta + start );
+
+        return subject;
+    }
+
 }

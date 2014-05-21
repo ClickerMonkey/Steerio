@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.magnos.steer.util.FieldOfView;
+import org.magnos.steer.vec.Vec;
+import org.magnos.steer.vec.Vec2;
+
 
 public class SteerMath
 {
@@ -49,28 +53,24 @@ public class SteerMath
         return (d < min ? min : (d > max ? max : d));
     }
 
-    public static Vector closest( Vector s, Vector e, Vector v, Vector out )
+    public static <V extends Vec<V>> V closest( V s, V e, V v, V out )
     {
-        float dx = e.x - s.x;
-        float dy = e.y - s.y;
-        float delta = ((v.x - s.x) * dx + (v.y - s.y) * dy) / (dx * dx + dy * dy);
+        V p0 = e.sub( s );
+        V p1 = v.sub( s );
+        float delta = p0.dot( p1 ) / p0.lengthSq();
 
         delta = clamp( delta, 0, 1 );
 
-        out.x = (s.x + delta * dx);
-        out.y = (s.y + delta * dy);
-
-        return out;
+        return out.interpolatei( s, e, delta );
     }
 
-    public static float interceptTime( Vector shooter, float shooterSpeed, Vector targetPosition, Vector targetVelocity )
+    public static <V extends Vec<V>> float interceptTime( V shooter, float shooterSpeed, V targetPosition, V targetVelocity )
     {
-        float tx = targetPosition.x - shooter.x;
-        float ty = targetPosition.y - shooter.y;
+        V tvec = targetPosition.sub( shooter );
 
-        float a = sqr( targetVelocity.x ) + sqr( targetVelocity.y ) - sqr( shooterSpeed );
-        float b = 2 * (targetVelocity.x * tx + targetVelocity.y * ty);
-        float c = sqr( tx ) + sqr( ty );
+        float a = targetVelocity.lengthSq() - (shooterSpeed * shooterSpeed);
+        float b = 2 * targetVelocity.dot( tvec );
+        float c = tvec.lengthSq();
 
         float t0 = Float.MIN_VALUE;
         float t1 = Float.MIN_VALUE;
@@ -93,7 +93,7 @@ public class SteerMath
         }
         else
         {
-            float disc = sqr( b ) - 4 * a * c;
+            float disc = b * b - 4 * a * c;
 
             if ( disc >= 0 )
             {
@@ -122,12 +122,7 @@ public class SteerMath
         return -1;
     }
 
-    public static float sqr( float x )
-    {
-        return x * x;
-    }
-
-    public static float getDistanceFromLine( Vector point, Vector start, Vector end )
+    public static <V extends Vec<V>> float getDistanceFromLine( V point, V start, V end )
     {
         float lineLength = start.distance( end );
         float startToPoint = point.distance( start );
@@ -136,7 +131,7 @@ public class SteerMath
         return getTriangleHeight( lineLength, startToPoint, endToPoint );
     }
 
-    public static float getDistanceFromLine( Vector point, Vector start, Vector end, Vector temp )
+    public static <V extends Vec<V>> float getDistanceFromLine( V point, V start, V end, V temp )
     {
         temp.set( start );
         float lineLength = temp.distance( end );
@@ -175,7 +170,7 @@ public class SteerMath
      *        is partially within view.
      * @return True if the target is in view, otherwise false.
      */
-    public static boolean isCircleInView( Vector origin, Vector direction, Vector fov, Vector circle, float radius, boolean entirely )
+    public static boolean isCircleInView( Vec2 origin, Vec2 direction, Vec2 fov, Vec2 circle, float radius, boolean entirely )
     {
         // Calculate upper and lower vectors
         // Calculate forward vector between target and origin
@@ -204,10 +199,10 @@ public class SteerMath
         }
 
         return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
-               (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
+        (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
     }
 
-    public static boolean isCircleInView( Vector origin, Vector direction, Vector fov, Vector circle, float radius, FieldOfView fovType )
+    public static boolean isCircleInView( Vec2 origin, Vec2 direction, Vec2 fov, Vec2 circle, float radius, FieldOfView fovType )
     {
         if ( fovType == FieldOfView.IGNORE )
         {
@@ -487,17 +482,17 @@ public class SteerMath
 
     public static final int MATRIX_DIMENSIONS = 4;
 
-    public static Vector parametricCubicCurve( float delta, Vector[] points, float[][] matrix, float weight, Vector out )
+    public static <V extends Vec<V>> V parametricCubicCurve( float delta, V[] points, float[][] matrix, float weight, V out )
     {
         final int n = points.length - 1;
         final float a = delta * n;
         final int i = clamp( (int)a, 0, n - 1 );
         final float d = a - i;
 
-        final Vector p0 = (i == 0 ? points[0] : points[i - 1]);
-        final Vector p1 = points[i];
-        final Vector p2 = points[i + 1];
-        final Vector p3 = (i == n - 1 ? points[n] : points[i + 2]);
+        final V p0 = (i == 0 ? points[0] : points[i - 1]);
+        final V p1 = points[i];
+        final V p2 = points[i + 1];
+        final V p3 = (i == n - 1 ? points[n] : points[i + 2]);
 
         SteerMath.cubicCurve( d, p0, p1, p2, p3, matrix, out );
 
@@ -506,9 +501,9 @@ public class SteerMath
         return out;
     }
 
-    public static void cubicCurve( float t, Vector p0, Vector p1, Vector p2, Vector p3, float[][] matrix, Vector out )
+    public static <V extends Vec<V>> void cubicCurve( float t, V p0, V p1, V p2, V p3, float[][] matrix, V out )
     {
-        final Vector temp = out.clone();
+        final V temp = out.clone();
         final float[] ts = { 1.0f, t, t * t, t * t * t };
 
         out.muli( 0 );
@@ -525,11 +520,11 @@ public class SteerMath
         }
     }
 
-    public static void cubicCurveCached( Vector p0, Vector p1, Vector p2, Vector p3, float[][] matrix, Vector[] out )
+    public static <V extends Vec<V>> void cubicCurveCached( V p0, V p1, V p2, V p3, float[][] matrix, V[] out )
     {
         for ( int i = 0; i < MATRIX_DIMENSIONS; i++ )
         {
-            Vector a = out[i];
+            V a = out[i];
 
             a.set( p0 );
             a.muli( matrix[i][0] );

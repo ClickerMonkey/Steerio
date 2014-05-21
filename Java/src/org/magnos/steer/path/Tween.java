@@ -1,31 +1,32 @@
+
 package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-public class Tween implements Path
+public class Tween<V extends Vec<V>> implements Path<V>
 {
-	
-	public Vector start;
-	public Vector end;
 
-	public Tween()
-	{
-	}
-	
-	public Tween(Vector start, Vector end) 
-	{
-		this.start = start;
-		this.end = end;
-	}
-	
-	@Override
-	public Vector set(Vector subject, float delta) 
-	{
-		subject.interpolate(start, end, delta);
-		
-		return subject;
-	}
-	
+    public V start;
+    public V end;
+
+    public Tween()
+    {
+    }
+
+    public Tween( V start, V end )
+    {
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    public V set( V subject, float delta )
+    {
+        subject.interpolate( start, end, delta );
+
+        return subject;
+    }
+
 }

@@ -1,6 +1,11 @@
+
 package org.magnos.steer;
 
-public interface Path
+import org.magnos.steer.vec.Vec;
+
+
+public interface Path<V extends Vec<V>>
 {
-	public Vector set(Vector subject, float delta);
+
+    public V set( V subject, float delta );
 }

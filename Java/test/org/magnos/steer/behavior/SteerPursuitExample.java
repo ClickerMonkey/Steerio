@@ -5,11 +5,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerDrive;
+import org.magnos.steer.behavior.SteerDrive2;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.target.TargetFuture;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -32,7 +33,7 @@ public class SteerPursuitExample extends SteerBasicExample
 	}
 	
 	private SteerSprite predator;
-	private TargetFuture future;
+	private TargetFuture<Vec2> future;
 	private SteerSprite sprite;
 
 	public SteerPursuitExample( int w, int h )
@@ -43,11 +44,11 @@ public class SteerPursuitExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander( 0, 100, 150, 80 ) );
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 
-		predator = newSprite( Color.orange, 15, 200, 1000, new SteerSet(
-			new SteerTo( future = new TargetFuture( sprite ) ),
-			new SteerDrive( 0, 0, 0, 100, true )
+		predator = newSprite( Color.orange, 15, 200, 1000, new SteerSet<Vec2>(
+			new SteerTo<Vec2>( future = new TargetFuture<Vec2>( sprite ) ),
+			new SteerDrive2( 0, 0, 0, 100, true )
 		));
 	}
 

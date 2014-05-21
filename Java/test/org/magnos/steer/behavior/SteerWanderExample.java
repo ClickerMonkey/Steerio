@@ -4,9 +4,8 @@ package org.magnos.steer.behavior;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.magnos.steer.Vector;
-import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -29,7 +28,7 @@ public class SteerWanderExample extends SteerBasicExample
 	}
 	
 	private SteerSprite sprite;
-	private SteerWander wander;
+	private SteerWander2 wander;
 
 	public SteerWanderExample( int w, int h )
 	{
@@ -39,7 +38,7 @@ public class SteerWanderExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		wander = new SteerWander( 0, 100, 150, 80 );
+		wander = new SteerWander2( 0, 100, 150, 80 );
 		sprite = newSprite( Color.blue, 15, 300, 1000, wander );
 	}
 
@@ -50,15 +49,15 @@ public class SteerWanderExample extends SteerBasicExample
 		
 		if (drawCircles)
 		{
-			Vector center = new Vector();
+			Vec2 center = new Vec2();
 			center.set( sprite.position );
 			center.addsi( sprite.direction, wander.distance );
 
-			Vector offset = new Vector();
+			Vec2 offset = new Vec2();
 			offset.angle( wander.theta, wander.radius );
 			offset.addi( center );
 
-			drawCircle( gr, Color.red, new Vector( center ), wander.radius, false );
+			drawCircle( gr, Color.red, new Vec2( center ), wander.radius, false );
 			drawLine( gr, Color.yellow, center, offset, false );
 			drawLine( gr, Color.gray, sprite.position, offset, false );
 			drawLine( gr, Color.orange, center, sprite.position, false );

@@ -1,13 +1,14 @@
 
 package org.magnos.steer.spatial;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.Obstacle;
+import org.magnos.steer.vec.Vec;
 
 
-public interface SpatialEntity
+public interface SpatialEntity<V extends Vec<V>> extends Obstacle<V>
 {
 
-	public Vector getPosition();
+	public V getPosition();
 
 	public float getRadius();
 

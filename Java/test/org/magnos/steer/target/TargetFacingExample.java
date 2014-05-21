@@ -6,10 +6,10 @@ import java.awt.Color;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerAway;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetFacing;
+import org.magnos.steer.behavior.SteerDrive2;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -39,17 +39,17 @@ public class TargetFacingExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000,  
-			new SteerWander( 0, 100, 150, 80 )
+			new SteerWander2( 0, 100, 150, 80 )
 		);
 
-		newSprite( Color.orange, 15, 300, 1000, new SteerSet(
-			new SteerAway( new TargetFacing( sprite, true ) ),
-			new SteerDrive( 0, 0, 0, 100 )
+		newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
+			new SteerAway<Vec2>( new TargetFacing<Vec2>( sprite, true ) ),
+			new SteerDrive2( 0, 0, 0, 100 )
 		));
 
-		newSprite( Color.green, 15, 300, 1000, new SteerSet(
-			new SteerAway( new TargetFacing( sprite, false ) ),
-			new SteerDrive( 0, 0, 0, 100 )
+		newSprite( Color.green, 15, 300, 1000, new SteerSet<Vec2>(
+			new SteerAway<Vec2>( new TargetFacing<Vec2>( sprite, false ) ),
+			new SteerDrive2( 0, 0, 0, 100 )
 		));
 	}
 

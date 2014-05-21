@@ -1,20 +1,20 @@
 package org.magnos.steer.path;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
-public class LinearPath extends TimedPath
+public class LinearPath<V extends Vec<V>> extends TimedPath<V>
 {
 	
 	public LinearPath()
 	{
 	}
 	
-	public LinearPath( Vector ... points) 
+	public LinearPath( V ... points) 
 	{
 		super( points, getTimes( points ) );
 	}
 	
-	public static <T> float[] getTimes(Vector[] points)
+	public static <V extends Vec<V>> float[] getTimes(V[] points)
 	{
 		int n = points.length;
 		float[] distances = new float[n--];

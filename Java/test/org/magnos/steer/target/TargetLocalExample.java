@@ -5,11 +5,11 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive;
+import org.magnos.steer.behavior.SteerDrive2;
 import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetLocal;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -31,7 +31,7 @@ public class TargetLocalExample extends SteerBasicExample
 	}
 	
 	private SteerSprite chaser;
-	private TargetLocal local;
+	private TargetLocal<Vec2> local;
 
 	public TargetLocalExample( int w, int h )
 	{
@@ -42,12 +42,12 @@ public class TargetLocalExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000, 
-			new SteerWander( 0, 100, 150, 80 )
+			new SteerWander2( 0, 100, 150, 80 )
 		);
 		
-		chaser = newSprite( Color.orange, 15, 300, 1000, new SteerSet(1000,
-			new SteerTo( local = new TargetLocal( sprite, 100 ) ),
-			new SteerDrive( 0, 0, 0, 100 )
+		chaser = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(1000,
+			new SteerTo<Vec2>( local = new TargetLocal<Vec2>( sprite, 100 ) ),
+			new SteerDrive2( 0, 0, 0, 100 )
 		));
 		chaser.position.set( 100, 100 );
 	}

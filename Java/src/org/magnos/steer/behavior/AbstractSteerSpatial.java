@@ -1,24 +1,21 @@
 
 package org.magnos.steer.behavior;
 
-import org.magnos.steer.FieldOfView;
 import org.magnos.steer.Steer;
-import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.SteerSubjectFilter;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * Abstract steering behavior that cares about other {@link SteerSubject}s around it.
  */
-public abstract class AbstractSteerSpatial extends AbstractSteer implements SearchCallback
+public abstract class AbstractSteerSpatial<V extends Vec<V>> extends AbstractSteer<V> implements SearchCallback<V>
 {
 
-    public static float DEFAULT_FOV_ALL = SteerMath.PI;
-    public static FieldOfView DEFAULT_FOV_TYPE = FieldOfView.IGNORE;
     public static int DEFAULT_MAX_RESULTS = 16;
     public static boolean DEFAULT_SHARED = true;
 
@@ -26,10 +23,9 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
     public long groups;
     public float query;
     public int max;
-    public SpatialDatabase space;
-    public SteerSubject subject;
-    public Vector fov;
-    public FieldOfView fovType;
+    public SpatialDatabase<V> space;
+    public SteerSubject<V> subject;
+    public SteerSubjectFilter<V, SpatialEntity<V>> filter;
 
     /**
      * Instantiates a new {@link AbstractSteerSpatial}.
@@ -50,15 +46,14 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public AbstractSteerSpatial( SpatialDatabase space, float query, long groups, int max, float fov, FieldOfView fovType, boolean shared )
+    public AbstractSteerSpatial( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared )
     {
         this.space = space;
         this.query = query;
         this.groups = groups;
         this.max = max;
         this.shared = shared;
-        this.fov = Vector.fromAngle( fov );
-        this.fovType = fovType;
+        this.filter = filter;
     }
 
     /**
@@ -80,7 +75,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
      *        The groups the {@link SpatialEntity} must be in to be visible to this steering behavior.
      * @return True if the given entity was valid (affects how many more entities are looked for).
      */
-    protected abstract boolean onFoundInView( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups );
+    protected abstract boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups );
 
     /**
      * Runs a search for all intersecting {@link SpatialEntity}s with the circle centered on {@link SteerSubject} with radius {@link #query}.
@@ -89,7 +84,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
      *        The {@link SteerSubject} to search around.
      * @return The number of {@link SpatialEntity}s found around the given subject that met the criteria.
      */
-    protected int search( SteerSubject steerSubject )
+    protected int search( SteerSubject<V> steerSubject )
     {
         subject = steerSubject;
 
@@ -103,7 +98,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
     }
 
     @Override
-    public final boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups )
+    public final boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
     {
         // The entity shouldn't find itself.
         if ( entity == subject )
@@ -112,7 +107,7 @@ public abstract class AbstractSteerSpatial extends AbstractSteer implements Sear
         }
 
         // Check if the spatial entity is in the field of view of the subject.
-        boolean inView = SteerMath.isCircleInView( subject.getPosition(), subject.getDirection(), fov, entity.getPosition(), entity.getRadius(), fovType );
+        boolean inView = filter == null || filter.isValid( subject, entity ); 
 
         // If it's in view, notify the implementing class.
         if ( inView )

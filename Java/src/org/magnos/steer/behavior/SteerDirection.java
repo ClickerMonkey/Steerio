@@ -1,21 +1,17 @@
 package org.magnos.steer.behavior;
 
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 
-public class SteerDirection extends AbstractSteer
+public class SteerDirection<V extends Vec<V>> extends AbstractSteer<V>
 {
 
 	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
+	public void getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		force.clear();
-		
-		forward( subject, subject.getDirection(), force, this );
-		
-		return force;
+		forward( subject, subject.getDirection(), out, this );
 	}
 
 	@Override

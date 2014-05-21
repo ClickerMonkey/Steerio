@@ -1,12 +1,12 @@
 
 package org.magnos.steer.spatial;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  * A callback which is notified when an entity was found in a search query.
  */
-public interface SearchCallback
+public interface SearchCallback<V extends Vec<V>>
 {
 
 	/**
@@ -22,5 +22,5 @@ public interface SearchCallback
 	 *        The number of entities found before this one.
 	 * @return True if the entity was a valid find.
 	 */
-	public boolean onFound( SpatialEntity entity, float overlap, int index, Vector queryOffset, float queryRadius, int queryMax, long queryGroups );
+	public boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups );
 }

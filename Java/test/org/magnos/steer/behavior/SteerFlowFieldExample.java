@@ -5,7 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -37,20 +37,20 @@ public class SteerFlowFieldExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		Vector[][] field = generateSineField( 32, 24, 0.1f, 0.0f, 0.2f, 0.2f );
+		Vec2[][] field = generateSineField( 32, 24, 0.1f, 0.0f, 0.2f, 0.2f );
 		
 		newSprite( Color.blue, 15, 300, 1000,  
-			flow = new SteerFlowField( 50.0f, new Vector( 0, 0 ), new Vector( width, height ), field )
+			flow = new SteerFlowField( 50.0f, new Vec2( 0, 0 ), new Vec2( width, height ), field )
 		);
 	}
 	
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		final Vector s = new Vector();
-		final Vector e = new Vector();
-		final Vector p = new Vector();
-		final Vector q = new Vector();
+		final Vec2 s = new Vec2();
+		final Vec2 e = new Vec2();
+		final Vec2 p = new Vec2();
+		final Vec2 q = new Vec2();
 		final Color colorVector = new Color( 80, 80, 80 );
 		
 		for (int y = 0; y < flow.cellsHigh; y++)
@@ -78,15 +78,15 @@ public class SteerFlowFieldExample extends SteerBasicExample
 		super.draw( state, gr, scene );
 	}
 
-	private Vector[][] generateSineField(int rows, int columns, float xradians, float xoffset, float yradians, float yoffset)
+	private Vec2[][] generateSineField(int rows, int columns, float xradians, float xoffset, float yradians, float yoffset)
 	{
-		Vector[][] field = new Vector[rows][columns];
+		Vec2[][] field = new Vec2[rows][columns];
 		
 		for (int y = 0; y < rows; y++)
 		{
 			for (int x = 0; x < columns; x++)
 			{
-				Vector v = new Vector();
+				Vec2 v = new Vec2();
 				v.x = SteerMath.sin( y * yradians + yoffset );
 				v.y = SteerMath.sin( x * xradians + xoffset );
 				v.normali();

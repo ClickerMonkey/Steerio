@@ -2,7 +2,7 @@ package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  *                                     delta
@@ -11,24 +11,23 @@ import org.magnos.steer.Vector;
  * |----------|----------|----------|----------|		(5)
  * 0          1          2          3          4
  * 
- * @param <T>
  */
-public class IntegralPath<T> implements Path
+public class IntegralPath<V extends Vec<V>> implements Path<V>
 {
 	
-	public Vector[] points;
+	public V[] points;
 	
 	public IntegralPath()
 	{
 	}
 	
-	public IntegralPath(Vector ... points ) 
+	public IntegralPath(V ... points ) 
 	{
 		this.points = points;
 	}
 	
 	@Override
-	public Vector set(Vector subject, float delta) 
+	public V set(V subject, float delta) 
 	{
 		if (delta <= 0) 
 		{

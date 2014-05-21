@@ -3,42 +3,38 @@ package org.magnos.steer.behavior;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  * A steering behavior that moves the subject away from a target at maximum 
  * acceleration.
  */
-public class SteerAway extends AbstractSteer
+public class SteerAway<V extends Vec<V>> extends AbstractSteer<V>
 {
 
-	public Target target;
+	public Target<V> target;
 	public boolean shared;
 	
-	public SteerAway(Target target)
+	public SteerAway(Target<V> target)
 	{
 		this( target, true );
 	}
 	
-	public SteerAway(Target target, boolean shared)
+	public SteerAway(Target<V> target, boolean shared)
 	{
 		this.target = target;
 		this.shared = shared;
 	}
 
 	@Override
-	public Vector getForce( float elapsed, SteerSubject subject )
+	public void getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		force.clear();
-		
-		Vector targetPosition = target.getTarget( subject );
+		V targetPosition = target.getTarget( subject );
 		
 		if (targetPosition != null)
 		{
-			away(subject, targetPosition, force, this );
+			away(subject, targetPosition, out, this );
 		}
-		
-		return force;
 	}
 	
 	@Override
@@ -48,9 +44,9 @@ public class SteerAway extends AbstractSteer
 	}
 
 	@Override
-	public Steer clone()
+	public Steer<V> clone()
 	{
-		return new SteerAway( target, shared );
+		return new SteerAway<V>( target, shared );
 	}
 
 }

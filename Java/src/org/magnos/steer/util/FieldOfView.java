@@ -1,5 +1,5 @@
 
-package org.magnos.steer;
+package org.magnos.steer.util;
 
 /**
  * A flag used to determine whether an object is in the field of view of a subject. A flag is necessary when the object is overlapping with the field

@@ -14,8 +14,8 @@ import java.awt.geom.Rectangle2D;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.Steer;
-import org.magnos.steer.Vector;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameState;
@@ -44,7 +44,7 @@ public abstract class SteerBasicExample implements Game
 	public static float DRAW_FORCE_MAX = 100.0f;
 	public static float DRAW_FORCE_SCALE = 0.01f;
 
-	public Vector mouse = new Vector();
+	public Vec2 mouse = new Vec2();
 	public EntityList<SteerSprite> sprites = new EntityList<SteerSprite>();
 	public boolean playing;
 	public int width;
@@ -59,7 +59,7 @@ public abstract class SteerBasicExample implements Game
 		playing = true;
 	}
 
-	public SteerSprite newSprite( Color color, float radius, float velocityMax, float accelerationMax, Steer steer )
+	public SteerSprite newSprite( Color color, float radius, float velocityMax, float accelerationMax, Steer<Vec2> steer )
 	{
 		SteerSprite s = new SteerSprite( color, radius, velocityMax, accelerationMax, steer );
 		s.position.set( width / 2, height / 2 );
@@ -99,7 +99,7 @@ public abstract class SteerBasicExample implements Game
 	{
 		for (int i = 0; i < sprites.size(); i++)
 		{
-			wrapVector( gr, sprites.get( i ).getPosition() );
+			wrapVec2tor( gr, sprites.get( i ).getPosition() );
 		}
 
 		sprites.draw( state, gr, scene );
@@ -109,16 +109,17 @@ public abstract class SteerBasicExample implements Game
 			for (int i = 0; i < sprites.size(); i++)
 			{
 				SteerSprite s = sprites.get( i );
-				Steer f = s.controller.force;
+				Steer<Vec2> f = s.controller.force;
 
-				Vector force = f.getForce( state.seconds, s );
+				Vec2 force = new Vec2();
+				f.getForce( state.seconds, s, force );
 
 				drawForce( gr, Color.white, s.position, force, true );
 			}
 		}
 	}
 
-	public static void drawLine( Graphics2D gr, Color color, Vector s, Vector e, boolean wrap )
+	public static void drawLine( Graphics2D gr, Color color, Vec2 s, Vec2 e, boolean wrap )
 	{
 		line.setLine( s.x, s.y, e.x, e.y );
 
@@ -126,7 +127,7 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, line, wrap, getEdgesFromLine( gr, s.x, s.y, e.x, e.y ) );
 	}
 
-	public static void drawVector( Graphics2D gr, Color color, Vector origin, Vector dir, float scale, boolean wrap )
+	public static void drawVector( Graphics2D gr, Color color, Vec2 origin, Vec2 dir, float scale, boolean wrap )
 	{
 		line.setLine( origin.x, origin.y, origin.x + dir.x * scale, origin.y + dir.y * scale );
 
@@ -142,7 +143,7 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, rect, wrap, getEdgesFromLine( gr, b.left, b.top, b.right, b.bottom ) );
 	}
 
-	public static void drawTarget( Graphics2D gr, Color color, Vector v, float radius, boolean wrap )
+	public static void drawTarget( Graphics2D gr, Color color, Vec2 v, float radius, boolean wrap )
 	{
 		int edges = getEdgesFromLine( gr, v.x - radius, v.y, v.x + radius, v.y ) |
 			getEdgesFromLine( gr, v.x, v.y - radius, v.x, v.y + radius );
@@ -156,9 +157,9 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, line, wrap, edges );
 	}
 
-	public static void drawForce( Graphics2D gr, Color color, Vector offset, Vector force, boolean wrap )
+	public static void drawForce( Graphics2D gr, Color color, Vec2 offset, Vec2 force, boolean wrap )
 	{
-		Vector n = force.mul( DRAW_FORCE_SCALE ).clamp( DRAW_FORCE_MIN, DRAW_FORCE_MAX );
+		Vec2 n = force.mul( DRAW_FORCE_SCALE ).clamp( DRAW_FORCE_MIN, DRAW_FORCE_MAX );
 
 		line.setLine( offset.x, offset.y, offset.x + n.x, offset.y + n.y );
 
@@ -166,7 +167,7 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, line, wrap, getEdgesFromLine( gr, line.x1, line.y1, line.x2, line.y2 ) );
 	}
 
-	public static void drawCircle( Graphics2D gr, Color color, Vector offset, float radius, boolean wrap )
+	public static void drawCircle( Graphics2D gr, Color color, Vec2 offset, float radius, boolean wrap )
 	{
 		ellipse.setFrame( offset.x - radius, offset.y - radius, radius * 2, radius * 2 );
 
@@ -174,14 +175,14 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, ellipse, wrap, getEdges( gr, offset, radius, radius ) );
 	}
 
-	public static void drawPath( Graphics2D gr, Color color, Vector[] path, boolean loop, boolean wrap )
+	public static void drawPath( Graphics2D gr, Color color, Vec2[] path, boolean loop, boolean wrap )
 	{
 		int edges = 0;
 		Path2D.Float p = new Path2D.Float();
 
 		for (int i = 0; i < path.length; i++)
 		{
-			Vector v = path[i];
+			Vec2 v = path[i];
 			if (i == 0)
 			{
 				p.moveTo( v.x, v.y );
@@ -202,11 +203,11 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, p, wrap, edges );
 	}
 
-	public static void drawPath( Graphics2D gr, Color color, Path path, int segments, boolean wrap )
+	public static void drawPath( Graphics2D gr, Color color, Path<Vec2> path, int segments, boolean wrap )
 	{
 		int edges = 0;
 		Path2D.Float p = new Path2D.Float();
-		Vector v = new Vector();
+		Vec2 v = new Vec2();
 
 		path.set( v, 0.0f );
 		edges |= getEdges( gr, v, 0, 0 );
@@ -228,7 +229,7 @@ public abstract class SteerBasicExample implements Game
 		return getEdges( gr, (x0 + x1) * 0.5f, (y0 + y1) * 0.5f, Math.abs( x1 - x0 ) * 0.5f, Math.abs( y1 - y0 ) * 0.5f );
 	}
 
-	public static int getEdges( Graphics2D gr, Vector p, float hw, float hh )
+	public static int getEdges( Graphics2D gr, Vec2 p, float hw, float hh )
 	{
 		return getEdges( gr, p.x, p.y, hw, hh );
 	}
@@ -297,7 +298,7 @@ public abstract class SteerBasicExample implements Game
 		}
 	}
 
-	public static void wrapVector( Graphics2D gr, Vector v )
+	public static void wrapVec2tor( Graphics2D gr, Vec2 v )
 	{
 		final Rectangle bounds = gr.getDeviceConfiguration().getBounds();
 

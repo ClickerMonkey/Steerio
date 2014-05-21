@@ -6,9 +6,9 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.behavior.SteerArrive;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerWander;
-import org.magnos.steer.target.TargetInLine;
+import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -30,7 +30,7 @@ public class TargetInLineExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "TargetInLineExample" );
 	}
 	
-	private TargetInLine interpose;
+	private TargetInLine<Vec2> interpose;
 
 	public TargetInLineExample( int w, int h )
 	{
@@ -41,15 +41,15 @@ public class TargetInLineExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite0 = newSprite( Color.white, 15, 300, 1000,
-			new SteerWander( 0, 100, 150, 80 )
+			new SteerWander2( 0, 100, 150, 80 )
 		);
 		
 		SteerSprite sprite1 = newSprite( Color.lightGray, 15, 300, 1000,
-			new SteerWander( 0, 100, 150, 80 )
+			new SteerWander2( 0, 100, 150, 80 )
 		);
 		
 		newSprite( Color.blue, 15, 300, 1000,  
-			new SteerArrive( interpose = new TargetInLine( sprite0, sprite1 ), 100, 0 )
+			new SteerArrive<Vec2>( interpose = new TargetInLine<Vec2>( sprite0, sprite1, Vec2.FACTORY ), 100, 0 )
 		);
 	}
 

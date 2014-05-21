@@ -4,15 +4,15 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.magnos.steer.Vector;
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.SpatialUtility;
+import org.magnos.steer.vec.Vec2;
 
 
-public class SpatialSweepAndPrune implements SpatialDatabase
+public class SpatialSweepAndPrune implements SpatialDatabase<Vec2>
 {
 
 	public Edge tailX = new Edge();
@@ -29,9 +29,9 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	}
 	
 	@Override
-	public void add( SpatialEntity entity )
+	public void add( SpatialEntity<Vec2> entity )
 	{
-		final Vector pos = entity.getPosition();
+		final Vec2 pos = entity.getPosition();
 		final float rad = entity.getRadius();
 		
 		addEdge( new Edge( entity, pos.x - rad, true ), tailX );
@@ -115,7 +115,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	}
 	
 	@Override
-	public int handleCollisions( CollisionCallback callback )
+	public int handleCollisions( CollisionCallback<Vec2> callback )
 	{
 		int collisionCount = 0;
 
@@ -169,7 +169,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	}
 
 	@Override
-	public int intersects( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int intersects( Vec2 offset, float radius, int max, long collidesWith, SearchCallback<Vec2> callback )
 	{
 		int intersectCount = 0;
 		
@@ -179,7 +179,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		{
 			if (e.min)
 			{
-				final SpatialEntity a = e.entity;
+				final SpatialEntity<Vec2> a = e.entity;
 				
 				if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 				{
@@ -204,7 +204,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	}
 
 	@Override
-	public int contains( Vector offset, float radius, int max, long collidesWith, SearchCallback callback )
+	public int contains( Vec2 offset, float radius, int max, long collidesWith, SearchCallback<Vec2> callback )
 	{
 		int containCount = 0;
 		
@@ -214,7 +214,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		{
 			if (e.min)
 			{
-				final SpatialEntity a = e.entity;
+				final SpatialEntity<Vec2> a = e.entity;
 				
 				if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 				{
@@ -243,7 +243,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	}
 
 	@Override
-	public int knn( Vector offset, int k, long collidesWith, SpatialEntity[] nearest, float[] distance )
+	public int knn( Vec2 offset, int k, long collidesWith, SpatialEntity<Vec2>[] nearest, float[] distance )
 	{
 		if (!SpatialUtility.prepareKnn( k, nearest, distance ))
 		{
@@ -258,7 +258,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		{
 			if (e.min)
 			{
-				final SpatialEntity a = e.entity;
+				final SpatialEntity<Vec2> a = e.entity;
 
 				if (!a.isInert() && (collidesWith & a.getSpatialGroups()) != 0)
 				{
@@ -305,7 +305,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		
 		while (curr != null)
 		{
-			SpatialEntity e = curr.entity;
+			SpatialEntity<Vec2> e = curr.entity;
 
 			if (e.isInert())
 			{
@@ -436,9 +436,9 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	
 	private class Pair
 	{
-		public SpatialEntity a, b;
+		public SpatialEntity<Vec2> a, b;
 		
-		public Pair(SpatialEntity a, SpatialEntity b)
+		public Pair(SpatialEntity<Vec2> a, SpatialEntity<Vec2> b)
 		{
 			this.a = a;
 			this.b = b;
@@ -462,7 +462,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 	
 	public class Edge
 	{
-		public SpatialEntity entity;
+		public SpatialEntity<Vec2> entity;
 		public float value;
 		public boolean min;
 		public Edge prev;
@@ -471,7 +471,7 @@ public class SpatialSweepAndPrune implements SpatialDatabase
 		{
 		}
 		
-		public Edge(SpatialEntity entity, float value, boolean min)
+		public Edge(SpatialEntity<Vec2> entity, float value, boolean min)
 		{
 			this.entity = entity;
 			this.value = value;

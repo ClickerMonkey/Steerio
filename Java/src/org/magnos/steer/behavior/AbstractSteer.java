@@ -4,19 +4,17 @@ package org.magnos.steer.behavior;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
+import org.magnos.steer.vec.Vec2;
 
 
 /**
  * Abstract steering behavior implementation.
  */
-public abstract class AbstractSteer implements Steer
+public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
 {
 
-    public final Vector force = new Vector();
-    
     protected boolean maximized = true;
-
 
     @Override
     public boolean isMaximized()
@@ -33,7 +31,7 @@ public abstract class AbstractSteer implements Steer
     /**
      * By default, a Steer cannot be cloned.
      */
-    public Steer clone()
+    public Steer<V> clone()
     {
         return null;
     }
@@ -50,7 +48,7 @@ public abstract class AbstractSteer implements Steer
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static void towards( SteerSubject subject, Vector target, Vector out, Steer steer )
+    public static <V extends Vec<V>> void towards( SteerSubject<V> subject, V target, V out, Steer<V> steer )
     {
         out.directi( subject.getPosition(), target );
 
@@ -72,7 +70,7 @@ public abstract class AbstractSteer implements Steer
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static void away( SteerSubject subject, Vector target, Vector out, Steer steer )
+    public static <V extends Vec<V>> void away( SteerSubject<V> subject, V target, V out, Steer<V> steer )
     {
         out.directi( target, subject.getPosition() );
 
@@ -94,9 +92,10 @@ public abstract class AbstractSteer implements Steer
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static void backward( SteerSubject subject, Vector force, Vector out, Steer steer )
+    public static <V extends Vec<V>> void backward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
     {
-        out.set( -force.x, -force.y );
+        out.set( force );
+        out.negi();
 
         if ( steer.isMaximized() )
         {
@@ -116,7 +115,7 @@ public abstract class AbstractSteer implements Steer
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static void forward( SteerSubject subject, Vector force, Vector out, Steer steer )
+    public static <V extends Vec<V>> void forward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
     {
         out.set( force );
 
@@ -134,7 +133,7 @@ public abstract class AbstractSteer implements Steer
      * @param force
      *        The force to maximize.
      */
-    public static void maximize( SteerSubject subject, Vector force )
+    public static <V extends Vec<V>> void maximize( SteerSubject<V> subject, V force )
     {
         if ( force.length( subject.getAccelerationMax() ) > 0 )
         {
@@ -154,7 +153,7 @@ public abstract class AbstractSteer implements Steer
      *        The point to test whether it's in front of the object.
      * @return True if <code>point</code> is in front of the object determined by <code>pos</code> and <code>dir</code>.
      */
-    public static boolean inFront( Vector pos, Vector dir, Vector point )
+    public static <V extends Vec<V>> boolean inFront( V pos, V dir, V point )
     {
         return (dir.dot( point.sub( pos ) ) > 0);
     }
@@ -171,7 +170,7 @@ public abstract class AbstractSteer implements Steer
      *        The point to test whether it's in front of the object.
      * @return True if <code>point</code> is in front of the object determined by <code>pos</code> and <code>dir</code>.
      */
-    public static boolean inBack( Vector pos, Vector dir, Vector point )
+    public static <V extends Vec<V>> boolean inBack( V pos, V dir, V point )
     {
         return (dir.dot( pos.sub( point ) ) > 0);
     }
@@ -185,7 +184,7 @@ public abstract class AbstractSteer implements Steer
      *        The second {@link SteerSubject}.
      * @return The intersection time in seconds, or -1 if no intersection will ever occur.
      */
-    public static float intersectionTime( SteerSubject bullet, SteerSubject target )
+    public static float intersectionTime( SteerSubject<Vec2> bullet, SteerSubject<Vec2> target )
     {
         return SteerMath.interceptTime( target.getPosition(), target.getVelocity().length(), bullet.getPosition(), bullet.getVelocity() );
     }

@@ -2,7 +2,7 @@ package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 /**
  * http://www.reddit.com/r/gamedev/comments/1ei88i/very_fast_2d_interpolation/
@@ -11,54 +11,52 @@ import org.magnos.steer.Vector;
  *
  * @param <T>
  */
-public class KramerPath implements Path 
+public class KramerPath<V extends Vec<V>> implements Path<V>
 {
 	
 	public static final float DEFAULT_LOOSENESS = 0.0575f;
 	
-	protected Vector[] points;
-	protected final Vector temp0 = new Vector();
-	protected final Vector temp1 = new Vector();
+	protected V[] points;
+	protected final V temp0;
+	protected final V temp1;
 	protected int depth;
 	protected float looseness;
 	protected boolean loops;
 	protected float roughness;
 	
-	public KramerPath()
-	{
-	}
-	
-	public KramerPath( int depth, boolean loops, Vector ... points )
+	public KramerPath( int depth, boolean loops, V ... points )
 	{
 		this( depth, loops, DEFAULT_LOOSENESS, 0.0f, points );
 	}
 	
-	public KramerPath( int depth, boolean loops, float looseness, Vector ... points ) 
+	public KramerPath( int depth, boolean loops, float looseness, V ... points ) 
 	{
 		this( depth, loops, looseness, 0.0f, points );
 	}
 	
-	public KramerPath( float roughness, boolean loops, Vector ... points )
+	public KramerPath( float roughness, boolean loops, V ... points )
 	{
 		this( 0, loops, DEFAULT_LOOSENESS, roughness, points );
 	}
 	
-	public KramerPath( float roughness, boolean loops, float looseness, Vector ... points ) 
+	public KramerPath( float roughness, boolean loops, float looseness, V ... points ) 
 	{
 		this( 0, loops, looseness, roughness, points );
 	}
 	
-	protected KramerPath( int depth, boolean loops, float looseness, float roughness, Vector ... points ) 
+	protected KramerPath( int depth, boolean loops, float looseness, float roughness, V ... points ) 
 	{
 		this.depth = depth;
 		this.loops = loops;
 		this.looseness = looseness;
 		this.roughness = roughness;
 		this.points = points;
+        this.temp0 = points[0].create();
+        this.temp1 = points[0].create();
 	}
 	
 	@Override
-	public Vector set(Vector subject, float delta) 
+	public V set(V subject, float delta) 
 	{
 		final int n = points.length;
 		final float a = delta * n;
@@ -77,22 +75,22 @@ public class KramerPath implements Path
 		return subject;
 	}
 	
-	public void getPointWithExactDepth( int i, float d, Vector subject )
+	public void getPointWithExactDepth( int i, float d, V subject )
 	{
 		// v0 and v5 are used to calculate the next v1 or v4, at the next level.
-		Vector v0 = points[ getActualIndex( i - 2 ) ];
-		Vector v1 = points[ getActualIndex( i - 1 ) ];
-		Vector v2 = points[ getActualIndex( i ) ];
-		Vector v3 = points[ getActualIndex( i + 1 ) ];
-		Vector v4 = points[ getActualIndex( i + 2 ) ];
-		Vector v5 = points[ getActualIndex( i + 3 ) ];
+		V v0 = points[ getActualIndex( i - 2 ) ];
+		V v1 = points[ getActualIndex( i - 1 ) ];
+		V v2 = points[ getActualIndex( i ) ];
+		V v3 = points[ getActualIndex( i + 1 ) ];
+		V v4 = points[ getActualIndex( i + 2 ) ];
+		V v5 = points[ getActualIndex( i + 3 ) ];
 		
 		int k = depth;
 
 		while (--k >= 0)
 		{
 			// Get mid point
-			Vector mid = getPoint( v1, v2, v3, v4 );
+			V mid = getPoint( v1, v2, v3, v4 );
 			
 			// If the desired point is closer to v2...
 			if (d < 0.5f)
@@ -104,7 +102,7 @@ public class KramerPath implements Path
 				}
 				else
 				{
-					Vector newEnd = v1;
+					V newEnd = v1;
 					v5 = v4;
 					v4 = v3;
 					v3 = mid;
@@ -124,7 +122,7 @@ public class KramerPath implements Path
 				}
 				else
 				{
-					Vector newEnd = v4;
+					V newEnd = v4;
 					v0 = v1;
 					v1 = v2;
 					v2 = mid;
@@ -140,20 +138,20 @@ public class KramerPath implements Path
 		subject.interpolate( v2, v3, d );
 	}
 	
-	public void getPointWithRoughness( int i, float d, Vector subject )
+	public void getPointWithRoughness( int i, float d, V subject )
 	{
 		// v0 and v5 are used to calculate the next v1 or v4, at the next level.
-		Vector v0 = points[ getActualIndex( i - 2 ) ];
-		Vector v1 = points[ getActualIndex( i - 1 ) ];
-		Vector v2 = points[ getActualIndex( i ) ];
-		Vector v3 = points[ getActualIndex( i + 1 ) ];
-		Vector v4 = points[ getActualIndex( i + 2 ) ];
-		Vector v5 = points[ getActualIndex( i + 3 ) ];
+		V v0 = points[ getActualIndex( i - 2 ) ];
+		V v1 = points[ getActualIndex( i - 1 ) ];
+		V v2 = points[ getActualIndex( i ) ];
+		V v3 = points[ getActualIndex( i + 1 ) ];
+		V v4 = points[ getActualIndex( i + 2 ) ];
+		V v5 = points[ getActualIndex( i + 3 ) ];
 
 		for (;;)
 		{
 			// Get mid point
-			Vector mid = getPoint( v1, v2, v3, v4 );
+			V mid = getPoint( v1, v2, v3, v4 );
 			
 			// if distance from mid to (v2->v3) is <= roughness, break
 			// calculate the distance between all three points to form a triangle,
@@ -170,7 +168,7 @@ public class KramerPath implements Path
 			if (d < 0.5f)
 			{
 				// shift all surrounding points one-level closer to v2
-				Vector newEnd = v1;
+				V newEnd = v1;
 				v5 = v4;
 				v4 = v3;
 				v3 = mid;
@@ -183,7 +181,7 @@ public class KramerPath implements Path
 			else
 			{
 				// shift all surrounding points one-level closer to v3
-				Vector newEnd = v4;
+				V newEnd = v4;
 				v0 = v1;
 				v1 = v2;
 				v2 = mid;
@@ -198,14 +196,14 @@ public class KramerPath implements Path
 		subject.interpolate( v2, v3, d );
 	}
 	
-	public float getDistance( Vector a, Vector b )
+	public float getDistance( V a, V b )
 	{
 		temp0.set( a );
 	
 		return temp0.distance( b );
 	}
 	
-	public Vector getPoint( Vector v1, Vector v2, Vector v3, Vector v4 )
+	public V getPoint( V v1, V v2, V v3, V v4 )
 	{
 		// p = (0.5f + looseness) * (v2 + v3) - looseness * (v1 + v4)
 		

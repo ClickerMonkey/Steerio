@@ -5,10 +5,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerAvoid;
-import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -32,7 +30,7 @@ public class SteerAvoidExample extends SteerBasicExample
 
 	private SteerSprite sprite;
 	private SteerSprite scared;
-	private SteerAvoid avoid;
+	private SteerAvoid<Vec2> avoid;
 
 	public SteerAvoidExample( int w, int h )
 	{
@@ -42,11 +40,11 @@ public class SteerAvoidExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander( 0, 100, 150, 80 ) );
+		sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 
-		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet(
-			avoid = new SteerAvoid( sprite, 200, true ),
-			new SteerDrive( 0, 0, 0, 100, true )
+		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
+			avoid = new SteerAvoid<Vec2>( sprite, 200, true ),
+			new SteerDrive2( 0, 0, 0, 100, true )
 		));
 	}
 

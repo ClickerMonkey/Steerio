@@ -4,17 +4,17 @@ package org.magnos.steer.behavior;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * A steering behavior that moves the subject closer to a target with maximum acceleration but slows down to a complete stop once it comes within a
  * given distance.
  */
-public class SteerArrive extends AbstractSteer
+public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
 {
 
-    public Target target;
+    public Target<V> target;
     public float caution;
     public float arrived;
     public boolean shared;
@@ -29,7 +29,7 @@ public class SteerArrive extends AbstractSteer
      * @param arrived
      *        The distance from the target that is considered "arrived". A common value for this is 0.
      */
-    public SteerArrive( Target target, float caution, float arrived )
+    public SteerArrive( Target<V> target, float caution, float arrived )
     {
         this( target, caution, arrived, true );
     }
@@ -46,7 +46,7 @@ public class SteerArrive extends AbstractSteer
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerArrive( Target target, float caution, float arrived, boolean shared )
+    public SteerArrive( Target<V> target, float caution, float arrived, boolean shared )
     {
         this.target = target;
         this.caution = caution;
@@ -55,33 +55,27 @@ public class SteerArrive extends AbstractSteer
     }
 
     @Override
-    public Vector getForce( float elapsed, SteerSubject subject )
+    public void getForce( float elapsed, SteerSubject<V> subject, V out )
     {
-        Vector targetPosition = target.getTarget( subject );
+        V targetPosition = target.getTarget( subject );
 
-        if ( targetPosition == null )
+        if ( targetPosition != null )
         {
-            force.clear();
-        }
-        else
-        {
-            force.directi( subject.getPosition(), targetPosition );
+            out.directi( subject.getPosition(), targetPosition );
 
-            float distance = force.length();
+            float distance = out.length();
 
             if ( distance > arrived )
             {
                 float factor = Math.min( distance / caution, 1 );
 
-                force.divi( distance );
-                force.muli( subject.getAccelerationMax() );
-                force.muli( factor * factor );
-                force.subi( subject.getVelocity() );
-                force.divi( elapsed );
+                out.divi( distance );
+                out.muli( subject.getAccelerationMax() );
+                out.muli( factor * factor );
+                out.subi( subject.getVelocity() );
+                out.divi( elapsed );
             }
         }
-
-        return force;
     }
 
     @Override
@@ -91,9 +85,9 @@ public class SteerArrive extends AbstractSteer
     }
 
     @Override
-    public Steer clone()
+    public Steer<V> clone()
     {
-        return new SteerArrive( target, caution, arrived, shared );
+        return new SteerArrive<V>( target, caution, arrived, shared );
     }
 
 }

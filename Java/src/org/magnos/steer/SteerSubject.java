@@ -2,18 +2,19 @@
 package org.magnos.steer;
 
 import org.magnos.steer.spatial.SpatialEntity;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * A 2d entity with position, direction, velocity, and acceleration.
  */
-public interface SteerSubject extends Target, SpatialEntity
+public interface SteerSubject<V extends Vec<V>> extends Target<V>, SpatialEntity<V>
 {
 
     /**
      * The current position of the subject.
      */
-    public Vector getPosition();
+    public V getPosition();
 
     /**
      * A normalized vector which is the direction of the subject. The direction is updated when velocity is changed internally, however if you
@@ -23,12 +24,12 @@ public interface SteerSubject extends Target, SpatialEntity
      * ss.getVelocity().normal( ss.getDirection() );
      * </pre>
      */
-    public Vector getDirection();
+    public V getDirection();
 
     /**
      * The current velocity of the subject.
      */
-    public Vector getVelocity();
+    public V getVelocity();
 
     /**
      * The maximum allowed velocity for this subject.
@@ -38,7 +39,7 @@ public interface SteerSubject extends Target, SpatialEntity
     /**
      * The current acceleration of the subject.
      */
-    public Vector getAcceleration();
+    public V getAcceleration();
 
     /**
      * The maximum allowed acceleration for this subject.

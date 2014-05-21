@@ -5,11 +5,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerAway;
-import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.behavior.SteerWander;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -32,7 +30,7 @@ public class SteerAwayExample extends SteerBasicExample
 	}
 
 	private SteerSprite scared;
-	private TargetLocal local;
+	private TargetLocal<Vec2> local;
 
 	public SteerAwayExample(int w, int h)
 	{
@@ -42,11 +40,11 @@ public class SteerAwayExample extends SteerBasicExample
 	@Override
 	public void start( Scene scene )
 	{
-		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander( 0, 100, 150, 80 ) );
+		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000, new SteerWander2( 0, 100, 150, 80 ) );
 		
-		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet(
-			new SteerAway( local = new TargetLocal( sprite, 300 ) ),
-			new SteerDrive( 0, 0, 0, 100, true )
+		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
+			new SteerAway<Vec2>( local = new TargetLocal<Vec2>( sprite, 300 ) ),
+			new SteerDrive2( 0, 0, 0, 100, true )
 		));
 	}
 	

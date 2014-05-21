@@ -1,7 +1,7 @@
 
 package com.gameprogblog.engine.core;
 
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec2;
 
 public class Bound2
 {
@@ -48,7 +48,7 @@ public class Bound2
 		return !(left > b.right || right < b.left || top > b.bottom || bottom < b.top);
 	}
 
-	public void set( Vector position, Bound2 extent )
+	public void set( Vec2 position, Bound2 extent )
 	{
 		left = position.x - extent.left;
 		right = position.x + extent.right;

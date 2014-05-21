@@ -4,7 +4,7 @@ package org.magnos.steer.behavior;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
-import org.magnos.steer.behavior.SteerDrive;
+import org.magnos.steer.behavior.SteerDrive2;
 
 import com.gameprogblog.engine.Game;
 import com.gameprogblog.engine.GameLoop;
@@ -26,7 +26,7 @@ public class SteerDriveExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerDriveExample" );
 	}
 
-	private SteerDrive drive;
+	private SteerDrive2 drive;
 
 	public SteerDriveExample( int w, int h )
 	{
@@ -37,7 +37,7 @@ public class SteerDriveExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		newSprite( Color.blue, 15, 300, 1000,  
-			drive = new SteerDrive( 600, 600, 1000, 100, true )
+			drive = new SteerDrive2( 600, 600, 1000, 100, true )
 		);
 	}
 

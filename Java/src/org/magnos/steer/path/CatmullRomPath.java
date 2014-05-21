@@ -2,10 +2,10 @@ package org.magnos.steer.path;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.Vector;
+import org.magnos.steer.vec.Vec;
 
 
-public class CatmullRomPath implements Path
+public class CatmullRomPath<V extends Vec<V>> implements Path<V>
 {
 
 	public static final float WEIGHT = 0.5f;
@@ -16,19 +16,19 @@ public class CatmullRomPath implements Path
 		{-1, 3,-3, 1}
 	};
 	
-	public Vector[] points;
+	public V[] points;
 	
 	public CatmullRomPath()
 	{
 	}
 	
-	public CatmullRomPath(Vector ... points)
+	public CatmullRomPath(V ... points)
 	{
 		this.points = points;
 	}
 
 	@Override
-	public Vector set( Vector subject, float delta )
+	public V set( V subject, float delta )
 	{
 		return SteerMath.parametricCubicCurve( delta, points, MATRIX, WEIGHT, subject );
 	}
