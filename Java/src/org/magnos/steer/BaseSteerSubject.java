@@ -66,7 +66,19 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     @Override
     public float getDistanceAndNormal( V origin, V lookahead, V outNormal )
     {
-        return SteerMath.closest( origin, lookahead, position, outNormal ).subi( position ).normalize() - radius;
+        V away = position.clone();
+        float intersectionTime = SteerMath.interceptTime( origin, origin.distance( lookahead ), position, velocity );
+        
+        if ( intersectionTime > 0 )
+        {
+            away.addsi( velocity, intersectionTime );
+        }
+        else
+        {
+            return Float.MAX_VALUE;
+        }
+        
+        return SteerMath.closest( origin, lookahead, away, outNormal ).subi( away ).normalize() - radius;
     }
 
     @Override
