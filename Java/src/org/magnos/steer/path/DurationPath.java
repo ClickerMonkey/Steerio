@@ -94,7 +94,7 @@ public class DurationPath<V extends Vec<V>> implements Path<V>
 
             float q = d / durations[i];
 
-            subject.interpolate( points[i], points[i + 1], q );
+            subject.interpolatei( points[i], points[i + 1], q );
         }
 
         return subject;

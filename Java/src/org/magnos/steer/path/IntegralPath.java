@@ -42,7 +42,7 @@ public class IntegralPath<V extends Vec<V>> implements Path<V>
 			float a = delta * (points.length - 1);
 			int index = SteerMath.clamp( (int)a, 0, points.length - 2 );
 			
-			subject.interpolate( points[index], points[index + 1], a - index );	
+			subject.interpolatei( points[index], points[index + 1], a - index );	
 		}
 		
 		return subject;

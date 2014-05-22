@@ -49,8 +49,8 @@ public class QuadraticCornerPath<V extends Vec<V>> implements Path<V>
         {
             d = (d / midpoint);
 
-            temp0.interpolate( p0, p1, d * halfmidpoint + negmidpoint + halfmidpoint );
-            temp1.interpolate( p1, p2, d * halfmidpoint + halfmidpoint );
+            temp0.interpolatei( p0, p1, d * halfmidpoint + negmidpoint + halfmidpoint );
+            temp1.interpolatei( p1, p2, d * halfmidpoint + halfmidpoint );
 
             p1 = temp0;
             p2 = temp1;
@@ -60,15 +60,15 @@ public class QuadraticCornerPath<V extends Vec<V>> implements Path<V>
         {
             d = (d - negmidpoint) / midpoint;
 
-            temp0.interpolate( p1, p2, d * halfmidpoint + negmidpoint );
-            temp1.interpolate( p2, p3, d * halfmidpoint );
+            temp0.interpolatei( p1, p2, d * halfmidpoint + negmidpoint );
+            temp1.interpolatei( p2, p3, d * halfmidpoint );
 
             p1 = temp0;
             p2 = temp1;
             d = d * 0.5f;
         }
 
-        subject.interpolate( p1, p2, d );
+        subject.interpolatei( p1, p2, d );
 
         return subject;
     }

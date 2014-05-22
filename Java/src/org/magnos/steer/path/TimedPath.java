@@ -49,7 +49,7 @@ public class TimedPath<V extends Vec<V>> implements Path<V>
                 --i;
             float q = (delta - times[i]) / (times[i + 1] - times[i]);
 
-            subject.interpolate( points[i], points[i + 1], q );
+            subject.interpolatei( points[i], points[i + 1], q );
         }
 
         return subject;

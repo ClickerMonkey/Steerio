@@ -135,7 +135,7 @@ public class KramerPath<V extends Vec<V>> implements Path<V>
 		}
 		
 		// subject = (v3 - v2) * d + v2
-		subject.interpolate( v2, v3, d );
+		subject.interpolatei( v2, v3, d );
 	}
 	
 	public void getPointWithRoughness( int i, float d, V subject )
@@ -193,7 +193,7 @@ public class KramerPath<V extends Vec<V>> implements Path<V>
 		}
 		
 		// subject = (v3 - v2) * d + v2
-		subject.interpolate( v2, v3, d );
+		subject.interpolatei( v2, v3, d );
 	}
 	
 	public float getDistance( V a, V b )

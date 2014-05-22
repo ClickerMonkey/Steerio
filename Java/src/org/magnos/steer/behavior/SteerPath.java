@@ -59,8 +59,8 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
     @Override
     public void getForce( float elapsed, SteerSubject<V> subject, V out )
     {
-        out.set( subject.getPosition() );
-        out.addsi( subject.getDirection(), velocity );
+        future.set( subject.getPosition() );
+        future.addsi( subject.getDirection(), velocity );
 
         if ( delta == -1 )
         {

@@ -24,7 +24,7 @@ public class Tween<V extends Vec<V>> implements Path<V>
     @Override
     public V set( V subject, float delta )
     {
-        subject.interpolate( start, end, delta );
+        subject.interpolatei( start, end, delta );
 
         return subject;
     }
