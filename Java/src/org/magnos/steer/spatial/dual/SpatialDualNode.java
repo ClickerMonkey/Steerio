@@ -210,8 +210,8 @@ public class SpatialDualNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
         V maxNodeMin = min.clone();
         V maxNodeMax = max.clone();
         
-        minNodeMax.set( axis, center.getComponent( axis ) );
-        maxNodeMin.set( axis, center.getComponent( axis ) );
+        minNodeMax.setComponent( axis, center.getComponent( axis ) );
+        maxNodeMin.setComponent( axis, center.getComponent( axis ) );
         
         minNode = new SpatialDualNode<V>( this, childAxis, minNodeMin, minNodeMax );
         maxNode = new SpatialDualNode<V>( this, childAxis, maxNodeMin, maxNodeMax );

@@ -11,15 +11,19 @@ public class SpatialGridCell<V extends Vec<V>> extends LinkedListBounds<V, Spati
 
     // The location of this cell on the grid.
     public final V index;
-
+    
+    // The offset of this cell in the grid
+    public final int offset;
+    
     // The look-backs for entity's that overlap cells on the right and bottom.
     public V lookback;
 
-    public SpatialGridCell( V index, SpatialGrid<V> db )
+    public SpatialGridCell( V index, int offset, SpatialGrid<V> db )
     {
         super( calculateMin( index, db ), calculateMax( index, db ) );
         
         this.index = index;
+        this.offset = offset;
         this.lookback = index.create();
     }
     

@@ -17,6 +17,8 @@ import org.magnos.steer.spatial.dual.SpatialDualNode;
 import org.magnos.steer.spatial.dual.SpatialDualTree;
 import org.magnos.steer.spatial.grid.SpatialGrid;
 import org.magnos.steer.spatial.grid.SpatialGridCell;
+import org.magnos.steer.spatial.quad.SpatialQuadNode;
+import org.magnos.steer.spatial.quad.SpatialQuadTree;
 import org.magnos.steer.spatial.sap.SpatialSweepAndPrune;
 import org.magnos.steer.vec.Vec2;
 
@@ -207,12 +209,12 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 		
 		if (input.keyUp[KeyEvent.VK_2])
 		{
-			rebuildDatabase( new SpatialGrid<Vec2>( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0 ) );
+		    rebuildDatabase( new SpatialGrid<Vec2>( new Vec2( WIDTH / GRID_SIZE, HEIGHT / GRID_SIZE ), new Vec2(), new Vec2( GRID_SIZE, GRID_SIZE ) ) );	
 		}
 		
 		if (input.keyUp[KeyEvent.VK_3])
 		{
-//			rebuildDatabase( new SpatialQuadTree<Vec2>( 0, 0, WIDTH, HEIGHT, 8, 30 ) );
+			rebuildDatabase( new SpatialQuadTree<Vec2>( new Vec2( 0, 0 ), new Vec2( WIDTH, HEIGHT ), 8, 30 ) );
 		}
 		
 		if (input.keyUp[KeyEvent.VK_4])
@@ -267,48 +269,41 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 			{
 				SpatialGrid<Vec2> grid = (SpatialGrid<Vec2>)database;
 				
-				for (int y = 0; y < grid.height; y++)
+				for ( SpatialGridCell<Vec2> cell : grid.cells )
 				{
-					for (int x = 0; x < grid.width; x++)
-					{
-						SpatialGridCell<Vec2> cell = grid.cells[y][x];
-						
-						rect.setFrameFromDiagonal( cell.min.x, cell.min.y, cell.max.x, cell.max.y );
-						gr.draw( rect );
-						
-						if ( cell.lookback.x != 0 || cell.lookback.y != 0 )
-						{
-							gr.drawString( String.format("{%d,%d}", cell.lookback.x, cell.lookback.x ), cell.index.x + 2, cell.index.y + 14 );	
-						}
-					}
+				    rect.setFrameFromDiagonal( cell.min.x, cell.min.y, cell.max.x, cell.max.y );
+                    gr.draw( rect );
+                    
+                    if ( cell.lookback.x != 0 || cell.lookback.y != 0 )
+                    {
+                        gr.drawString( String.format("{%.0f,%.0f}", cell.lookback.x, cell.lookback.x ), cell.center.x + 2, cell.center.y + 14 );  
+                    }
 				}
-			}
-			/* TODO 
+			} 
 			if ( database instanceof SpatialQuadTree )
 			{
-				SpatialQuadTree quad = (SpatialQuadTree)database;
+				SpatialQuadTree<Vec2> quad = (SpatialQuadTree<Vec2>)database;
 				
-				Queue<SpatialQuadNode> nodes = new ArrayDeque<SpatialQuadNode>();
+				Queue<SpatialQuadNode<Vec2>> nodes = new ArrayDeque<SpatialQuadNode<Vec2>>();
 				nodes.add( quad.root );
 				
 				while (!nodes.isEmpty())
 				{
-					SpatialQuadNode n = nodes.poll();
+					SpatialQuadNode<Vec2> n = nodes.poll();
 
-					rect.setFrameFromDiagonal( n.l, n.t, n.r, n.b );
+					rect.setFrameFromDiagonal( n.min.x, n.min.y, n.max.x, n.max.y );
 					gr.draw( rect );
-					gr.drawString( String.format("%d", n.size), (n.l + n.r) * 0.5f + 2, (n.t + n.b) * 0.5f + 14 );
+					gr.drawString( String.format("%d", n.size), n.center.x + 2, n.center.y + 14 );
 					
 					if ( n.isBranch() )
 					{
-						nodes.add( n.children[0] );
-						nodes.add( n.children[1] );
-						nodes.add( n.children[2] );
-						nodes.add( n.children[3] );
+					    for ( SpatialQuadNode<Vec2> child : n.children )
+					    {
+					        nodes.add( child );
+					    }
 					}
 				}
 			}
-			*/
 			if ( database instanceof SpatialDualTree )
 			{
 				SpatialDualTree<Vec2> dual = (SpatialDualTree<Vec2>)database;

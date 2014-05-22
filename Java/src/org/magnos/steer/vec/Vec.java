@@ -70,6 +70,11 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public void clear();
 
     /**
+     * Clears this Vector's components by setting them to the given value.
+     */
+    public V clear( float value );
+
+    /**
      * Negates this Vector and returns this.
      */
     public V negi();
@@ -314,6 +319,51 @@ public interface Vec<V extends Vec<V>> extends Target<V>
      * Returns a new Vector that is this Vector rotated by the unit V.
      */
     public V rotate( V cossin );
+
+    /**
+     * Returns a new Vector that is this Vector with floored components.
+     */
+    public V floor();
+
+    /**
+     * Floors the components of this Vector and returns this.
+     */
+    public V floori();
+
+    /**
+     * Sets out to this Vector with its components floored and returns out.
+     */
+    public V floor( V out );
+
+    /**
+     * Returns a new Vector that is this Vector with ceiling components.
+     */
+    public V ceil();
+
+    /**
+     * Ceilings the components of this Vector and returns this.
+     */
+    public V ceili();
+
+    /**
+     * Sets out to this Vector with its components ceiling and returns out.
+     */
+    public V ceil( V out );
+    
+    /**
+     * Reflects this Vector across the normal and returns this.
+     */
+    public V inverti();
+
+    /**
+     * Sets out to this Vector reflected across the normal and returns out.
+     */
+    public V invert( V out );
+    
+    /**
+     * Returns a new Vector that is this Vector reflected across the normal.
+     */
+    public V invert();
 
     /**
      * Reflects this Vector across the normal and returns this.

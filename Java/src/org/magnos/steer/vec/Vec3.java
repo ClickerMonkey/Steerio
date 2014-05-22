@@ -155,6 +155,14 @@ public class Vec3 extends AbstractVec<Vec3>
    }
 
    @Override
+   public Vec3 clear( float value )
+   {
+       x = y = z = value;
+       
+       return this;
+   }
+
+   @Override
    public Vec3 neg( Vec3 out )
    {
       out.x = -x;
@@ -294,6 +302,35 @@ public class Vec3 extends AbstractVec<Vec3>
    public Vec3 rotate( Vec3 cossin, Vec3 out )
    {
       throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Vec3 floor( Vec3 out )
+   {
+       out.x = (float)Math.floor( x );
+       out.y = (float)Math.floor( y );
+       out.z = (float)Math.floor( z );
+       
+       return out;
+   }
+
+   @Override
+   public Vec3 ceil( Vec3 out )
+   {
+       out.x = (float)Math.ceil( x );
+       out.y = (float)Math.ceil( y );
+       out.z = (float)Math.ceil( z );
+       
+       return out;
+   }
+
+   @Override
+   public Vec3 invert( Vec3 out )
+   {
+       out.x = x == 0.0f ? 0.0f : 1.0f / x;
+       out.y = y == 0.0f ? 0.0f : 1.0f / y;
+       out.z = z == 0.0f ? 0.0f : 1.0f / z;
+       return out;
    }
 
    @Override

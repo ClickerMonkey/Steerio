@@ -212,46 +212,27 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 	    
 	    children = new SpatialQuadNode[ childCount ];
 	    
-	    for (int i = 0; i < children.length; i++)
+	    for (int i = 0; i < childCount; i++)
 	    {
 	        V childMin = min.clone();
 	        V childMax = max.clone();
 	        
-	        if (i % components == 0)
+	        for (int k = 0; k < components; k++)
 	        {
-	            childMin.setComponent( 0, center.getComponent( 0 ) );
-	        }
-	        else
-	        {
-	            childMax.setComponent( 0, center.getComponent( 0 ) );
-	        }
-	        
-	        if ((i << 1) >= childCount)
-	        {
-	            childMin.setComponent( 1, center.getComponent( 1 ) );
-	        }
-	        else
-	        {
-                childMax.setComponent( 1, center.getComponent( 1 ) );
+	            if (((i >> k) & 0x1) == 0x1)
+	            {
+	                childMin.setComponent( k, center.getComponent( k ) );
+	            }
+	            else
+	            {
+	                childMax.setComponent( k, center.getComponent( k ) );
+	            }
 	        }
 	        
 	        children[i] = new SpatialQuadNode<V>( this, childMin, childMax );
 	    }
-	    
-	    // TODO expand
-	    /*
-		final float cx = (l + r) * 0.5f;
-		final float cy = (t + b) * 0.5f;
-		
-		children = new SpatialQuadNode[] {
-			new SpatialQuadNode(this, l, t, cx, cy), /* top left * /
-			new SpatialQuadNode(this, cx, t, r, cy), /* top right * /
-			new SpatialQuadNode(this, l, cy, cx, b), /* bottom left * /
-			new SpatialQuadNode(this, cx, cy, r, b), /* bottom right * /
-		};
-		*/
-		
-		LinkedNode<SpatialEntity<V>> start = head.next;
+
+	    LinkedNode<SpatialEntity<V>> start = head.next;
 		
 		while (start != head)
 		{

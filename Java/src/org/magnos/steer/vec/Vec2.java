@@ -148,6 +148,14 @@ public class Vec2 extends AbstractVec<Vec2>
     }
 
     @Override
+    public Vec2 clear( float value )
+    {
+        x = y = value;
+        
+        return this;
+    }
+
+    @Override
     public Vec2 neg( Vec2 out )
     {
         out.x = -x;
@@ -352,6 +360,32 @@ public class Vec2 extends AbstractVec<Vec2>
         return out;
     }
 
+    @Override
+    public Vec2 floor( Vec2 out )
+    {
+        out.x = (float)Math.floor( x );
+        out.y = (float)Math.floor( y );
+        
+        return out;
+    }
+
+    @Override
+    public Vec2 ceil( Vec2 out )
+    {
+        out.x = (float)Math.ceil( x );
+        out.y = (float)Math.ceil( y );
+        
+        return out;
+    }
+
+    @Override
+    public Vec2 invert( Vec2 out )
+    {
+        out.x = x == 0.0f ? 0.0f : 1.0f / x;
+        out.y = y == 0.0f ? 0.0f : 1.0f / y;
+        return out;
+    }
+    
     /**
      * Rotates this vector around the origin the given number of times and
      * returns this.
