@@ -160,6 +160,31 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
             }
         }
     }
+    
+    public SteerPath<V> setWorldUnits( float lookaheadUnit, float granularityUnit, int pathPointsToCalculateLength )
+    {
+        float length = 0;
+        float delta = 0.0f;
+        float deltaInc = 1.0f / pathPointsToCalculateLength;
+        
+        V start = future.create();
+        V end = future.create();
+        
+        path.set( start, delta );
+        
+        for (int i = 0; i < pathPointsToCalculateLength; i++)
+        {
+            delta += deltaInc;
+            path.set( end, delta );
+            length += start.distance( end );
+            start.set( end );
+        }
+        
+        lookahead = lookaheadUnit / length;
+        granularity = granularityUnit / length;
+        
+        return this;
+    }
 
     @Override
     public boolean isShared()
