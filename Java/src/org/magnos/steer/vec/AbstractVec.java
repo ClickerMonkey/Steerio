@@ -137,6 +137,30 @@ public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
     {
         return sub( v, create() );
     }
+    
+    @Override
+    public V modi( float s )
+    {
+        return mod( s, (V)this );
+    }
+
+    @Override
+    public V mod( float s )
+    {
+        return mod( s, create() );
+    }
+
+    @Override
+    public V modi( V v )
+    {
+        return mod( v, (V)this );
+    }
+
+    @Override
+    public V mod( V v )
+    {
+        return mod( v, create() );
+    }
 
     @Override
     public V directi( V origin, V target )

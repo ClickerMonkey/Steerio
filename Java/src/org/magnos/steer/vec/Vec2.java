@@ -259,6 +259,22 @@ public class Vec2 extends AbstractVec<Vec2>
         out.y = y - v.y;
         return out;
     }
+    
+    @Override
+    public Vec2 mod( float s, Vec2 out )
+    {
+        out.x = x % s;
+        out.y = y % s;
+        return out;
+    }
+
+    @Override
+    public Vec2 mod( Vec2 v, Vec2 out )
+    {
+        out.x = x % v.x;
+        out.y = y % v.y;
+        return out;
+    }
 
     @Override
     public Vec2 direct( Vec2 origin, Vec2 target, Vec2 out )

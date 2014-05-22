@@ -266,6 +266,24 @@ public class Vec3 extends AbstractVec<Vec3>
       out.z = z - v.z;
       return out;
    }
+   
+   @Override
+   public Vec3 mod( float s, Vec3 out )
+   {
+       out.x = x % s;
+       out.y = y % s;
+       out.z = z % s;
+       return out;
+   }
+
+   @Override
+   public Vec3 mod( Vec3 v, Vec3 out )
+   {
+       out.x = x % v.x;
+       out.y = y % v.y;
+       out.z = z % v.z;
+       return out;
+   }
 
    @Override
    public Vec3 direct( Vec3 origin, Vec3 target, Vec3 out )

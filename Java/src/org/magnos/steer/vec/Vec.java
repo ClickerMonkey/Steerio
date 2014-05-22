@@ -249,6 +249,42 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public V sub( V v );
 
     /**
+     * <p><code>this = this % s</code></p>
+     * Sets this to the remainder from this divided by s and returns this.
+     */
+    public V modi( float s );
+
+    /**
+     * <p><code>out = this % s</code></p>
+     * Sets out to the remainder of this divided by s and returns out.
+     */
+    public V mod( float s, V out );
+
+    /**
+     * <p><code>new (this % s)</code></p>
+     * Returns a new Vector that is the remainder of the division of this by s.
+     */
+    public V mod( float s );
+
+    /**
+     * <p><code>this = this % v</code></p>
+     * Sets this to the remainder from this divided by v and returns this.
+     */
+    public V modi( V v );
+
+    /**
+     * <p><code>out = this % v</code></p>
+     * Sets out to the remainder of this divided by v and returns out.
+     */
+    public V mod( V v, V out );
+
+    /**
+     * <p><code>new (this % v)</code></p>
+     * Returns a new Vector that is the remainder of the division of this by v.
+     */
+    public V mod( V v );
+
+    /**
      * <p><code>this = target - origin</code></p>
      * Sets this to the V starting at origin and ending at target, and
      * returns this.
