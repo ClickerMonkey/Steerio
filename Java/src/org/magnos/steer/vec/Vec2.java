@@ -4,6 +4,19 @@ package org.magnos.steer.vec;
 /**
  * A 2d {@link Vec} implementation.
  * 
+ * Unique properties of 2d unit (normalized) Vectors:
+ * <ol>
+ * <li>x = cos(A) where A is the angle of the Vector (returned by
+ * {@link #angle()}).</li>
+ * <li>y = sin(A) where A is the angle of the Vector (returned by
+ * {@link #angle()}).</li>
+ * <li>passing in {@link #angle()} to {@link #rotatei(float)} is the same as
+ * passing the Vector into {@link #rotatei(V)} because of the two
+ * properties mentioned above except the latter method is quicker since
+ * {@link Math#cos(double)} and {@link Math#sin(double)} don't need to be
+ * called.</li>
+ * </ol>
+ * 
  * @author Philip Diffenderfer
  *
  */
