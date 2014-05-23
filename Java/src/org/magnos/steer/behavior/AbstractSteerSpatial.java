@@ -3,7 +3,7 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.SteerSubjectFilter;
+import org.magnos.steer.Filter;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
@@ -25,7 +25,7 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>> extends AbstractSte
     public int max;
     public SpatialDatabase<V> space;
     public SteerSubject<V> subject;
-    public SteerSubjectFilter<V, SpatialEntity<V>> filter;
+    public Filter<V, SpatialEntity<V>> filter;
 
     /**
      * Instantiates a new {@link AbstractSteerSpatial}.
@@ -46,7 +46,7 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>> extends AbstractSte
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public AbstractSteerSpatial( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared )
+    public AbstractSteerSpatial( SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
     {
         this.space = space;
         this.query = query;

@@ -2,7 +2,7 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.SteerSubjectFilter;
+import org.magnos.steer.Filter;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
@@ -27,12 +27,12 @@ public class SteerSeparation<V extends Vec<V>> extends AbstractSteerSpatial<V>
 		this( space, query, groups, max, null, DEFAULT_SHARED, template );
 	}
 	
-	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, V template)
+	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template)
 	{
 		this( space, query, groups, max, filter, DEFAULT_SHARED, template );
 	}
 		
-	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared, V template)
+	public SteerSeparation(SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template)
 	{
 		super(space, query, groups, max, filter, shared);
 

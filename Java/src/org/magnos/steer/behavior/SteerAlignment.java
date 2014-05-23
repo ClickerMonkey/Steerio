@@ -3,7 +3,7 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.SteerSubjectFilter;
+import org.magnos.steer.Filter;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
@@ -65,7 +65,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V>
      * @param fovType
      *        A flag used to determine whether an object is in the field of view of a subject.
      */
-    public SteerAlignment( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter )
+    public SteerAlignment( SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter )
     {
         this( space, query, groups, max, filter, DEFAULT_SHARED );
     }
@@ -89,7 +89,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V>
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerAlignment( SpatialDatabase<V> space, float query, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerAlignment( SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
     {
         super( space, query, groups, max, filter, shared );
     }

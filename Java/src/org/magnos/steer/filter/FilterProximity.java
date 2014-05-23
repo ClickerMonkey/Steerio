@@ -1,10 +1,10 @@
 package org.magnos.steer.filter;
 
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.SteerSubjectFilter;
+import org.magnos.steer.Filter;
 import org.magnos.steer.vec.Vec;
 
-public class FilterProximity<V extends Vec<V>> implements SteerSubjectFilter<V, SteerSubject<V>>
+public class FilterProximity<V extends Vec<V>> implements Filter<V, SteerSubject<V>>
 {
     
     public float minimum;

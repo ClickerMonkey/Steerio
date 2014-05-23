@@ -3,7 +3,7 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.SteerSubjectFilter;
+import org.magnos.steer.Filter;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
@@ -39,12 +39,12 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
         this( space, lookahead, buffer, groups, max, null, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, V template )
+    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
     {
         this( space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, SteerSubjectFilter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
     {
         super( space, 0f, groups, max, filter, shared );
 
