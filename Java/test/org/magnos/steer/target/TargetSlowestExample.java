@@ -48,7 +48,7 @@ public class TargetSlowestExample extends SteerBasicExample
 		database = new SpatialArray<Vec2>( 32 );
 		
 		newSprite( Color.red, 15, 190, 500, new SteerSet<Vec2>(  
-			new SteerTo<Vec2>( slowest = new TargetSlowest<Vec2>( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) ),
+			new SteerTo<Vec2>( slowest = new TargetSlowest<Vec2>( database, null, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) ),
 			new SteerWander2( 0, 100, 150, 80 )
 		));
 

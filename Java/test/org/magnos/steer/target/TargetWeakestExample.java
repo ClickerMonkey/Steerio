@@ -49,7 +49,7 @@ public class TargetWeakestExample extends SteerBasicExample
 		database = new SpatialArray<Vec2>( 32 );
 		
 		subject = newSprite( Color.red, 15, 190, 500,  
-			new SteerTo<Vec2>( weakest = new TargetWeakest<Vec2>( database, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) 
+			new SteerTo<Vec2>( weakest = new TargetWeakest<Vec2>( database, null, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) 
 		));
 
 		for (int i = 0; i < 16; i++)

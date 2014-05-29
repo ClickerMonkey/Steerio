@@ -2,6 +2,7 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.Filter;
 import org.magnos.steer.Target;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -13,6 +14,7 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 {
 
 	public SpatialDatabase<V> space;
+    public Filter<V, SpatialEntity<V>> filter;
 	public float queryOffset;
 	public float queryRadius;
 	public boolean contains;
@@ -25,9 +27,10 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	public final V queryPosition;
 	public final V target;
 
-	public TargetWeakest(SpatialDatabase<V> space, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
+	public TargetWeakest(SpatialDatabase<V> space, Filter<V, SpatialEntity<V>> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
 		this.space = space;
+		this.filter = filter;
 		this.queryOffset = queryOffset;
 		this.queryRadius = queryRadius;
 		this.contains = contains;
@@ -72,7 +75,7 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	@Override
 	public boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		boolean applicable = (entity instanceof SteerSubject);
+		boolean applicable = (entity instanceof SteerSubject) && (filter == null || filter.isValid( subject, entity ));
 		
 		if (applicable)
 		{
