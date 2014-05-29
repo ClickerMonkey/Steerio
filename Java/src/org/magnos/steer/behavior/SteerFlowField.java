@@ -57,10 +57,10 @@ public class SteerFlowField extends AbstractSteer<Vec2>
 			Vec2 BL = field[y+1][x];
 			Vec2 BR = field[y+1][x+1];
 			
-			temp0.interpolate( TL, TR, dx );
-			temp1.interpolate( BL, BR, dx );
+			temp0.interpolatei( TL, TR, dx );
+			temp1.interpolatei( BL, BR, dx );
 			
-			out.interpolate( temp0, temp1, dy );
+			out.interpolatei( temp0, temp1, dy );
 			
 			maximize( subject, out );
 		}
