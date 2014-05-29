@@ -4,6 +4,7 @@ package org.magnos.steer.target;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.magnos.steer.SteerMath;
 import org.magnos.steer.behavior.SteerArrive;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerWander2;
@@ -43,10 +44,12 @@ public class TargetInLineExample extends SteerBasicExample
 		SteerSprite sprite0 = newSprite( Color.white, 15, 300, 1000,
 			new SteerWander2( 0, 100, 150, 80 )
 		);
+		sprite0.position.addi( SteerMath.randomFloat( 100 ) );
 		
 		SteerSprite sprite1 = newSprite( Color.lightGray, 15, 300, 1000,
 			new SteerWander2( 0, 100, 150, 80 )
 		);
+		sprite1.position.addi( SteerMath.randomFloat( 100 ) );
 		
 		newSprite( Color.blue, 15, 300, 1000,  
 			new SteerArrive<Vec2>( interpose = new TargetInLine<Vec2>( sprite0, sprite1, Vec2.FACTORY ), 100, 0 )

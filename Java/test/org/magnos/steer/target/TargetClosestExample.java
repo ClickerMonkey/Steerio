@@ -49,7 +49,7 @@ public class TargetClosestExample extends SteerBasicExample
 		database = new SpatialArray<Vec2>( 32 );
 		
 		newSprite( Color.red, 15, 190, 500, new SteerTo<Vec2>( 
-			closest = new TargetClosest<Vec2>( database, new FilterView2( 1.6f, FieldOfView.PARTIAL ), 1L, 8 )
+			closest = new TargetClosest<Vec2>( database, new FilterView2( 1.6f, FieldOfView.PARTIAL ), 8, 1L )
 		));
 
 		for (int i = 0; i < 16; i++)
