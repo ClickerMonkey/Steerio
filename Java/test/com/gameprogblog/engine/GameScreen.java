@@ -174,27 +174,87 @@ public class GameScreen extends JPanel
 
 		loop = gameLoop;
 	}
+	
+    public boolean isAntialising()
+    {
+        return antialising;
+    }
 
-	/**
-	 * Shows the given GameScreen in a window with the given title.
-	 * 
-	 * @param gameScreen
-	 *        The GameScreen to add to the window.
-	 * @param title
-	 *        The title of the window.
-	 */
-	public static void showWindow( GameScreen gameScreen, String title )
-	{
-		if (gameScreen != null)
-		{
-			JFrame window = new JFrame( title );
-			window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-			window.add( gameScreen );
-			window.pack();
-			window.setVisible( true );
+    public void setAntialising( boolean antialising )
+    {
+        this.antialising = antialising;
+    }
+    
+    public BufferedImage getBuffer()
+    {
+        return buffer;
+    }
+    
+    public GameLoop getLoop()
+    {
+        return loop;
+    }
+    
+    public Game getGame()
+    {
+        return game;
+    }
+    
+    public GameState getState()
+    {
+        return state;
+    }
 
-			gameScreen.start();
-		}
-	}
+    public GameInput getInput()
+    {
+        return input;
+    }
+
+    public Scene getScene()
+    {
+        return scene;
+    }
+
+    /**
+     * Shows the given GameScreen in a window with the given title.
+     * 
+     * @param gameScreen
+     *        The GameScreen to add to the window.
+     * @param title
+     *        The title of the window.
+     */
+    public static void showWindow( GameScreen gameScreen, String title )
+    {
+        showWindow( gameScreen, title, true );
+    }
+
+    /**
+     * Shows the given GameScreen in a window with the given title.
+     * 
+     * @param gameScreen
+     *        The GameScreen to add to the window.
+     * @param title
+     *        The title of the window.
+     */
+    public static JFrame showWindow( GameScreen gameScreen, String title, boolean start )
+    {
+        JFrame window = null;
+        
+        if (gameScreen != null)
+        {
+            window = new JFrame( title );
+            window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+            window.add( gameScreen );
+            window.pack();
+            window.setVisible( true );
+
+            if (start)
+            {
+                gameScreen.start();    
+            }
+        }
+        
+        return window;
+    }
 
 }

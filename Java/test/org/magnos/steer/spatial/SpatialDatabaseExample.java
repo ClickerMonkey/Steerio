@@ -38,7 +38,7 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 
 	public static void main( String[] args )
 	{
-		Game game = new SpatialDatabaseExample();
+		Game game = new SpatialDatabaseExample( WIDTH, HEIGHT );
 		GameLoop loop = new GameLoopVariable( 0.1f );
 		GameScreen screen = new GameScreen( WIDTH, HEIGHT, false, loop, game );
 		screen.setBackground( Color.black );
@@ -104,6 +104,10 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 	public long statIntersectEndNanos;
 	public double statIntersectSeconds;
 	public int statIntersectCount;
+	
+    public SpatialDatabaseExample(int w, int h)
+    {
+    }
 	
 	@Override
 	public void start( Scene scene )
