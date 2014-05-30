@@ -393,8 +393,8 @@ public class Vec2 extends AbstractVec<Vec2>
     public Vec2 unrotate( Vec2 cossin, Vec2 out )
     {
         final float ox = x, oy = y;
-        out.x = (-cossin.x * ox + cossin.y * oy);
-        out.y = (-cossin.x * oy - cossin.y * ox);
+        out.x = (cossin.x * ox + cossin.y * oy);
+        out.y = (cossin.x * oy - cossin.y * ox);
         return out;
     }
 

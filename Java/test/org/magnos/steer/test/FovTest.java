@@ -54,7 +54,7 @@ public class FovTest implements Game
 		circleRadius = 50.0f;
 		circleEntirely = false;
 		direction = new Vec2( 1.0f, 0.0f );
-		fov = new Vec2().angle( SteerMath.PI * 0.25f, 1.0f );
+		fov = Vec2.fromAngle( SteerMath.PI * 0.25f );
 		playing = true;
 	}
 
@@ -108,6 +108,7 @@ public class FovTest implements Game
 		Vec2 upperRotated = upper.rotate( direction );
 		Vec2 lowerRotated = lower.rotate( direction );
 
+		/*
 		Vec2 towards = target.sub( origin );
 		float ut = upperRotated.cross( towards );
 		float lt = lowerRotated.cross( towards );
@@ -115,6 +116,7 @@ public class FovTest implements Game
 		boolean view = (ut <= 0 && lt >= 0 ) || (fov.x < 0.0f && ((ut >= 0 && lt >= 0) || (ut <= 0 && lt <= 0)));
 		
 		boolean circleInView = SteerMath.isCircleInView( origin, direction, fov, circlePos, circleRadius, circleEntirely );
+		*/
 		
 		gr.setColor( Color.orange );
 		line.setLine( origin.x, origin.y, origin.x + upperRotated.x * radius, origin.y + upperRotated.y * radius );
@@ -129,6 +131,8 @@ public class FovTest implements Game
 		drawCircle( gr, circlePos, circleRadius, Color.yellow );
 
 		gr.setColor( Color.white );
+		
+		/*
 		gr.drawString( String.format( "fov: {%.2f,%.2f}", fov.x, fov.y ), 2, 12 );
 		gr.drawString( String.format( "origin.distanceSq(target): %.2f", origin.distanceSq( target ) ), 2, 24 );
 		gr.drawString( String.format( "direction.dot(towards): %.2f", direction.dot(towards) ), 2, 36 );
@@ -136,6 +140,30 @@ public class FovTest implements Game
 		gr.drawString( String.format( "upperRotated.cross( towards ): %.2f", upperRotated.cross( towards ) ), 2, 60 );
 		gr.drawString( String.format( "lowerRotated.cross( towards ): %.2f", lowerRotated.cross( towards ) ), 2, 72 );
 		gr.drawString( String.format( "isCircleInView(entirely=%s): %s", circleEntirely, circleInView ), 2, 84 );
+		*/
+		
+		Vec2 _unrotated = circlePos.sub( origin ).unrotatei( direction );
+        Vec2 _upper = _unrotated.rotate( fov );
+        Vec2 _lower = _unrotated.unrotate( fov );
+        float _upperDist = -_upper.getComponent( 1 );
+        float _lowerDist = -_lower.getComponent( 1 );
+        
+        if ( !circleEntirely )
+        {
+            _upperDist += circleRadius * 2;
+            _lowerDist += circleRadius * 2;
+        }
+
+        boolean _inview = (_lowerDist >= circleRadius && _upperDist >= circleRadius) || // FOV <= 90
+              (fov.getComponent( 0 ) < 0 && (_upperDist >= circleRadius || _lowerDist >= circleRadius)); // FOV >= 90
+
+        int textY = 0;
+        gr.drawString( String.format( "upper: {%.2f,%.2f}", _upper.x, _upper.y ), 2, textY += 12 );
+        gr.drawString( String.format( "lower: {%.2f,%.2f}", _lower.x, _lower.y ), 2, textY += 12 );
+        gr.drawString( String.format( "upperDist: %.2f", _upperDist ), 2, textY += 12 );
+        gr.drawString( String.format( "lowerDist: %.2f", _lowerDist ), 2, textY += 12 );
+        gr.drawString( String.format( "inview(entirely=%s): %s", circleEntirely, _inview ), 2, textY += 12 );
+        gr.drawString( String.format( "fov: {%.2f,%.2f}", fov.x, fov.y ), 2, textY += 12 );
 	}
 	
 	private void drawCircle( Graphics2D gr, Vec2 v, float size, Color color )

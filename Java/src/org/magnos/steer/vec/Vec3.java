@@ -348,22 +348,22 @@ public class Vec3 extends AbstractVec<Vec3>
    public Vec3 unrotate( Vec3 cossin, Vec3 out )
    {
       float ox = x, oy = y, oz = z, px, py, pz;
-      float zcos = -cossin.x;
-      float zsin = -cossin.y;
+      float zcos = cossin.x;
+      float zsin = cossin.y;
       
       px = ox * zcos - oy * zsin;
       py = ox * zsin + oy * zcos;
       pz = oz;
       
-      float ycos = -cossin.x;
-      float ysin = -cossin.z;
+      float ycos = cossin.x;
+      float ysin = cossin.z;
       
       ox = px * ycos + pz * ysin;
       oy = py;
       oz =-px * ysin + pz * ycos;
 
-      float xcos = -cossin.z;
-      float xsin = -cossin.y;
+      float xcos = cossin.z;
+      float xsin = cossin.y;
       
       px = ox;
       py = oy * xcos - oz * xsin;
@@ -582,6 +582,14 @@ public class Vec3 extends AbstractVec<Vec3>
       float dz = a.z - b.z;
 
       return (float)Math.sqrt( dx * dx + dy * dy + dz * dz );
+   }
+
+   /**
+    * Returns a vector that represents the given angle, where x = cos(angle) and y = sin(angle).
+    */
+   public static Vec3 fromAngle( float angle )
+   {
+       return new Vec3( (float)Math.cos( angle ), (float)Math.sin( angle ), 0.0f );
    }
 
    /**

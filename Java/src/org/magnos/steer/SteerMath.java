@@ -7,7 +7,6 @@ import java.util.Random;
 
 import org.magnos.steer.util.FieldOfView;
 import org.magnos.steer.vec.Vec;
-import org.magnos.steer.vec.Vec2;
 
 
 public class SteerMath
@@ -175,6 +174,24 @@ public class SteerMath
 
         return height;
     }
+    
+    public static <V extends Vec<V>> boolean isCircleInView( V origin, V direction, V fov, V circle, float radius, boolean entirely )
+    {
+        V unrotated = circle.sub( origin ).rotatei( direction );
+        V upper = unrotated.unrotate( fov );
+        V lower = unrotated.rotate( fov );
+        float upperDist = upper.getComponent( 1 );
+        float lowerDist = lower.getComponent( 1 );
+        
+        if ( !entirely )
+        {
+            upperDist += radius * 2;
+            lowerDist += radius * 2;
+        }
+
+        return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
+               (fov.getComponent( 0 ) < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
+    }
 
     /**
      * Returns whether a circle is within view of an object at the origin facing some direction.
@@ -195,6 +212,7 @@ public class SteerMath
      *        is partially within view.
      * @return True if the target is in view, otherwise false.
      */
+    /*
     public static boolean isCircleInView( Vec2 origin, Vec2 direction, Vec2 fov, Vec2 circle, float radius, boolean entirely )
     {
         // Calculate upper and lower vectors
@@ -226,8 +244,9 @@ public class SteerMath
         return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
         (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
     }
+    */
 
-    public static boolean isCircleInView( Vec2 origin, Vec2 direction, Vec2 fov, Vec2 circle, float radius, FieldOfView fovType )
+    public static <V extends Vec<V>> boolean isCircleInView( V origin, V direction, V fov, V circle, float radius, FieldOfView fovType )
     {
         if ( fovType == FieldOfView.IGNORE )
         {
