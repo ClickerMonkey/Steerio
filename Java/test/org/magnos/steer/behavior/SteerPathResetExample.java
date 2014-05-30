@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.contraints.ConstraintTurning2;
+import org.magnos.steer.constraint.ConstraintTurning;
 import org.magnos.steer.filter.FilterAnd;
 import org.magnos.steer.filter.FilterInFront;
 import org.magnos.steer.filter.FilterProximity;
@@ -72,7 +72,7 @@ public class SteerPathResetExample extends SteerBasicExample
                     ) 
                 ), true ) 
 		));
-		quicker.controller.constraint = new ConstraintTurning2( 1.8f );
+		quicker.controller.constraint = new ConstraintTurning<Vec2>( 20.0f );
 	}
 
 	@Override

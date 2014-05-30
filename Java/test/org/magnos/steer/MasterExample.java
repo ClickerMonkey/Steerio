@@ -42,6 +42,8 @@ import org.magnos.steer.behavior.SteerPathResetExample;
 import org.magnos.steer.behavior.SteerPursuitExample;
 import org.magnos.steer.behavior.SteerToExample;
 import org.magnos.steer.behavior.SteerWanderExample;
+import org.magnos.steer.constraint.ConstraintTurningExample;
+import org.magnos.steer.constraint.ConstraintZeroVelocityThresholdExample;
 import org.magnos.steer.spatial.SpatialDatabaseExample;
 import org.magnos.steer.target.TargetAverageExample;
 import org.magnos.steer.target.TargetClosestExample;
@@ -97,6 +99,9 @@ public class MasterExample implements Game
         put( SteerPursuitExample.class, "The yellow subject is steering towards the blue wandering subject's future position. This is a combination between SteerTo and TargetFuture." );
         put( SteerToExample.class, "The blue subject steers towards the mouse when it's inside the gray circle." );
         put( SteerWanderExample.class, "The blue subject wanders around the world randomly." );
+        /* constraint */
+        put( ConstraintTurningExample.class, "Driving forces are applied when any of the arrow keys are pressed and a turning constraint is put in place to keep the subject from rotating unrealistcally fast." );
+        put( ConstraintZeroVelocityThresholdExample.class, "Driving forces are applied when any of the arrow keys are pressed and a turning constraint is put in place to stop the subject when they are going slower than 50 pixels per second." );
         /* spatial */
         put( SpatialDatabaseExample.class, "Tests all available spatial database implementations for performance & correctedness with respect to collision detection, containment queries, and KNN queries. Press H for help." );
         /* target */

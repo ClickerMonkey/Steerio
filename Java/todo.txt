@@ -5,7 +5,6 @@
 - SteerDrive 3d or generic
 - SteerFlowField 3d or generic
 - SteerWander 3d or generic
-- ConstraintTurning 3d or generic
 - SpatialSweepAndPrune 3d or generic
 - Unit Testing
     interceptTime

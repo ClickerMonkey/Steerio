@@ -52,6 +52,31 @@ public class SteerMath
     {
         return (d < min ? min : (d > max ? max : d));
     }
+    
+    public static <V extends Vec<V>> V slerp( V s, V e, float t, V out )
+    {
+        float slength = s.length();
+        float elength = e.length();
+        float angle = (float)Math.acos( s.dot( e ) / (slength * elength) );
+        
+        return slerp( s, e, angle, t, out );
+    }
+    
+    public static <V extends Vec<V>> V slerpNormal( V s, V e, float t, V out )
+    {
+        float angle = (float)Math.acos( s.dot( e ) );
+        
+        return slerp( s, e, angle, t, out );
+    }
+    
+    public static <V extends Vec<V>> V slerp( V s, V e, float angle, float t, V out )
+    {
+        float denom = 1.0f / sin( angle );
+        float d0 = sin( (1 - t) * angle ) * denom;
+        float d1 = sin( t * angle ) * denom;
+        
+        return out.set( e ).muli( d1 ).addsi( s, d0 );
+    }
 
     public static <V extends Vec<V>> V closest( V s, V e, V v, V out )
     {

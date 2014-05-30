@@ -1,5 +1,5 @@
 
-package org.magnos.steer.contraints;
+package org.magnos.steer.constraint;
 
 import org.magnos.steer.Constraint;
 import org.magnos.steer.SteerSubject;
