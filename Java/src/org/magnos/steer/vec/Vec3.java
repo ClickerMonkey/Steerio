@@ -319,36 +319,84 @@ public class Vec3 extends AbstractVec<Vec3>
    @Override
    public Vec3 rotate( Vec3 cossin, Vec3 out )
    {
-      throw new UnsupportedOperationException();
+      float ox = x, oy = y, oz = z, px, py, pz;
+      float zcos = cossin.x;
+      float zsin = cossin.y;
+      
+      px = ox * zcos - oy * zsin;
+      py = ox * zsin + oy * zcos;
+      pz = oz;
+      
+      float ycos = cossin.x;
+      float ysin = cossin.z;
+      
+      ox = px * ycos + pz * ysin;
+      oy = py;
+      oz =-px * ysin + pz * ycos;
+
+      float xcos = cossin.z;
+      float xsin = cossin.y;
+      
+      px = ox;
+      py = oy * xcos - oz * xsin;
+      py = oy * xsin + oz * xcos;
+      
+      return out.set( px, py, pz );
+   }
+
+   @Override
+   public Vec3 unrotate( Vec3 cossin, Vec3 out )
+   {
+      float ox = x, oy = y, oz = z, px, py, pz;
+      float zcos = -cossin.x;
+      float zsin = -cossin.y;
+      
+      px = ox * zcos - oy * zsin;
+      py = ox * zsin + oy * zcos;
+      pz = oz;
+      
+      float ycos = -cossin.x;
+      float ysin = -cossin.z;
+      
+      ox = px * ycos + pz * ysin;
+      oy = py;
+      oz =-px * ysin + pz * ycos;
+
+      float xcos = -cossin.z;
+      float xsin = -cossin.y;
+      
+      px = ox;
+      py = oy * xcos - oz * xsin;
+      py = oy * xsin + oz * xcos;
+      
+      return out.set( px, py, pz );
    }
 
    @Override
    public Vec3 floor( Vec3 out )
    {
-       out.x = (float)Math.floor( x );
-       out.y = (float)Math.floor( y );
-       out.z = (float)Math.floor( z );
-       
-       return out;
+      out.x = (float)Math.floor( x );
+      out.y = (float)Math.floor( y );
+      out.z = (float)Math.floor( z );
+      return out;
    }
 
    @Override
    public Vec3 ceil( Vec3 out )
    {
-       out.x = (float)Math.ceil( x );
-       out.y = (float)Math.ceil( y );
-       out.z = (float)Math.ceil( z );
-       
-       return out;
+      out.x = (float)Math.ceil( x );
+      out.y = (float)Math.ceil( y );
+      out.z = (float)Math.ceil( z );
+      return out;
    }
 
    @Override
    public Vec3 invert( Vec3 out )
    {
-       out.x = x == 0.0f ? 0.0f : 1.0f / x;
-       out.y = y == 0.0f ? 0.0f : 1.0f / y;
-       out.z = z == 0.0f ? 0.0f : 1.0f / z;
-       return out;
+      out.x = x == 0.0f ? 0.0f : 1.0f / x;
+      out.y = y == 0.0f ? 0.0f : 1.0f / y;
+      out.z = z == 0.0f ? 0.0f : 1.0f / z;
+      return out;
    }
 
    @Override

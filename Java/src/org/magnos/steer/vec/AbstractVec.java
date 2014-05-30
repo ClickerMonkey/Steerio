@@ -269,6 +269,18 @@ public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
     {
         return rotate( cossin, create() );
     }
+
+    @Override
+    public V unrotatei( V cossin )
+    {
+        return unrotate( cossin, (V)this );
+    }
+
+    @Override
+    public V unrotate( V cossin )
+    {
+        return unrotate( cossin, create() );
+    }
     
     @Override
     public V floor()

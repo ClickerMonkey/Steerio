@@ -367,6 +367,21 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public V rotate( V cossin );
 
     /**
+     * Un-Rotates this Vector by the given unit V and returns this.
+     */
+    public V unrotatei( V cossin );
+
+    /**
+     * Sets out to this Vector unit V by the normal and returns out.
+     */
+    public V unrotate( V cossin, V out );
+
+    /**
+     * Returns a new Vector that is this Vector unrotated by the unit V.
+     */
+    public V unrotate( V cossin );
+
+    /**
      * <p><code>this = this reflected across normal</code></p>
      * Reflects this Vector across the normal and returns this.
      */

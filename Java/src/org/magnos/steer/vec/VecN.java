@@ -274,6 +274,12 @@ public class VecN extends AbstractVec<VecN>
     }
 
     @Override
+    public VecN unrotate( VecN cossin, VecN out )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public VecN floor( VecN out )
     {
         for (int i = x.length - 1; i >= 0; i--)

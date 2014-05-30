@@ -202,7 +202,7 @@ public class SteerMath
         // Rotate forward by upper, resulting vector.y is the distance from upper to target
         // Rotate forward by lower, resulting vector.y is the distance from lower to target
         // If it doesn't matter if it's entirely in view, add radius*2 to the distances.
-
+        
         float fovy = Math.abs( fov.y );
         float dxfx = direction.x * fov.x;
         float dxfy = direction.x * fovy;
