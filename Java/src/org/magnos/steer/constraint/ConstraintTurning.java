@@ -27,21 +27,20 @@ public class ConstraintTurning<V extends Vec<V>> implements Constraint<V>
 	{
 		final V dir = subject.getDirection();
 		final V vel = subject.getVelocity();
-		final V acc = subject.getAcceleration();
-		final V desired = vel.adds( acc, elapsed );
-		float deslength = desired.normalize();
+		final V acc = subject.getAcceleration().muli( elapsed ).addi( vel );
+		float acclength = acc.normalize();
 		
-		if (deslength != 0.0f)
+		if (acclength != 0.0f)
 		{
-		    float inner = (float)Math.acos( dir.dot( desired ) );
+		    float inner = (float)Math.acos( dir.dot( acc ) );
             float outer = radians * elapsed;
             
 		    if (inner > outer)
 		    {
-		        SteerMath.slerp( dir, desired, inner, outer / inner, desired );
+		        SteerMath.slerp( dir, acc, inner, outer / inner, acc );
 		    }
 		    
-            acc.set( desired ).muli( deslength ).subi( vel ).divi( elapsed );
+            acc.muli( acclength ).subi( vel ).divi( elapsed );
 		}
 	}
 	
