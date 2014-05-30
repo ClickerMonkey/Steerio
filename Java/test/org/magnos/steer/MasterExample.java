@@ -27,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.magnos.steer.behavior.SteerArriveExample;
 import org.magnos.steer.behavior.SteerArriveOffsetExample;
-import org.magnos.steer.behavior.SteerAvoidExample;
 import org.magnos.steer.behavior.SteerAvoidObstaclesExample;
 import org.magnos.steer.behavior.SteerAvoidWallExample;
 import org.magnos.steer.behavior.SteerAwayExample;
@@ -84,7 +83,6 @@ public class MasterExample implements Game
         /* behavior */
         put( SteerArriveExample.class, "The blue subject moves towards the mouse, and when the mouse is inside it's white caution circle, it slows down until it stops at the point." );
         put( SteerArriveOffsetExample.class, "A chain of subjects that need to arrive a fixed amount behind another subject (or the mouse for the first entity)." );
-        put( SteerAvoidExample.class, "The yellow subject moves away from the blue subject when it enters the red circle and it is infront of the blue subject (i.e. in view)." );
         put( SteerAvoidObstaclesExample.class, "A set of subjects are moving in a constant direction and they are trying to avoid collisions with each other." );
         put( SteerAvoidWallExample.class, "The blue entity is stuck in a room made up of 4 walls." );
         put( SteerAwayExample.class, "The yellow subject moves away from the blue subject when it enters the red circle." );

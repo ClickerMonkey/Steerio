@@ -6,8 +6,13 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
+import org.magnos.steer.SteerSubject;
 import org.magnos.steer.contraints.ConstraintTurning2;
+import org.magnos.steer.filter.FilterAnd;
+import org.magnos.steer.filter.FilterInFront;
+import org.magnos.steer.filter.FilterProximity;
 import org.magnos.steer.path.LinearPath;
+import org.magnos.steer.target.TargetFilteredSubject;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
 
@@ -59,7 +64,13 @@ public class SteerPathResetExample extends SteerBasicExample
 
 		SteerSprite quicker = newSprite( Color.orange, 15, 300, 10000, new SteerSet<Vec2>(
 			new SteerPath<Vec2>( path, 0.01f, 0.025f, 0, 10, 20, 1, true, true, Vec2.FACTORY ),
-			new SteerAvoid<Vec2>( sprite, 100, true )
+	         new SteerAway<Vec2>( 
+                new TargetFilteredSubject<Vec2>( sprite, 
+                    new FilterAnd<Vec2, SteerSubject<Vec2>>(
+                        new FilterInFront<Vec2>(), 
+                        new FilterProximity<Vec2>(100) 
+                    ) 
+                ), true ) 
 		));
 		quicker.controller.constraint = new ConstraintTurning2( 1.8f );
 	}

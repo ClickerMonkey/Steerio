@@ -10,6 +10,22 @@ public class FilterProximity<V extends Vec<V>> implements Filter<V, SteerSubject
     public float minimum;
     public float maximum;
 
+    public FilterProximity()
+    {
+        this( 0, Float.MAX_VALUE );
+    }
+    
+    public FilterProximity(float max)
+    {
+        this( 0, max );
+    }
+    
+    public FilterProximity(float min, float max)
+    {
+        this.minimum = min;
+        this.maximum = max;
+    }
+
     @Override
     public boolean isValid( SteerSubject<V> subject, SteerSubject<V> test )
     {

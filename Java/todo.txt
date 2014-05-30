@@ -1,8 +1,5 @@
 - Target doesn't return Vec, it's passed as an out parameter and Target returns boolean
-- Remove hard coded proximity filtering from all behaviors & targets, replace with filtering when necessary
 - Combine SpatialEntityObstacle and Obstacle
-- Refactor SteerAvoid out
-- Join SpatialEntity & SteerSubject
 - Unit Testing
     interceptTime
     getDistanceFromLine
