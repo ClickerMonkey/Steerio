@@ -1,5 +1,12 @@
 - Target doesn't return Vec, it's passed as an out parameter and Target returns boolean
 - Combine SpatialEntityObstacle and Obstacle
+- FilterView 3d or generic
+- FilterViewCustomRadius 3d or generic
+- SteerDrive 3d or generic
+- SteerFlowField 3d or generic
+- SteerWander 3d or generic
+- ConstraintTurning 3d or generic
+- SpatialSweepAndPrune 3d or generic
 - Unit Testing
     interceptTime
     getDistanceFromLine
