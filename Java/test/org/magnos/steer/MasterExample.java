@@ -3,9 +3,11 @@ package org.magnos.steer;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -72,7 +74,7 @@ public class MasterExample implements Game
         GameScreen screen = new GameScreen( SteerBasicExample.DEFAULT_WIDTH, SteerBasicExample.DEFAULT_HEIGHT, true, loop, game );
         screen.setBackground( Color.black );
         game.screen = screen;
-        game.window = GameScreen.showWindow( screen, "MasterExample", false );
+        game.initializeInterface( 0 );
         game.setExample( 0 );
         screen.start();
     }
@@ -121,53 +123,83 @@ public class MasterExample implements Game
     private int currentIndex = -1;
     private int nextIndex = -1;
     
-    private JFrame selectionWindow;
-    private JList selectionList;
-    private JScrollPane selectionScroller;
-    private JTextArea selectionText;
-    private JPanel selectionPanel;
+    private JTextArea explanation;
 
     public MasterExample()
     {
-        /* selection */
-        DefaultListModel selectionListModel = new DefaultListModel();
+        
+    }
+    
+    public void initializeInterface(int defaultSelection)
+    {
+        final DefaultListModel exampleListModel = new DefaultListModel();
         for (Class<?> exampleClass : EXAMPLES_LIST)
         {
-            selectionListModel.addElement( exampleClass.getSimpleName() );
+            exampleListModel.addElement( exampleClass.getSimpleName() );
         }
         
-        selectionList = new JList();
-        selectionList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-        selectionList.setLayoutOrientation( JList.VERTICAL );
-        selectionList.setVisibleRowCount( 10 );
-        selectionList.setModel( selectionListModel );
-        selectionList.addListSelectionListener( new ListSelectionListener() {
+        final KeyListener keysIgnore = new KeyListener() {
+            public void keyPressed(KeyEvent ke){  
+                ke.consume();
+                screen.getInput().keyPressed( ke );
+            }
+            public void keyReleased(KeyEvent ke){  
+                ke.consume();
+                screen.getInput().keyReleased( ke );
+            }
+            public void keyTyped(KeyEvent ke){  
+                ke.consume();
+                screen.getInput().keyTyped( ke );
+            }
+        };
+        
+        final JList exampleList = new JList();
+        exampleList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+        exampleList.setLayoutOrientation( JList.VERTICAL );
+        exampleList.setVisibleRowCount( 10 );
+        exampleList.setModel( exampleListModel );
+        exampleList.addKeyListener( keysIgnore );
+        exampleList.setSelectedIndex( defaultSelection );
+        exampleList.addListSelectionListener( new ListSelectionListener() {
             public void valueChanged( ListSelectionEvent event ) {
                 if (event.getValueIsAdjusting()) {
-                    nextIndex = selectionList.getSelectedIndex();
+                    nextIndex = exampleList.getSelectedIndex();
                 }
             }
         } );
         
-        selectionScroller = new JScrollPane( selectionList );
-        selectionScroller.setPreferredSize( new Dimension( 300, 200 ) );
-        selectionScroller.setBorder( new EmptyBorder(5, 5, 5, 5) );
+        final JScrollPane scrollPane = new JScrollPane( exampleList );
+        scrollPane.setPreferredSize( new Dimension( 300, 240 ) );
+        scrollPane.setBorder( new EmptyBorder(5, 5, 5, 5) );
+        scrollPane.addKeyListener( keysIgnore );
         
-        selectionText = new JTextArea( 10, 25 );
-        selectionText.setEditable( false );
-        selectionText.setLineWrap( true );
-        selectionText.setWrapStyleWord( true );
-        selectionText.setBorder( new EmptyBorder(5, 5, 5, 5) );
+        explanation = new JTextArea( 10, 25 );
+        explanation.setEditable( false );
+        explanation.setLineWrap( true );
+        explanation.setWrapStyleWord( true );
+        explanation.setBorder( new EmptyBorder(5, 5, 5, 5) );
+        explanation.addKeyListener( keysIgnore );
         
-        selectionPanel = new JPanel( new GridLayout( 0, 1 ) );
-        selectionPanel.add( selectionScroller );
-        selectionPanel.add( selectionText );
+        final JPanel selectionPanel = new JPanel( new GridLayout( 0, 1 ) );
+        selectionPanel.add( scrollPane );
+        selectionPanel.add( explanation );
         
-        selectionWindow = new JFrame( "Example Selection" );
-        selectionWindow.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        selectionWindow.add( selectionPanel );
-        selectionWindow.pack();
-        selectionWindow.setVisible( true );
+        screen.setFocusable( true );
+        screen.removeKeyListener( screen.getInput() );
+        
+        final JPanel mainPanel = new JPanel( new FlowLayout() );
+        mainPanel.add( screen );
+        mainPanel.add( selectionPanel );
+        mainPanel.setFocusable( true );
+        
+        window = new JFrame( "Example Selection" );
+        window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        window.setResizable( false );
+        window.setFocusable( true );
+        window.add( mainPanel );
+        window.pack();
+        window.setVisible( true );
+        window.addKeyListener( screen.getInput() );
     }
 
     public void setExample( int index ) throws Exception
@@ -185,7 +217,7 @@ public class MasterExample implements Game
         current = game;
         current.start( screen.getScene() );
         window.setTitle( clazz.getSimpleName() );
-        selectionText.setText( gameExplanation );
+        explanation.setText( gameExplanation );
         currentIndex = nextIndex = index;
     }
 
@@ -193,7 +225,7 @@ public class MasterExample implements Game
     public void start( Scene scene )
     {
         playing = true;
-        
+            
         current.start( scene );
     }
 
