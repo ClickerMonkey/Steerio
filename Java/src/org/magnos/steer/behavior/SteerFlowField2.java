@@ -4,7 +4,7 @@ import org.magnos.steer.SteerSubject;
 import org.magnos.steer.vec.Vec2;
 
 
-public class SteerFlowField extends AbstractSteer<Vec2>
+public class SteerFlowField2 extends AbstractSteer<Vec2>
 {
 
 	public Vec2[][] field;
@@ -19,7 +19,7 @@ public class SteerFlowField extends AbstractSteer<Vec2>
 	private final Vec2 temp0 = new Vec2();
 	private final Vec2 temp1 = new Vec2();
 	
-	public SteerFlowField(float lookahead, Vec2 fieldMin, Vec2 fieldMax, Vec2[][] field)
+	public SteerFlowField2(float lookahead, Vec2 fieldMin, Vec2 fieldMax, Vec2[][] field)
 	{
 		setField( lookahead, fieldMin, fieldMax, field );
 	}

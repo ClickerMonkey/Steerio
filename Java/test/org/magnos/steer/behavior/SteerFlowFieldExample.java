@@ -27,7 +27,7 @@ public class SteerFlowFieldExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "SteerFlowFieldExample" );
 	}
 
-	private SteerFlowField flow;
+	private SteerFlowField2 flow;
 
 	public SteerFlowFieldExample( int w, int h )
 	{
@@ -40,7 +40,7 @@ public class SteerFlowFieldExample extends SteerBasicExample
 		Vec2[][] field = generateSineField( 32, 24, 0.1f, 0.0f, 0.2f, 0.2f );
 		
 		newSprite( Color.blue, 15, 300, 1000,  
-			flow = new SteerFlowField( 50.0f, new Vec2( 0, 0 ), new Vec2( width, height ), field )
+			flow = new SteerFlowField2( 50.0f, new Vec2( 0, 0 ), new Vec2( width, height ), field )
 		);
 	}
 	
