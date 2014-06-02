@@ -7,7 +7,7 @@ import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerModifier;
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.filter.FilterView2;
+import org.magnos.steer.filter.FilterView;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
@@ -64,7 +64,7 @@ public class SteerControllerImmediateExample extends SteerBasicExample
 			new SteerAway<Vec2>( new TargetLocal<Vec2>( predator, 300 ) ),
 			new SteerModifier<Vec2>( new SteerSeparation<Vec2>( database, querySeparation, Vec2.FACTORY ), 3.0f ),
 			new SteerCohesion<Vec2>( database, queryCohesion, Vec2.FACTORY ),
-			new SteerModifier<Vec2>( new SteerAlignment<Vec2>( database, queryAlignment, SpatialDatabase.ALL_GROUPS, SteerAlignment.DEFAULT_MAX_RESULTS, new FilterView2( 1.5f, FieldOfView.FULL ) ), 1.0f ),
+			new SteerModifier<Vec2>( new SteerAlignment<Vec2>( database, queryAlignment, SpatialDatabase.ALL_GROUPS, SteerAlignment.DEFAULT_MAX_RESULTS, FilterView.fromDegrees( 179.0, FieldOfView.PARTIAL, Vec2.class ) ), 1.0f ),
 			new SteerModifier<Vec2>( new SteerWander2( 0, 80, 80, 60 ), 0.4f )
 		);
 

@@ -175,78 +175,52 @@ public class SteerMath
         return height;
     }
     
-    public static <V extends Vec<V>> boolean isCircleInView( V origin, V direction, V fov, V circle, float radius, boolean entirely )
+    public static <V extends Vec<V>> boolean isPointInView( V origin, V direction, float fovCos, V point )
     {
-        V unrotated = circle.sub( origin ).rotatei( direction );
-        V upper = unrotated.unrotate( fov );
-        V lower = unrotated.rotate( fov );
-        float upperDist = upper.getComponent( 1 );
-        float lowerDist = lower.getComponent( 1 );
-        
-        if ( !entirely )
-        {
-            upperDist += radius * 2;
-            lowerDist += radius * 2;
-        }
-
-        return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
-               (fov.getComponent( 0 ) < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
+        return point.sub( origin ).dot( direction ) > fovCos;
     }
-
+    
     /**
-     * Returns whether a circle is within view of an object at the origin facing some direction.
+     * Returns whether a circle is within view of an object at a position facing some direction.
      * 
-     * @param origin
+     * @param viewOrigin
      *        The origin of the view.
-     * @param direction
+     * @param viewDirection
      *        The direction of the view, must be a normalized vector.
-     * @param fov
-     *        The vector where x=cos(FOV/2) and y=sin(FOV/2), must be normalized by definition.
+     * @param fovTan
+     *        The tangent of half of the total field of view.
+     * @param fovCos
+     *        The cosine of half of the total field of view.
      * @param circle
      *        The center of the circle.
-     * @param radius
+     * @param circleRadius
      *        The radius of the circle.
      * @param entirely
      *        True if this method should return whether the circle is completely
      *        within view, or false if this method should return whether the circle
      *        is partially within view.
-     * @return True if the target is in view, otherwise false.
+     * @return True if the circle is in view, otherwise false.
      */
-    /*
-    public static boolean isCircleInView( Vec2 origin, Vec2 direction, Vec2 fov, Vec2 circle, float radius, boolean entirely )
+    public static <V extends Vec<V>> boolean isCircleInView( V viewOrigin, V viewDirection, double fovTan, double fovCos, V circle, float circleRadius, boolean entirely )
     {
-        // Calculate upper and lower vectors
-        // Calculate forward vector between target and origin
-        // Rotate forward by upper, resulting vector.y is the distance from upper to target
-        // Rotate forward by lower, resulting vector.y is the distance from lower to target
-        // If it doesn't matter if it's entirely in view, add radius*2 to the distances.
+        // http://www.cbloom.com/3d/techdocs/culling.txt
+        final V circleToOrigin = circle.sub( viewOrigin );
+        double distanceAlongDirection = circleToOrigin.dot( viewDirection );    
+        double coneRadius = distanceAlongDirection * fovTan;                       
+        double distanceFromAxis = Math.sqrt( circleToOrigin.lengthSq() - distanceAlongDirection * distanceAlongDirection ); 
+        double distanceFromCenterToCone = distanceFromAxis - coneRadius;                              
+        double shortestDistance = distanceFromCenterToCone * fovCos;                          
         
-        float fovy = Math.abs( fov.y );
-        float dxfx = direction.x * fov.x;
-        float dxfy = direction.x * fovy;
-        float dyfx = direction.y * fov.x;
-        float dyfy = direction.y * fovy;
-        float upperX = (dxfx - dyfy);
-        float upperY = (dxfy + dyfx);
-        float lowerX = (dxfx + dyfy);
-        float lowerY = (dyfx - dxfy);
-        float forwardX = circle.x - origin.x;
-        float forwardY = circle.y - origin.y;
-        float upperDist = (upperX * forwardY + upperY * forwardX);
-        float lowerDist = -(lowerX * forwardY + lowerY * forwardX);
-
-        if ( !entirely )
-        {
-            upperDist += radius * 2;
-            lowerDist += radius * 2;
+        if (entirely) {
+            shortestDistance += circleRadius;
+        } else {
+            shortestDistance -= circleRadius;
         }
-
-        return (lowerDist >= radius && upperDist >= radius) || // FOV <= 90
-        (fov.x < 0 && (upperDist >= radius || lowerDist >= radius)); // FOV >= 90
+        
+        return shortestDistance <= 0;
     }
-    */
 
-    public static <V extends Vec<V>> boolean isCircleInView( V origin, V direction, V fov, V circle, float radius, FieldOfView fovType )
+    public static <V extends Vec<V>> boolean isCircleInView( V viewOrigin, V viewDirection, double fovTan, double fovCos, V circle, float circleRadius, FieldOfView fovType )
     {
         if ( fovType == FieldOfView.IGNORE )
         {
@@ -255,10 +229,10 @@ public class SteerMath
 
         if ( fovType == FieldOfView.HALF )
         {
-            radius = 0f;
+            circleRadius = 0f;
         }
 
-        return isCircleInView( origin, direction, fov, circle, radius, fovType == FieldOfView.FULL );
+        return isCircleInView( viewOrigin, viewDirection, fovTan, fovCos, circle, circleRadius, fovType == FieldOfView.FULL );
     }
 
     public static int factorial( int x )

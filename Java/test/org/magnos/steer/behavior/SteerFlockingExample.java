@@ -7,12 +7,14 @@ import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerModifier;
 import org.magnos.steer.SteerSet;
+import org.magnos.steer.filter.FilterView;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
+import org.magnos.steer.util.FieldOfView;
 import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
@@ -57,10 +59,10 @@ public class SteerFlockingExample extends SteerBasicExample
 		));
 		
 		steerings = new SteerSet<Vec2>(
-			new SteerAway<Vec2>( new TargetLocal<Vec2>( predator, 300 ) ),
+			new SteerAway<Vec2>( new TargetLocal<Vec2>( predator, 400 ) ),
 			new SteerModifier<Vec2>( new SteerSeparation<Vec2>( database, querySeparation, Vec2.FACTORY ), 3.0f ),
 			new SteerCohesion<Vec2>( database, queryCohesion, Vec2.FACTORY ),
-			new SteerModifier<Vec2>( new SteerAlignment<Vec2>( database, queryAlignment ), 1.0f ),
+			new SteerModifier<Vec2>( new SteerAlignment<Vec2>( database, queryAlignment, -1, 16, FilterView.fromDegrees( 270, FieldOfView.HALF, Vec2.class ) ), 1.0f ),
 			new SteerModifier<Vec2>( new SteerWander2( 0, 80, 80, 60 ), 0.4f )
 		);
 

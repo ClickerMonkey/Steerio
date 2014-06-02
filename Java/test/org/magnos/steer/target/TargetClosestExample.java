@@ -8,7 +8,7 @@ import org.magnos.steer.SteerMath;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander2;
-import org.magnos.steer.filter.FilterView2;
+import org.magnos.steer.filter.FilterView;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
@@ -49,7 +49,7 @@ public class TargetClosestExample extends SteerBasicExample
 		database = new SpatialArray<Vec2>( 32 );
 		
 		newSprite( Color.red, 15, 190, 500, new SteerTo<Vec2>( 
-			closest = new TargetClosest<Vec2>( database, new FilterView2( 1.6f, FieldOfView.PARTIAL ), 8, 1L )
+			closest = new TargetClosest<Vec2>( database, FilterView.fromDegrees( 190.0f, FieldOfView.PARTIAL, Vec2.class ), 8, 1L )
 		));
 
 		for (int i = 0; i < 16; i++)

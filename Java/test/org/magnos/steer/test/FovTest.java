@@ -41,6 +41,7 @@ public class FovTest implements Game
 	public Vec2 direction;
 	public Vec2 target;
 	public Vec2 fov;
+	public float fovAngle;
 	public Vec2 circlePos;
 	public float circleRadius;
 	public boolean circleEntirely;
@@ -54,7 +55,7 @@ public class FovTest implements Game
 		circleRadius = 50.0f;
 		circleEntirely = false;
 		direction = new Vec2( 1.0f, 0.0f );
-		fov = Vec2.fromAngle( SteerMath.PI * 0.25f );
+		fov = Vec2.fromAngle( fovAngle = SteerMath.PI * 0.25f );
 		playing = true;
 	}
 
@@ -85,6 +86,7 @@ public class FovTest implements Game
 		if (input.keyDown[KeyEvent.VK_F])
 		{
 			fov.set( input.mouseX, input.mouseY ).subi( origin ).normali();
+			fovAngle = fov.angle();
 		}
 		if (input.keyUp[KeyEvent.VK_E])
 		{
@@ -130,8 +132,6 @@ public class FovTest implements Game
 		drawCircle( gr, target, 5, Color.red );
 		drawCircle( gr, circlePos, circleRadius, Color.yellow );
 
-		gr.setColor( Color.white );
-		
 		/*
 		gr.drawString( String.format( "fov: {%.2f,%.2f}", fov.x, fov.y ), 2, 12 );
 		gr.drawString( String.format( "origin.distanceSq(target): %.2f", origin.distanceSq( target ) ), 2, 24 );
@@ -142,28 +142,46 @@ public class FovTest implements Game
 		gr.drawString( String.format( "isCircleInView(entirely=%s): %s", circleEntirely, circleInView ), 2, 84 );
 		*/
 		
-		Vec2 _unrotated = circlePos.sub( origin ).unrotatei( direction );
-        Vec2 _upper = _unrotated.rotate( fov );
-        Vec2 _lower = _unrotated.unrotate( fov );
-        float _upperDist = -_upper.getComponent( 1 );
-        float _lowerDist = -_lower.getComponent( 1 );
-        
-        if ( !circleEntirely )
-        {
-            _upperDist += circleRadius * 2;
-            _lowerDist += circleRadius * 2;
-        }
-
-        boolean _inview = (_lowerDist >= circleRadius && _upperDist >= circleRadius) || // FOV <= 90
-              (fov.getComponent( 0 ) < 0 && (_upperDist >= circleRadius || _lowerDist >= circleRadius)); // FOV >= 90
+		Vec2 _V = circlePos.sub( origin );
+		double _a = _V.dot( direction );                  // how far along the direction the sphere's center is
+		double _b = _a * Math.tan( fovAngle );            // radius of the cone at _a
+		double _c = Math.sqrt( _V.lengthSq() - _a * _a ); // distance from center of sphere to axis of the cone
+		double _d = _c - _b;                              // distance from center of sphere to the surface of the cone
+		double _e = _d * Math.cos( fovAngle );            // shortest distance from center of the sphere to the surface of the cone
+		
+		boolean _inview = false;
+		
+		if ( _e >= circleRadius ) {
+		    // cull
+		} else if ( _e <= -circleRadius ) {
+		    // totally
+		    _inview = true;
+		} else {
+		    // partially
+		    if (!circleEntirely) {
+		        _inview = true;
+		    }
+		}
+		
+		Vec2 farAlong = SteerMath.closest( origin, direction.mul( radius ).addi( origin ), circlePos, new Vec2() );
+        line.setLine( origin.x, origin.y, farAlong.x, farAlong.y );
+        gr.draw( line );
+        line.setLine( farAlong.x + direction.y * _a, farAlong.y - direction.x * _a, farAlong.x - direction.y * _a, farAlong.y + direction.x * _a );
+        gr.draw( line );
+        line.setLine( farAlong.x, farAlong.y, circlePos.x, circlePos.y );
+        gr.setColor( Color.blue );
+        gr.draw( line );
 
         int textY = 0;
-        gr.drawString( String.format( "upper: {%.2f,%.2f}", _upper.x, _upper.y ), 2, textY += 12 );
-        gr.drawString( String.format( "lower: {%.2f,%.2f}", _lower.x, _lower.y ), 2, textY += 12 );
-        gr.drawString( String.format( "upperDist: %.2f", _upperDist ), 2, textY += 12 );
-        gr.drawString( String.format( "lowerDist: %.2f", _lowerDist ), 2, textY += 12 );
+        gr.setColor( Color.white );
+        gr.drawString( String.format( "how far along: %.2f (expected=%.2f)", _a, farAlong.distance( origin ) ), 2, textY += 12 );
+        gr.drawString( String.format( "radius of cone: %.2f", _b ), 2, textY += 12 );
+        gr.drawString( String.format( "circle->axis of cone: %.2f (expected=%.2f)", _c, farAlong.distance( circlePos ) ), 2, textY += 12 );
+        gr.drawString( String.format( "circle->surface of cone: %.2f", _d ), 2, textY += 12 );
+        gr.drawString( String.format( "shortest distance: %.2f", _e ), 2, textY += 12 );
         gr.drawString( String.format( "inview(entirely=%s): %s", circleEntirely, _inview ), 2, textY += 12 );
-        gr.drawString( String.format( "fov: {%.2f,%.2f}", fov.x, fov.y ), 2, textY += 12 );
+        gr.drawString( String.format( "fov: {%.2f,%.2f}: %.2f (%.2f)", fov.x, fov.y, fovAngle, Math.toDegrees( fovAngle ) ), 2, textY += 12 );
+        gr.drawString( String.format( "isCircleInView: %s", SteerMath.isCircleInView( origin, direction, Math.tan(fovAngle), Math.cos(fovAngle), circlePos, circleRadius, circleEntirely ) ), 2, textY += 12 );
 	}
 	
 	private void drawCircle( Graphics2D gr, Vec2 v, float size, Color color )
