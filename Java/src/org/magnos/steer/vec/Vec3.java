@@ -55,6 +55,11 @@ public class Vec3 extends AbstractVec<Vec3>
    public static final Vec3 NEAR = new Vec3( 0, 0, -1 );
 
    /**
+    * Constant used to fix the angle returned by {@link #angle()} and {@link #angleTo(Vec2)}.
+    */
+   private static final float ANGLE_FIX = (float)(Math.PI * 2.0f);
+
+   /**
     * The x-coordinate of the Vector.
     */
    public float x;
@@ -314,6 +319,50 @@ public class Vec3 extends AbstractVec<Vec3>
    public float length()
    {
       return (float)Math.sqrt( x * x + y * y + z * z );
+   }
+
+   /**
+    * Sets this to the vector with the given yaw and pitch in radians with the 
+    * given magnitude, and returns this.
+    */
+   public Vec3 angle( float yaw, float pitch, float magnitude )
+   {
+       // euler angles to vector
+       x = (float)(Math.cos(yaw) * Math.cos(pitch)) * magnitude;
+       y = (float)(Math.sin(yaw) * Math.cos(pitch)) * magnitude;
+       z = (float)(Math.sin(pitch)) * magnitude;
+
+       return this;
+   }
+
+   /**
+    * Returns the yaw in radians of this vector.
+    */
+   public float yaw()
+   {
+       float a = (float)StrictMath.atan2( x, z );
+
+       if ( a < 0 )
+       {
+           a += ANGLE_FIX;
+       }
+
+       return a;
+   }
+
+   /**
+    * Returns the yaw in radians of this vector.
+    */
+   public float pitch()
+   {
+       float a = (float)StrictMath.atan2( y, Math.sqrt( z * z + x * x) );
+
+       if ( a < 0 )
+       {
+           a += ANGLE_FIX;
+       }
+
+       return a;
    }
 
    @Override
@@ -582,14 +631,6 @@ public class Vec3 extends AbstractVec<Vec3>
       float dz = a.z - b.z;
 
       return (float)Math.sqrt( dx * dx + dy * dy + dz * dz );
-   }
-
-   /**
-    * Returns a vector that represents the given angle, where x = cos(angle) and y = sin(angle).
-    */
-   public static Vec3 fromAngle( float angle )
-   {
-       return new Vec3( (float)Math.cos( angle ), (float)Math.sin( angle ), 0.0f );
    }
 
    /**
