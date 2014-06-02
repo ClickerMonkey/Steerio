@@ -1,7 +1,6 @@
 - Target doesn't return Vec, it's passed as an out parameter and Target returns boolean
 - Combine SpatialEntityObstacle and Obstacle
 - SpatialSweepAndPrune 3d or generic
-- Fix SteerAvoidObstacles
 - Unit Testing
     interceptTime
     getDistanceFromLine

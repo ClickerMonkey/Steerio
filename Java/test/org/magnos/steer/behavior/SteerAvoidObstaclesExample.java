@@ -41,10 +41,11 @@ public class SteerAvoidObstaclesExample extends SteerBasicExample
 	{
 		database = new SpatialArray<Vec2>( 32 );
 		
-		for (int i = 0; i < 16; i++) 
+		for (int i = 0; i < 24; i++) 
 		{
 			SteerSprite lamb = newSprite( Color.green, 15, 200, 2000, new SteerSet<Vec2>(
-				new SteerModifier<Vec2>( new SteerAvoidObstacles<Vec2>( database, 80.0f, 4.0f, Vec2.FACTORY ), 0.8f ),
+			    new SteerSeparation<Vec2>( database, 15, Vec2.FACTORY ),
+				new SteerModifier<Vec2>( new SteerAvoidObstacles<Vec2>( database, 100.0f, 30.0f, Vec2.FACTORY ), 0.9f ),
 				new SteerConstant<Vec2>( new Vec2( SteerMath.randomFloat( -300, 300 ), SteerMath.randomFloat( -300, 300 ) ) )	
 			));
 			

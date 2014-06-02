@@ -68,7 +68,7 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
 
         lookaheadPoint.set( p );
         lookaheadPoint.addsi( d, lookahead );
-        lookaheadCenter.interpolate( p, lookaheadPoint, 0.5f );
+        lookaheadCenter.interpolatei( p, lookaheadPoint, 0.5f );
         lookaheadVelocity = v.length();
         lookaheadRadius = (lookahead * 0.5f) + r + buffer;
 
