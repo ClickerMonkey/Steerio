@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive2;
+import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
@@ -47,7 +47,7 @@ public class TargetLocalExample extends SteerBasicExample
 		
 		chaser = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(1000,
 			new SteerTo<Vec2>( local = new TargetLocal<Vec2>( sprite, 100 ) ),
-			new SteerDrive2( 0, 0, 0, 100 )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 		chaser.position.set( 100, 100 );
 	}

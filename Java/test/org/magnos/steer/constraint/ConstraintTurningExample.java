@@ -5,8 +5,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive2;
-import org.magnos.steer.constraint.ConstraintTurning;
+import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
 
@@ -30,7 +29,7 @@ public class ConstraintTurningExample extends SteerBasicExample
 		GameScreen.showWindow( screen, "ContraintTurningExample" );
 	}
 
-	private SteerDrive2 drive;
+	private SteerDrive<Vec2> drive;
 
 	public ConstraintTurningExample( int w, int h )
 	{
@@ -41,7 +40,7 @@ public class ConstraintTurningExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		SteerSprite sprite = newSprite( Color.blue, 15, 300, 1000,  
-			drive = new SteerDrive2( 600, 600, 1000, 100, true )
+            drive = new SteerDrive<Vec2>( 600, 600, 100, true, new Vec2(0, 1000), new Vec2(0, -1000) )
 		);
 		
 		sprite.controller.constraint = new ConstraintTurning<Vec2>( 4.0f );
@@ -54,8 +53,8 @@ public class ConstraintTurningExample extends SteerBasicExample
 		
 		drive.thrusting = input.keyDown[ KeyEvent.VK_UP ];
 		drive.braking = input.keyDown[ KeyEvent.VK_DOWN ];
-		drive.turnRight = input.keyDown[ KeyEvent.VK_RIGHT ];
-		drive.turnLeft = input.keyDown[ KeyEvent.VK_LEFT ];
+		drive.turn[0] = input.keyDown[ KeyEvent.VK_RIGHT ];
+		drive.turn[1] = input.keyDown[ KeyEvent.VK_LEFT ];
 	}
 	
 }

@@ -108,7 +108,7 @@ public class MasterExample implements Game
         put( TargetAverageExample.class, "The red subject targets the average location of all white wandering subjects within the yellow circle." );
         put( TargetClosestExample.class, "The red subject follows the closest wandering white subject in view (180deg FOV)." );
         put( TargetFacingExample.class, "The blue subject wanders while the orange subject steers away from it when it's in front of it and the green subject steers away from it when the blue subject is behind it." );
-        put( TargetFutureExample.class, "The yellow subject steers to the future position of the blue subject." );
+        put( TargetFutureExample.class, "The yellow subject steers to the future position of the blue subject. If it can't intercept it, it will follow it." );
         put( TargetInLineExample.class, "The blue subject targets the line between the white and gray subjects." );
         put( TargetInterposeExample.class, "The blue subject targets 25% of the way between the white subject and the gray subject." );
         put( TargetLocalExample.class, "The yellow subject steers to the blue subject when the blue subject enters it's local space (yellow circle)." );

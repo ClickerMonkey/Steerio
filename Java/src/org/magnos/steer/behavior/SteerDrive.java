@@ -2,46 +2,45 @@ package org.magnos.steer.behavior;
 
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
-import org.magnos.steer.vec.Vec2;
+import org.magnos.steer.vec.Vec;
 
 
 /**
  * A steering behavior that applies deceleration and simple thrusting, turning, 
  * and braking forces if certain flags on the behavior are true.
  */
-public class SteerDrive2 extends AbstractSteer<Vec2>
+public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
 {
     
 	public float thrust;
-	public float turn;
 	public float brake;
 	public float deceleration;
 	public boolean shared;
-	
 	public boolean thrusting = false;
-	public boolean turnLeft = false;
-	public boolean turnRight = false;
 	public boolean braking = false;
+    public V[] turnForce;
+    public boolean[] turn;
 	
-	public SteerDrive2(float thrust, float turn, float brake, float deceleration)
+	public SteerDrive(float thrust, float brake, float deceleration, V ... turnForce)
 	{
-		this( thrust, turn, brake, deceleration, true );
+		this( thrust, brake, deceleration, true, turnForce );
 	}
 	
-	public SteerDrive2(float thrust, float turn, float brake, float deceleration, boolean shared)
+	public SteerDrive(float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
 	{
 		this.thrust = thrust;
-		this.turn = turn;
 		this.brake = brake;
 		this.deceleration = deceleration;
 		this.shared = shared;
+		this.turnForce = turnForce;
+		this.turn = new boolean[ turnForce.length ];
 	}
 	
 	@Override
-	public void getForce( float elapsed, SteerSubject<Vec2> subject, Vec2 out )
+	public void getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		Vec2 dir = subject.getDirection();
-		Vec2 vel = subject.getVelocity();
+		V dir = subject.getDirection();
+		V vel = subject.getVelocity();
 		float speed = vel.length();
 		
 		if (thrusting) 
@@ -54,16 +53,12 @@ public class SteerDrive2 extends AbstractSteer<Vec2>
 		    out.addsi(dir, -Math.min(brake, speed));
 		}
 		
-		if (turnLeft) 
+		for (int i = 0; i < turn.length; i++)
 		{
-		    out.x += dir.y * turn;
-		    out.y -= dir.x * turn;
-		}
-		
-		if (turnRight) 
-		{
-		    out.x -= dir.y * turn;
-		    out.y += dir.x * turn;
+		    if (turn[i])
+		    {
+		        out.addi( turnForce[i].rotate( dir ) );
+		    }
 		}
 		
 		if ( speed > 0.001f ) 
@@ -79,9 +74,9 @@ public class SteerDrive2 extends AbstractSteer<Vec2>
 	}
 
 	@Override
-	public Steer<Vec2> clone()
+	public Steer<V> clone()
 	{
-		return new SteerDrive2( thrust, turn, brake, deceleration, shared );
+		return new SteerDrive<V>( thrust, brake, deceleration, shared, turnForce );
 	}
 
 }

@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive2;
+import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -50,7 +50,7 @@ public class TargetAverageExample extends SteerBasicExample
 		
 		newSprite( Color.red, 15, 190, 500, new SteerSet<Vec2>(  
 			new SteerTo<Vec2>( average = new TargetAverage<Vec2>( database, null, 100, 200, false, 32, SpatialDatabase.ALL_GROUPS, Vec2.FACTORY ) ),
-			new SteerDrive2( 0, 0, 0, 100 )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 
 		for (int i = 0; i < 16; i++)

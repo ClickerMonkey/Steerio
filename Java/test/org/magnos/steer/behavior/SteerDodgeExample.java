@@ -42,7 +42,7 @@ public class SteerDodgeExample extends SteerBasicExample
 		
 		newSprite( Color.red, 15, 400, 2000, new SteerSet<Vec2>( 
 			new SteerDodge<Vec2>( database, 200.0f ),
-			new SteerDrive2( 0, 0, 0, 2000 )
+			new SteerDrive<Vec2>( 0, 0, 2000 )
 		));
 		
 		for (int i = 0; i < 16; i++) 

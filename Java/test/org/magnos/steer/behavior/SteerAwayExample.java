@@ -44,7 +44,7 @@ public class SteerAwayExample extends SteerBasicExample
 		
 		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
 			new SteerAway<Vec2>( local = new TargetLocal<Vec2>( sprite, 300 ) ),
-			new SteerDrive2( 0, 0, 0, 100, true )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 	}
 	

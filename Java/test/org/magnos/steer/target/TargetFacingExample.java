@@ -6,7 +6,7 @@ import java.awt.Color;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerAway;
 import org.magnos.steer.behavior.SteerBasicExample;
-import org.magnos.steer.behavior.SteerDrive2;
+import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
@@ -44,12 +44,12 @@ public class TargetFacingExample extends SteerBasicExample
 
 		newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
 			new SteerAway<Vec2>( new TargetFacing<Vec2>( sprite, true ) ),
-			new SteerDrive2( 0, 0, 0, 100 )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 
 		newSprite( Color.green, 15, 300, 1000, new SteerSet<Vec2>(
 			new SteerAway<Vec2>( new TargetFacing<Vec2>( sprite, false ) ),
-			new SteerDrive2( 0, 0, 0, 100 )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 	}
 

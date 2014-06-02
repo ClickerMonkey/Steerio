@@ -5,9 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerAway;
-import org.magnos.steer.behavior.SteerDrive2;
-import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.target.TargetFuture;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
@@ -53,7 +50,7 @@ public class SteerEvadeExample extends SteerBasicExample
 		
 		scared = newSprite( Color.orange, 15, 300, 1000, new SteerSet<Vec2>(
 			new SteerAway<Vec2>( local ),
-			new SteerDrive2( 0, 0, 0, 100, true )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 	}
 	

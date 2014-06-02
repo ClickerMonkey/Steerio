@@ -5,9 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.behavior.SteerDrive2;
-import org.magnos.steer.behavior.SteerTo;
-import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.target.TargetFuture;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
@@ -48,7 +45,7 @@ public class SteerPursuitExample extends SteerBasicExample
 
 		predator = newSprite( Color.orange, 15, 200, 1000, new SteerSet<Vec2>(
 			new SteerTo<Vec2>( future = new TargetFuture<Vec2>( sprite ) ),
-			new SteerDrive2( 0, 0, 0, 100, true )
+			new SteerDrive<Vec2>( 0, 0, 100 )
 		));
 	}
 
