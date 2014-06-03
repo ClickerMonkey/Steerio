@@ -176,4 +176,17 @@ public class EntityList<E extends Entity> implements Entity
 		return entities[i];
 	}
 	
+	public boolean contains( E entity )
+	{
+	    for (int i = 0; i < size; i++)
+	    {
+	        if (entities[i] == entity)
+	        {
+	            return true;
+	        }
+	    }
+	    
+	    return false;
+	}
+	
 }

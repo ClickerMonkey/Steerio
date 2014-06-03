@@ -52,5 +52,5 @@ public class Plane<V extends Vec<V>> implements Obstacle<V>
     {
         return Float.POSITIVE_INFINITY;
     }
-
+    
 }

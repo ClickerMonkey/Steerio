@@ -51,6 +51,7 @@ public abstract class SteerBasicExample implements Game
 	public int height;
 	public boolean drawForces = true;
 	public boolean drawCircles = true;
+	public boolean wrapEntities = true;
 
 	public SteerBasicExample( int w, int h )
 	{
@@ -97,10 +98,13 @@ public abstract class SteerBasicExample implements Game
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		for (int i = 0; i < sprites.size(); i++)
-		{
-			wrapVec2tor( gr, sprites.get( i ).getPosition() );
-		}
+	    if (wrapEntities)
+	    {
+	        for (int i = 0; i < sprites.size(); i++)
+	        {
+	            wrapVector( gr, sprites.get( i ).getPosition() );
+	        }
+	    }
 
 		sprites.draw( state, gr, scene );
 
@@ -114,7 +118,7 @@ public abstract class SteerBasicExample implements Game
 				Vec2 force = new Vec2();
 				f.getForce( state.seconds, s, force );
 
-				drawForce( gr, Color.white, s.position, force, true );
+				drawForce( gr, Color.white, s.position, force, wrapEntities );
 			}
 		}
 	}
@@ -167,13 +171,21 @@ public abstract class SteerBasicExample implements Game
 		drawShape( gr, line, wrap, getEdgesFromLine( gr, line.x1, line.y1, line.x2, line.y2 ) );
 	}
 
-	public static void drawCircle( Graphics2D gr, Color color, Vec2 offset, float radius, boolean wrap )
-	{
-		ellipse.setFrame( offset.x - radius, offset.y - radius, radius * 2, radius * 2 );
+    public static void drawCircle( Graphics2D gr, Color color, Vec2 offset, float radius, boolean wrap )
+    {
+        ellipse.setFrame( offset.x - radius, offset.y - radius, radius * 2, radius * 2 );
 
-		gr.setColor( color );
-		drawShape( gr, ellipse, wrap, getEdges( gr, offset, radius, radius ) );
-	}
+        gr.setColor( color );
+        drawShape( gr, ellipse, wrap, getEdges( gr, offset, radius, radius ) );
+    }
+
+    public static void fillCircle( Graphics2D gr, Color color, Vec2 offset, float radius, boolean wrap )
+    {
+        ellipse.setFrame( offset.x - radius, offset.y - radius, radius * 2, radius * 2 );
+
+        gr.setColor( color );
+        fillShape( gr, ellipse, wrap, getEdges( gr, offset, radius, radius ) );
+    }
 
 	public static void drawPath( Graphics2D gr, Color color, Vec2[] path, boolean loop, boolean wrap )
 	{
@@ -261,44 +273,81 @@ public abstract class SteerBasicExample implements Game
 		return edges;
 	}
 
-	public static void drawShape( Graphics2D gr, Shape shape, boolean wrap, int edges )
-	{
-		gr.draw( shape );
+    public static void drawShape( Graphics2D gr, Shape shape, boolean wrap, int edges )
+    {
+        gr.draw( shape );
 
-		if (!wrap)
-		{
-			return;
-		}
+        if (!wrap)
+        {
+            return;
+        }
 
-		final Rectangle bounds = gr.getDeviceConfiguration().getBounds();
+        final Rectangle bounds = gr.getDeviceConfiguration().getBounds();
 
-		final int[] masks = {
-			EDGE_L, EDGE_R, EDGE_T, EDGE_B,
-			EDGE_L | EDGE_T, EDGE_L | EDGE_B,
-			EDGE_R | EDGE_T, EDGE_R | EDGE_B
-		};
+        final int[] masks = {
+            EDGE_L, EDGE_R, EDGE_T, EDGE_B,
+            EDGE_L | EDGE_T, EDGE_L | EDGE_B,
+            EDGE_R | EDGE_T, EDGE_R | EDGE_B
+        };
 
-		final int w = bounds.width;
-		final int h = bounds.height;
+        final int w = bounds.width;
+        final int h = bounds.height;
 
-		final int[][] translate = {
-			{ w, 0 }, { -w, 0 }, { 0, h }, { 0, -h },
-			{ w, h }, { w, -h }, { -w, h }, { -w, -h }
-		};
+        final int[][] translate = {
+            { w, 0 }, { -w, 0 }, { 0, h }, { 0, -h },
+            { w, h }, { w, -h }, { -w, h }, { -w, -h }
+        };
 
-		for (int i = 0; i < masks.length; i++)
-		{
-			if ((masks[i] & edges) == masks[i])
-			{
-				AffineTransform t = gr.getTransform();
-				gr.translate( translate[i][0], translate[i][1] );
-				gr.draw( shape );
-				gr.setTransform( t );
-			}
-		}
-	}
+        for (int i = 0; i < masks.length; i++)
+        {
+            if ((masks[i] & edges) == masks[i])
+            {
+                AffineTransform t = gr.getTransform();
+                gr.translate( translate[i][0], translate[i][1] );
+                gr.draw( shape );
+                gr.setTransform( t );
+            }
+        }
+    }
 
-	public static void wrapVec2tor( Graphics2D gr, Vec2 v )
+    public static void fillShape( Graphics2D gr, Shape shape, boolean wrap, int edges )
+    {
+        gr.fill( shape );
+
+        if (!wrap)
+        {
+            return;
+        }
+
+        final Rectangle bounds = gr.getDeviceConfiguration().getBounds();
+
+        final int[] masks = {
+            EDGE_L, EDGE_R, EDGE_T, EDGE_B,
+            EDGE_L | EDGE_T, EDGE_L | EDGE_B,
+            EDGE_R | EDGE_T, EDGE_R | EDGE_B
+        };
+
+        final int w = bounds.width;
+        final int h = bounds.height;
+
+        final int[][] translate = {
+            { w, 0 }, { -w, 0 }, { 0, h }, { 0, -h },
+            { w, h }, { w, -h }, { -w, h }, { -w, -h }
+        };
+
+        for (int i = 0; i < masks.length; i++)
+        {
+            if ((masks[i] & edges) == masks[i])
+            {
+                AffineTransform t = gr.getTransform();
+                gr.translate( translate[i][0], translate[i][1] );
+                gr.fill( shape );
+                gr.setTransform( t );
+            }
+        }
+    }
+
+	public static void wrapVector( Graphics2D gr, Vec2 v )
 	{
 		final Rectangle bounds = gr.getDeviceConfiguration().getBounds();
 

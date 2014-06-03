@@ -1,6 +1,10 @@
 - Target doesn't return Vec, it's passed as an out parameter and Target returns boolean
+- Refactor Target to optionally have Direction, Velocity, and Acceleration
 - Combine SpatialEntityObstacle and Obstacle
 - SpatialSweepAndPrune 3d or generic
+- Asteroids Example
+- RTS Example
+- Remote sqrt from SteerMath (and all math aliased methods)
 - Unit Testing
     interceptTime
-    getDistanceFromLine
+    getDistanceFromLinek

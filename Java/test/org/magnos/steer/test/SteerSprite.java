@@ -18,6 +18,7 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
 {
 
 	public Color color;
+	public boolean drawWrapped = true;
 
 	public SteerSprite( Color color, float radius, float max )
 	{
@@ -45,8 +46,8 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
 	@Override
 	public void draw( GameState state, Graphics2D gr, Scene scene )
 	{
-		SteerBasicExample.drawVector( gr, color, position, direction, radius * 1.2f, true );
-		SteerBasicExample.drawCircle( gr, color, position, radius, true );
+		SteerBasicExample.drawVector( gr, color, position, direction, radius * 1.2f, drawWrapped );
+		SteerBasicExample.drawCircle( gr, color, position, radius, drawWrapped );
 	}
 
 	@Override
@@ -66,5 +67,16 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
 	{
 
 	}
+	
+	public void reset()
+	{
+	    inert = false;
+	}
+
+    @Override
+    public String toString()
+    {
+        return "SteerSprite [color=" + color + ", drawWrapped=" + drawWrapped + ", position=" + position + ", direction=" + direction + ", velocity=" + velocity + ", velocityMax=" + velocityMax + ", acceleration=" + acceleration + ", accelerationMax=" + accelerationMax + ", radius=" + radius + ", groups=" + groups + ", collisionGroups=" + collisionGroups + ", dynamic=" + dynamic + ", inert=" + inert + ", controller=" + controller + "]";
+    }
 
 }

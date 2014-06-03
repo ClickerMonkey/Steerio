@@ -31,6 +31,7 @@ import org.magnos.steer.behavior.SteerAvoidObstaclesExample;
 import org.magnos.steer.behavior.SteerAvoidWallExample;
 import org.magnos.steer.behavior.SteerAwayExample;
 import org.magnos.steer.behavior.SteerBasicExample;
+import org.magnos.steer.behavior.SteerContainmentExample;
 import org.magnos.steer.behavior.SteerControllerImmediateExample;
 import org.magnos.steer.behavior.SteerDodgeExample;
 import org.magnos.steer.behavior.SteerDriveExample;
@@ -82,12 +83,15 @@ public class MasterExample implements Game
 
     @SuppressWarnings ({ "serial" })
     private static Map<Class<? extends Game>, String> EXAMPLES = new LinkedHashMap<Class<? extends Game>, String>() {{
+        /* full examples */
+        put( CaptureTheFlag.class, "A classic game of capture the flag. If you're tagged on you opponent's side you are sent to prison. If you are tagged and you have the enemies flag, their flag is returned back to their base. If you go to the prison you free all the prisoners and they are randomly placed on their side." );
         /* behavior */
         put( SteerArriveExample.class, "The blue subject moves towards the mouse, and when the mouse is inside it's white caution circle, it slows down until it stops at the point." );
         put( SteerArriveOffsetExample.class, "A chain of subjects that need to arrive a fixed amount behind another subject (or the mouse for the first entity)." );
         put( SteerAvoidObstaclesExample.class, "A set of subjects are moving in a constant direction and they are trying to avoid collisions with each other." );
         put( SteerAvoidWallExample.class, "The blue entity is stuck in a room made up of 4 walls." );
         put( SteerAwayExample.class, "The yellow subject moves away from the blue subject when it enters the red circle." );
+        put( SteerContainmentExample.class, "The blue subject tries to stay within the red boundaries, which can be changed: 1=circle, 2=rectangle, 3=capsule." );
         put( SteerControllerImmediateExample.class, "In immediate mode the steering forces are applied directly to the subject's position instead of velocity." );
         put( SteerDodgeExample.class, "The red subject will actively avoid being hit by a green subject if a collision may occur." );
         put( SteerDriveExample.class, "Driving forces are applied when any of the arrow keys are pressed." );
