@@ -3,6 +3,7 @@ package org.magnos.steer;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import org.magnos.steer.behavior.SteerAvoidObstacles;
@@ -34,6 +35,7 @@ import com.gameprogblog.engine.GameState;
 import com.gameprogblog.engine.Scene;
 import com.gameprogblog.engine.core.Bound2;
 import com.gameprogblog.engine.core.EntityList;
+import com.gameprogblog.engine.input.GameInput;
 
 /**
  * Defense:
@@ -94,7 +96,9 @@ public class CaptureTheFlag extends SteerBasicExample
     public static final float PRISON_RADIUS = 4;
     public static final float PLAYER_RADIUS = 8;
     
+    public static final float PLAYER_ACC_MIN = 800;
     public static final float PLAYER_ACC_MAX = 1000;
+    public static final float PLAYER_VEL_MIN = 150;
     public static final float PLAYER_VEL_MAX = 200;
     
     public static final float QUERY_SIZE = 1000;
@@ -140,7 +144,6 @@ public class CaptureTheFlag extends SteerBasicExample
         SteerModifier<Vec2> towardsBase;
         SteerModifier<Vec2> attack;
         SteerModifier<Vec2> towardsOpponentsFlag;
-        SteerSet<Vec2> steerings;
         boolean hasEnemyFlag;
         boolean prisoner;
     }
@@ -181,7 +184,7 @@ public class CaptureTheFlag extends SteerBasicExample
         team1.flagCapturer = GROUP_TEAM1_CAPTURER;
         team1.flagNonCapturer = GROUP_TEAM1_NONCAPTURER;
         team1.flagPlayer = team1.flagCapturer | team1.flagNonCapturer;
-        team1.color = Color.red;
+        team1.color = new Color( 255, 69, 0 );
         
         team2 = new Team();
         team2.base = new Vec2( WIDTH - 50, HEIGHT / 2 );
@@ -243,6 +246,7 @@ public class CaptureTheFlag extends SteerBasicExample
         Target<Vec2> targetOpponentCapturer = new TargetClosest<Vec2>( database, filter, QUERY_SIZE, their.flagCapturer, QUERY_MAX );
 	    Target<Vec2> targetWeakest          = new TargetWeakest<Vec2>( database, filter, 80, 120, true, QUERY_MAX, their.flagPlayer, Vec2.FACTORY );
 	    Target<Vec2> targetWeakestDefense   = new TargetWeakest<Vec2>( database, null, 0, 120, true, QUERY_MAX, their.flagPlayer, Vec2.FACTORY );
+	    Target<Vec2> targetOpponentDefense  = new TargetClosest<Vec2>( database, null, QUERY_SIZE, their.flagCapturer, QUERY_MAX );
 	    
 	    Steer<Vec2> steerCapturerGuard      = new SteerSeparation<Vec2>( database, 100, my.flagCapturer, QUERY_MAX, null, Vec2.FACTORY);
 	    Steer<Vec2> steerCapturer           = new SteerTo<Vec2>( targetCapturer );
@@ -273,19 +277,21 @@ public class CaptureTheFlag extends SteerBasicExample
 	        off.attack                 = new SteerModifier<Vec2>( attack, 1.0f );
 	        off.towardsOpponentsFlag   = new SteerModifier<Vec2>( towardsOpponentsFlag, 1.0f );
 	        
-	        off.steerings = new SteerSet<Vec2>( PLAYER_ACC_MAX - 1, 
-	            stayInside,
-	            separation,   
-	            off.attackCapturer,
-	            off.guardFlagHolder,
-	            off.stayAwayFromOpponent,
-	            off.freePrisoners,
-	            off.towardsBase,
-	            off.attack,
-	            off.towardsOpponentsFlag
+	        off.sprite = new SteerSprite( my.color, PLAYER_RADIUS, 
+	            SteerMath.randomFloat( PLAYER_VEL_MIN, PLAYER_VEL_MAX ), 
+	            SteerMath.randomFloat( PLAYER_ACC_MIN, PLAYER_ACC_MAX ), 
+	            new SteerSet<Vec2>( PLAYER_ACC_MAX - 1, 
+	                stayInside,
+	                separation,   
+	                off.attackCapturer,
+	                off.guardFlagHolder,
+	                off.stayAwayFromOpponent,
+	                off.freePrisoners,
+	                off.towardsBase,
+	                off.attack,
+	                off.towardsOpponentsFlag
+	            )
 	        );
-	        
-	        off.sprite = new SteerSprite( my.color, PLAYER_RADIUS, PLAYER_VEL_MAX, PLAYER_ACC_MAX, off.steerings );
 	        off.sprite.groups = my.flagNonCapturer;
 	        off.sprite.collisionGroups = their.flagPlayer;
 	        off.sprite.drawWrapped = false;
@@ -310,7 +316,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	        def.sprite = new SteerSprite( my.color, PLAYER_RADIUS, PLAYER_VEL_MAX / 2, PLAYER_ACC_MAX / 3, 
 	            new SteerSet<Vec2>( PLAYER_ACC_MAX / 3 - 1,
 	                new SteerContainment<Vec2>( my.side, 30 ),
-	                new SteerTo<Vec2>( targetOpponentCapturer ),
+	                new SteerTo<Vec2>( targetOpponentDefense ),
 	                new SteerSeparation<Vec2>( database, 100, my.flagCapturer, QUERY_MAX, null, Vec2.FACTORY ),
 	                new SteerTo<Vec2>( new TargetLocal<Vec2>( my.base, DEFENSE_CIRCLE_RADIUS_MIN, Float.MAX_VALUE ) ),
 	                new SteerTo<Vec2>( targetWeakestDefense ),
@@ -463,6 +469,17 @@ public class CaptureTheFlag extends SteerBasicExample
 	    {
 	        sprites.add( prisoner.sprite );    
 	        randomlyPlace( prisoner.sprite, myTeam );
+	    }
+	}
+	
+	@Override
+	public void input( GameInput input ) 
+	{
+	    super.input( input );
+	    
+	    if (input.keyDown[KeyEvent.VK_R])
+	    {
+	        resetGame();    
 	    }
 	}
 	
