@@ -30,8 +30,9 @@ public class SearchCallbackArray<V extends Vec<V>> implements SearchCallback<V>
 
 		this.entity[index] = entity;
 		this.overlap[index] = overlap;
+		this.count = index + 1;
 		
 		return true;
 	}
-
+	
 }
