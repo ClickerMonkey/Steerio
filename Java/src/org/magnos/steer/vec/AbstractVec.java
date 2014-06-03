@@ -187,6 +187,18 @@ public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
     }
 
     @Override
+    public V clampi( V min, V max )
+    {
+        return clamp( min, max, (V)this );
+    }
+
+    @Override
+    public V clamp( V min, V max )
+    {
+        return clamp( min, max, create() );
+    }
+
+    @Override
     public boolean isUnit()
     {
         return lengthSq() == 1.0f;

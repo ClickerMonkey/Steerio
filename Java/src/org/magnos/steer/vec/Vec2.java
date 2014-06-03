@@ -1,6 +1,8 @@
 
 package org.magnos.steer.vec;
 
+import org.magnos.steer.SteerMath;
+
 /**
  * A 2d {@link Vec} implementation.
  * 
@@ -52,7 +54,7 @@ public class Vec2 extends AbstractVec<Vec2>
     /**
      * Returns a unit vector along the x-axis in the negative direction.
      */
-    public static final Vec2 LEFT = new Vec2( 1, 0 );
+    public static final Vec2 LEFT = new Vec2(-1, 0 );
 
     /*
      * Returns a unit vector along the y-axis in the positive direction.
@@ -290,6 +292,15 @@ public class Vec2 extends AbstractVec<Vec2>
         out.x = (end.x - start.x) * delta + start.x;
         out.y = (end.y - start.y) * delta + start.y;
 
+        return out;
+    }
+    
+    @Override
+    public Vec2 clamp( Vec2 min, Vec2 max, Vec2 out )
+    {
+        out.x = SteerMath.clamp( x, min.x, max.x );
+        out.y = SteerMath.clamp( y, min.y, max.y );
+        
         return out;
     }
 

@@ -328,6 +328,26 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public V interpolate( V start, V end, float delta );
 
     /**
+     * <p><code>this = clamp(this, min, max)</code></p>
+     * Sets this to the Vector that lies between min and max that is the closest 
+     * to this Vector, and returns this.
+     */
+    public V clampi( V min, V max );
+
+    /**
+     * <p><code>out = clamp(this, min, max)</code></p>
+     * Sets out to the Vector that lies between min and max that is the closest 
+     * to this Vector, and returns out.
+     */
+    public V clamp( V min, V max, V out );
+
+    /**
+     * <p><code>new (clamp(this, min, max))</code></p>
+     * Returns a new Vector that lies between min and max that is closest to this Vector.
+     */
+    public V clamp( V min, V max );
+
+    /**
      * Sets the length of this Vector and returns the previous length. If this
      * Vector has no length, nothing changes.
      */

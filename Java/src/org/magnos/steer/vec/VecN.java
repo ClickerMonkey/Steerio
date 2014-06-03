@@ -3,6 +3,8 @@ package org.magnos.steer.vec;
 
 import java.util.Arrays;
 
+import org.magnos.steer.SteerMath;
+
 /**
  * An n-dimensional {@link Vec} implementation.
  * 
@@ -245,6 +247,17 @@ public class VecN extends AbstractVec<VecN>
         {
             out.x[i] = (end.x[i] - start.x[i]) * delta + start.x[i];
         }
+        return out;
+    }
+    
+    @Override
+    public VecN clamp( VecN min, VecN max, VecN out )
+    {
+        for (int i = x.length - 1; i >= 0; i--)
+        {
+            out.x[i] = SteerMath.clamp( x[i], min.x[i], max.x[i] );
+        }
+        
         return out;
     }
 

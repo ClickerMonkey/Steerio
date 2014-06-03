@@ -1,6 +1,8 @@
 
 package org.magnos.steer.vec;
 
+import org.magnos.steer.SteerMath;
+
 /**
  * A 3d {@link Vec} implementation.
  * 
@@ -307,6 +309,16 @@ public class Vec3 extends AbstractVec<Vec3>
       out.z = (end.z - start.z) * delta + start.z;
       
       return out;
+   }
+   
+   @Override
+   public Vec3 clamp( Vec3 min, Vec3 max, Vec3 out )
+   {
+       out.x = SteerMath.clamp( x, min.x, max.x );
+       out.y = SteerMath.clamp( y, min.y, max.y );
+       out.z = SteerMath.clamp( z, min.z, max.z );
+       
+       return out;
    }
 
    @Override
