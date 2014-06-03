@@ -193,7 +193,7 @@ public class CaptureTheFlag extends SteerBasicExample
         team2.flagCapturer = GROUP_TEAM2_CAPTURER;
         team2.flagNonCapturer = GROUP_TEAM2_NONCAPTURER;
         team2.flagPlayer = team2.flagCapturer | team2.flagNonCapturer;
-        team2.color = Color.blue;
+        team2.color = new Color( 69, 69, 255 );
 
         resetGame();
 	}
