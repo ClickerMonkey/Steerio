@@ -25,7 +25,6 @@ public class ConstraintZeroVelocityThreshold<V extends Vec<V>> implements Constr
         if ( acc.dot( vel ) < 0 && vel.lengthSq() < threshold * threshold )
         {
             vel.clear();
-            acc.clear();
         }
     }
 
