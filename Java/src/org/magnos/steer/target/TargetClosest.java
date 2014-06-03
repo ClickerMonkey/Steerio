@@ -52,7 +52,7 @@ public class TargetClosest<V extends Vec<V>> implements Target<V>
 		{
 			SpatialEntity<V> c = closest[i];
 			
-			if (filter.isValid( subject, c ))
+			if (c != null && (filter == null || filter.isValid( subject, c )))
 			{
 			    chosen = c;
 			    
