@@ -9,16 +9,31 @@ import org.magnos.steer.vec.Vec;
 public class Bounds<V extends Vec<V>> implements Obstacle<V>
 {
 
+    public static <V extends Vec<V>> Bounds<V> fromMinMax( V min, V max )
+    {
+        V center = min.interpolate( min, max, 0.5f );
+        
+        return new Bounds<V>( min, max, center, center.distance( min ) );
+    }
+
+    public static <V extends Vec<V>> Bounds<V> fromCenter( V center, V size )
+    {
+        V min = center.adds( size, -0.5f );
+        V max = center.adds( size, +0.5f );
+        
+        return new Bounds<V>( min, max, center, center.distance( min ) );
+    }
+    
     public V min;
     public V max;
-    private V center;
-    private float radius;
-
+    public V center;
+    public float radius;
+    
     public Bounds()
     {
     }
 
-    public Bounds( V min, V max )
+    private Bounds( V min, V max, V center, float radius )
     {
         this.min = min;
         this.max = max;
