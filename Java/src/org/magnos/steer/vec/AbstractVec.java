@@ -187,6 +187,18 @@ public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
     }
 
     @Override
+    public V interpolateToi( V end, float delta )
+    {
+        return interpolateTo( end, delta, (V)this );
+    }
+
+    @Override
+    public V interpolateTo( V end, float delta )
+    {
+        return interpolateTo( end, delta, create() );
+    }
+
+    @Override
     public V clampi( V min, V max )
     {
         return clamp( min, max, (V)this );

@@ -249,6 +249,16 @@ public class VecN extends AbstractVec<VecN>
         }
         return out;
     }
+
+    @Override
+    public VecN interpolateTo( VecN end, float delta, VecN out )
+    {
+        for (int i = x.length - 1; i >= 0; i--)
+        {
+            out.x[i] = (end.x[i] - x[i]) * delta + x[i];
+        }
+        return out;
+    }
     
     @Override
     public VecN clamp( VecN min, VecN max, VecN out )
@@ -257,7 +267,6 @@ public class VecN extends AbstractVec<VecN>
         {
             out.x[i] = SteerMath.clamp( x[i], min.x[i], max.x[i] );
         }
-        
         return out;
     }
 

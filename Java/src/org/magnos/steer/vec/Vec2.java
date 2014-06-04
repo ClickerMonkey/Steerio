@@ -294,6 +294,15 @@ public class Vec2 extends AbstractVec<Vec2>
 
         return out;
     }
+
+    @Override
+    public Vec2 interpolateTo( Vec2 end, float delta, Vec2 out )
+    {
+        out.x = (end.x - x) * delta + x;
+        out.y = (end.y - y) * delta + y;
+
+        return out;
+    }
     
     @Override
     public Vec2 clamp( Vec2 min, Vec2 max, Vec2 out )

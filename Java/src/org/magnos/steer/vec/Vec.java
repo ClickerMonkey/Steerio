@@ -328,6 +328,29 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public V interpolate( V start, V end, float delta );
 
     /**
+     * <p><code>this = (end - start) * delta + start</code></p>
+     * Sets this to the V between start and end based on delta where delta
+     * is 0.0 for the start, 0.5 for the middle, and 1.0 for the end, and returns
+     * this.
+     */
+    public V interpolateToi( V end, float delta );
+
+    /**
+     * <p><code>out = (end - start) * delta + start</code></p>
+     * Sets out to the V between start and end based on delta where delta is
+     * 0.0 for the start, 0.5 for the middle, and 1.0 for the end, and returns
+     * out.
+     */
+    public V interpolateTo( V end, float delta, V out );
+
+    /**
+     * <p><code>new ((end - start) * delta + start)</code></p>
+     * Returns a new Vector between start and end based on delta where delta is
+     * 0.0 for the start, 0.5 for the middle, and 1.0 for the end.
+     */
+    public V interpolateTo( V end, float delta );
+
+    /**
      * <p><code>this = clamp(this, min, max)</code></p>
      * Sets this to the Vector that lies between min and max that is the closest 
      * to this Vector, and returns this.
