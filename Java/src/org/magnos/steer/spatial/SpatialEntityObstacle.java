@@ -16,6 +16,7 @@ public class SpatialEntityObstacle<V extends Vec<V>> implements SpatialEntity<V>
     public boolean fixed;
     public long groups;
     public long collisionGroups;
+    public Object attachment;
 
     public SpatialEntityObstacle()
     {
@@ -82,6 +83,24 @@ public class SpatialEntityObstacle<V extends Vec<V>> implements SpatialEntity<V>
     public boolean isInert()
     {
         return inert;
+    }
+
+    @Override
+    public void attach( Object attachment )
+    {
+        this.attachment = attachment;
+    }
+
+    @Override
+    public <T> T attachment()
+    {
+        return (T)attachment;
+    }
+
+    @Override
+    public <T> T attachment( Class<T> type )
+    {
+        return attachment != null && type.isAssignableFrom( attachment.getClass() ) ? (T)attachment : null;
     }
 
 }

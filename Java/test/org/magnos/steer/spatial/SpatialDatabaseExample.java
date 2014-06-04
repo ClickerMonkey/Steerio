@@ -803,6 +803,24 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
         {
             return 0;
         }
+
+        @Override
+        public void attach( Object attachment )
+        {
+            
+        }
+
+        @Override
+        public <T> T attachment()
+        {
+            return null;
+        }
+
+        @Override
+        public <T> T attachment( Class<T> type )
+        {
+            return null;
+        }
 		
 	}
 

@@ -68,7 +68,7 @@ public class SteerContainmentExample extends SteerBasicExample
 	public void start( Scene scene )
 	{
 		sphere = new Sphere<Vec2>( new Vec2( DEFAULT_WIDTH / 2, DEFAULT_HEIGHT / 2), DEFAULT_HEIGHT / 2 - 50 );
-		bounds = new Bounds<Vec2>( new Vec2( 100, 100 ), new Vec2( DEFAULT_WIDTH - 100, DEFAULT_HEIGHT - 100 ) );
+		bounds = Bounds.fromMinMax( new Vec2( 100, 100 ), new Vec2( DEFAULT_WIDTH - 100, DEFAULT_HEIGHT - 100 ) );
 		capsule = new Segment<Vec2>( new Vec2( 100, 100 ), new Vec2( DEFAULT_WIDTH - 100, DEFAULT_HEIGHT - 100 ), 80 );
 		
 		newSprite( Color.blue, 15, 300, 4000, new SteerSet<Vec2>( 4000,

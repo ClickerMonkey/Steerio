@@ -202,6 +202,24 @@ public class SpatialDatabasePerformance
         {
             return out.set( position );
         }
+
+        @Override
+        public void attach( Object attachment )
+        {
+            
+        }
+
+        @Override
+        public <T> T attachment()
+        {
+            return null;
+        }
+
+        @Override
+        public <T> T attachment( Class<T> type )
+        {
+            return null;
+        }
 	}
 	
 	public class EmptyCollisionCallback implements CollisionCallback<Vec2>

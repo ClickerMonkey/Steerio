@@ -19,6 +19,7 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     public long collisionGroups = SpatialDatabase.ALL_GROUPS;
     public boolean dynamic = true;
     public boolean inert = false;
+    public Object attachment;
     public SteerController<V> controller;
 
     public BaseSteerSubject( V template, float radius, float max )
@@ -157,6 +158,24 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     public float getAccelerationMax()
     {
         return accelerationMax;
+    }
+
+    @Override
+    public void attach( Object attachment )
+    {
+        this.attachment = attachment;
+    }
+
+    @Override
+    public <T> T attachment()
+    {
+        return (T)attachment;
+    }
+
+    @Override
+    public <T> T attachment( Class<T> type )
+    {
+        return attachment != null && type.isAssignableFrom( attachment.getClass() ) ? (T)attachment : null;
     }
 
 }
