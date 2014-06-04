@@ -31,8 +31,8 @@ public class GameInput implements KeyListener, MouseInputListener
 	public Queue<GameKeyEvent> keyEvents = new ConcurrentLinkedQueue<GameKeyEvent>();
 
 	public int mouseX, mouseY, mouseDownCount, mouseUpCount;
-	public boolean[] mouseDown = new boolean[MouseInfo.getNumberOfButtons()];
-	public boolean[] mouseUp = new boolean[MouseInfo.getNumberOfButtons()];
+	public boolean[] mouseDown = new boolean[MouseInfo.getNumberOfButtons() * 2];
+	public boolean[] mouseUp = new boolean[MouseInfo.getNumberOfButtons() * 2];
 	public boolean mouseInside = true;
 	public boolean mouseDragging = false;
 	public boolean mouseMoving = false;
