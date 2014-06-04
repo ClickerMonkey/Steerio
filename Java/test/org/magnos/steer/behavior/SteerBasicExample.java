@@ -122,6 +122,14 @@ public abstract class SteerBasicExample implements Game
 			}
 		}
 	}
+	
+	public static void drawText( Graphics2D gr, Object text, Color color, Vec2 position, float anchorX, float anchorY )
+	{
+	    Rectangle2D rect = gr.getFontMetrics().getStringBounds( String.valueOf( text ), gr );
+	    
+	    gr.setColor( color );
+	    gr.drawString( String.valueOf( text ), (float)(position.x - anchorX * rect.getWidth()), (float)(position.y + (1 - anchorY) * rect.getHeight()) );
+	}
 
 	public static void drawLine( Graphics2D gr, Color color, Vec2 s, Vec2 e, boolean wrap )
 	{
