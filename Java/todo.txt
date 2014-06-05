@@ -7,4 +7,27 @@
 - Remote sqrt from SteerMath (and all math aliased methods)
 - Unit Testing
     interceptTime
-    getDistanceFromLinek
+    
+- Refactor and remove maximize vector functionality across the board
+    - Steer should have max force and min force
+    - Steer.getForce(elapsed, subject, out) should return float, which is decided force or 1 if out force is not a unit vector
+
+- Refactor targeting & spatial system
+    - SpatialEntity:
+         getPosition():V                       required
+         getSpatialGroups():long               0
+         getSpatialCollisionGroups():long      0
+         isStatic():boolean                    false
+         isInert():boolean                     false
+         attach(Object):void                   
+         attachment():T                        null
+         attachment(Class<T>):T                null
+        +getDirection():V                      Vec.ZERO()
+        +getVelocity():V                       Vec.ZERO()
+        ?getMaximumVelocity():float            0 
+        +getAcceleration():V                   Vec.ZERO()
+        ?getMaximumAcceleration():float        0
+    - Shape:
+        
+         
+    

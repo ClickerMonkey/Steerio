@@ -15,6 +15,7 @@ import org.magnos.steer.behavior.SteerContainment;
 import org.magnos.steer.behavior.SteerDrive;
 import org.magnos.steer.behavior.SteerSeparation;
 import org.magnos.steer.behavior.SteerTo;
+import org.magnos.steer.constraint.ConstraintTurning;
 import org.magnos.steer.filter.FilterView;
 import org.magnos.steer.obstacle.Bounds;
 import org.magnos.steer.obstacle.Plane;
@@ -384,6 +385,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	        );
 	        off.sprite.groups = my.flagNonCapturer;
 	        off.sprite.collisionGroups = their.flagPlayer;
+	        off.sprite.controller.constraint = new ConstraintTurning<Vec2>( 20.0f );
 	        off.sprite.drawWrapped = false;
 	        off.sprite.attach( off );
 	        randomlyPlace( off.sprite, my );
@@ -642,6 +644,8 @@ public class CaptureTheFlag extends SteerBasicExample
             
             updateOffense( team1, team2 );
             updateOffense( team2, team1 );   
+            
+            database.refresh();
             
             super.update( state, scene );
         }
