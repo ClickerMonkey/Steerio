@@ -14,6 +14,19 @@ import org.magnos.steer.SteerMath;
 public class VecN extends AbstractVec<VecN>
 {
 
+    public static VecN[] ZERO = {
+        new VecN( 0 ),
+        new VecN( 1 ),
+        new VecN( 2 ),
+        new VecN( 3 ),
+        new VecN( 4 ),
+        new VecN( 5 ),
+        new VecN( 6 ),
+        new VecN( 7 ),
+        new VecN( 8 )
+    };
+                                 
+    
     /**
      * The coordinates of the Vector.
      */
@@ -377,6 +390,12 @@ public class VecN extends AbstractVec<VecN>
         return new VecN( Arrays.copyOf( x, x.length ) );
     }
 
+    @Override
+    public VecN ZERO()
+    {
+        return ZERO[ x.length ];
+    }
+    
     @Override
     public boolean isZero( float epsilon )
     {

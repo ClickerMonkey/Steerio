@@ -645,6 +645,12 @@ public class Vec2 extends AbstractVec<Vec2>
     {
         return new Vec2( x, y );
     }
+    
+    @Override
+    public Vec2 ZERO()
+    {
+        return ZERO;
+    }
 
     @Override
     public boolean isZero( float epsilon )

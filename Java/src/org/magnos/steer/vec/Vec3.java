@@ -513,6 +513,12 @@ public class Vec3 extends AbstractVec<Vec3>
    }
 
    @Override
+   public Vec3 ZERO()
+   {
+       return ZERO;
+   }
+   
+   @Override
    public boolean isZero( float epsilon )
    {
       return isEqual( 0, 0, 0, epsilon );

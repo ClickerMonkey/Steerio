@@ -601,6 +601,12 @@ public interface Vec<V extends Vec<V>> extends Target<V>
     public boolean isParallel( V v, float epsilon );
 
     /**
+     * Returns a reference to a Vector which is located at the origin. Returning
+     * a constant is desired, therefore the returned vector should not be modified. 
+     */
+    public V ZERO();
+    
+    /**
      * <p><code>this == 0</code></p>
      * Determines whether this Vector's components are both exactly zero.
      */
