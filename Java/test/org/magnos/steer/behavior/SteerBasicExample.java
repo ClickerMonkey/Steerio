@@ -2,10 +2,12 @@
 package org.magnos.steer.behavior;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -125,10 +127,17 @@ public abstract class SteerBasicExample implements Game
 	
 	public static void drawText( Graphics2D gr, Object text, Color color, Vec2 position, float anchorX, float anchorY )
 	{
-	    Rectangle2D rect = gr.getFontMetrics().getStringBounds( String.valueOf( text ), gr );
+	    String textString = String.valueOf( text );
+	    
+	    FontMetrics fm = gr.getFontMetrics();
+	    LineMetrics lm = fm.getLineMetrics( textString, gr );
+	    Rectangle2D rect = fm.getStringBounds( textString, gr );
+
+	    float textX = (float)(position.x - anchorX * rect.getWidth());
+	    float textY = (float)(position.y + (1 - anchorY) * lm.getAscent());
 	    
 	    gr.setColor( color );
-	    gr.drawString( String.valueOf( text ), (float)(position.x - anchorX * rect.getWidth()), (float)(position.y + (1 - anchorY) * rect.getHeight()) );
+	    gr.drawString( textString, textX, textY );
 	}
 
 	public static void drawLine( Graphics2D gr, Color color, Vec2 s, Vec2 e, boolean wrap )

@@ -2,6 +2,7 @@
 package org.magnos.steer;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
@@ -703,7 +704,13 @@ public class CaptureTheFlag extends SteerBasicExample
         drawBounds( gr, team.color, new Bound2( flag.x, flag.y - 25, flag.x + 15, flag.y - 15 ), false );
 
         drawText( gr, team.prisonList.size(), team.color, team.prison, 0.5f, 1.5f );
+        
+        Font currentFont = gr.getFont();
+        gr.setFont( currentFont.deriveFont( 24.0f ) );
+        
         drawText( gr, team.wins, team.color, team.side.center, 0.5f, 0.5f );
+
+        gr.setFont( currentFont );
 
         for ( Defense def : team.defenseList )
         {
