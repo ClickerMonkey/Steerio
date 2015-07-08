@@ -87,4 +87,10 @@ public class Bounds<V extends Vec<V>> implements Obstacle<V>
         return center.isBetween( min, max, -radius );
     }
 
+    @Override
+    public String toString()
+    {
+        return "Bounds [min=" + min + ", max=" + max + ", center=" + center + ", radius=" + radius + "]";
+    }
+    
 }

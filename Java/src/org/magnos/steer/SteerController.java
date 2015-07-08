@@ -49,7 +49,6 @@ public class SteerController<V extends Vec<V>>
 		V a = subject.getAcceleration();
 		V v = subject.getVelocity();
 		V p = subject.getPosition();
-		float amax = subject.getAccelerationMax();
 		float vmax = subject.getVelocityMax();
 		
 		if ( immediate )
@@ -58,28 +57,29 @@ public class SteerController<V extends Vec<V>>
 		}
 		
 		a.clear();
-		force.getForce( elapsed, subject, a );
+		float magnitude = force.getForce( elapsed, subject, a );
 		
-		if (amax != Steer.INFINITE)
+		if (!Float.isNaN( magnitude ) && !Float.isInfinite( magnitude ))
 		{
-			a.max( amax );
-		}
+		    if ( constraint != null )
+	        {
+	            constraint.constrain( elapsed, subject );
+	        }
+		    
+		    a.muli( magnitude );
+		    a.subi( v );
+		    
+	        v.addsi( a, immediate ? 1.0f : elapsed );
+	        
+	        if (vmax != Steer.INFINITE)
+	        {
+	            v.max( vmax );
+	        }
 
-		if ( constraint != null )
-		{
-			constraint.constrain( elapsed, subject );
+	        p.addsi( v, elapsed );
+	        
+	        updateDirection();
 		}
-		
-		v.addsi( a, immediate ? 1.0f : elapsed );
-		
-		if (vmax != Steer.INFINITE)
-		{
-			v.max( vmax );
-		}
-		
-		p.addsi( v, elapsed );
-		
-		updateDirection();
 	}
 	
 }

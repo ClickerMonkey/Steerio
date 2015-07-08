@@ -5,13 +5,23 @@ import org.magnos.steer.vec.Vec;
 
 
 
-public class SteerDirection<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerDirection<V extends Vec<V>> extends AbstractSteer<V, SteerDirection<V>>
 {
 
-	@Override
-	public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public SteerDirection( float minimum, float maximum )
+    {
+        super( minimum, maximum );
+    }
+
+    public SteerDirection( float magnitude )
+    {
+        super( magnitude, magnitude );
+    }
+
+    @Override
+	public float getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		forward( subject, subject.getDirection(), out, this );
+		return forward( subject, subject.getDirection(), out, this );
 	}
 
 	@Override

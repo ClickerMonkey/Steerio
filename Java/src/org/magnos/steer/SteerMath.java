@@ -17,29 +17,9 @@ public class SteerMath
     public static final float PI2 = (float)(Math.PI * 2.0);
     public static final float EPSILON = 0.00001f;
 
-    public static boolean equals( float a, float b )
-    {
-        return equals( a, b, EPSILON );
-    }
-
     public static boolean equals( float a, float b, float epsilon )
     {
         return Math.abs( a - b ) < epsilon;
-    }
-
-    public static float sqrt( float x )
-    {
-        return (float)Math.sqrt( x );
-    }
-
-    public static float cos( float x )
-    {
-        return (float)Math.cos( x );
-    }
-
-    public static float sin( float x )
-    {
-        return (float)Math.sin( x );
     }
 
     public static float clamp( float d, float min, float max )
@@ -70,9 +50,9 @@ public class SteerMath
     
     public static <V extends Vec<V>> V slerp( V s, V e, float angle, float t, V out )
     {
-        float denom = 1.0f / sin( angle );
-        float d0 = sin( (1 - t) * angle ) * denom;
-        float d1 = sin( t * angle ) * denom;
+        float denom = 1.0f / (float)Math.sin( angle );
+        float d0 = (float)Math.sin( (1 - t) * angle ) * denom;
+        float d1 = (float)Math.sin( t * angle ) * denom;
         
         return out.set( e ).muli( d1 ).addsi( s, d0 );
     }
@@ -81,6 +61,7 @@ public class SteerMath
     {
         V p0 = e.sub( s );
         V p1 = v.sub( s );
+        
         float delta = p0.dot( p1 ) / p0.lengthSq();
 
         delta = clamp( delta, 0, 1 );
@@ -121,7 +102,7 @@ public class SteerMath
 
             if ( disc >= 0 )
             {
-                disc = sqrt( disc );
+                disc = (float)Math.sqrt( disc );
                 a = 2 * a;
                 t0 = (-b - disc) / a;
                 t1 = (-b + disc) / a;
@@ -169,7 +150,7 @@ public class SteerMath
     public static float getTriangleHeight( float base, float side1, float side2 )
     {
         float p = (base + side1 + side2) * 0.5f;
-        float area = sqrt( p * (p - base) * (p - side1) * (p - side2) );
+        float area = (float)Math.sqrt( p * (p - base) * (p - side1) * (p - side2) );
         float height = area * 2.0f / base;
 
         return height;

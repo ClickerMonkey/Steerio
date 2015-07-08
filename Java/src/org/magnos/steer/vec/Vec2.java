@@ -846,7 +846,6 @@ public class Vec2 extends AbstractVec<Vec2>
         }
 
         return array;
-
     }
 
 }

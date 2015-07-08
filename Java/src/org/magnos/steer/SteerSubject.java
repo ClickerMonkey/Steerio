@@ -41,9 +41,4 @@ public interface SteerSubject<V extends Vec<V>> extends Target<V>, SpatialEntity
      */
     public V getAcceleration();
 
-    /**
-     * The maximum allowed acceleration for this subject.
-     */
-    public float getAccelerationMax();
-
 }

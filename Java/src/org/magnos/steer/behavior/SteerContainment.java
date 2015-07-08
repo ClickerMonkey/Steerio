@@ -9,27 +9,39 @@ import org.magnos.steer.vec.Vec;
 
 /**
  */
-public class SteerContainment<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerContainment<V extends Vec<V>> extends AbstractSteer<V, SteerContainment<V>>
 {
 
     public Obstacle<V> obstacle;
     public float buffer;
     public boolean shared;
 
-    public SteerContainment( Obstacle<V> obstacle, float buffer )
+    public SteerContainment( float minimum, float maximum, Obstacle<V> obstacle, float buffer )
     {
-        this( obstacle, buffer, true );
+        this( minimum, maximum, obstacle, buffer, DEFAULT_SHARED );
     }
 
-    public SteerContainment( Obstacle<V> obstacle, float buffer, boolean shared )
+    public SteerContainment( float magnitude, Obstacle<V> obstacle, float buffer )
     {
+        this( magnitude, magnitude, obstacle, buffer, DEFAULT_SHARED );
+    }
+
+    public SteerContainment( float magnitude, Obstacle<V> obstacle, float buffer, boolean shared )
+    {
+        this( magnitude, magnitude, obstacle, buffer, shared );
+    }
+
+    public SteerContainment( float minimum, float maximum, Obstacle<V> obstacle, float buffer, boolean shared )
+    {
+        super( minimum, maximum );
+        
         this.obstacle = obstacle;
         this.buffer = buffer;
         this.shared = shared;
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         final V p = subject.getPosition();
         final V v = subject.getVelocity();
@@ -40,8 +52,11 @@ public class SteerContainment<V extends Vec<V>> extends AbstractSteer<V>
         if ( distance > -buffer )
         {
             out.set( inner ).negi();
-            maximize( subject, out );
+            
+            return forceFromVector( this, out );
         }
+        
+        return Steer.NONE;
     }
 
     @Override
@@ -53,7 +68,7 @@ public class SteerContainment<V extends Vec<V>> extends AbstractSteer<V>
     @Override
     public Steer<V> clone()
     {
-        return new SteerContainment<V>( obstacle, buffer, shared );
+        return new SteerContainment<V>( minimum, maximum, obstacle, buffer, shared );
     }
 
 }

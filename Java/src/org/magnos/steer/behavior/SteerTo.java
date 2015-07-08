@@ -11,32 +11,46 @@ import org.magnos.steer.vec.Vec;
  * A steering behavior that moves the subject closer to a target with maximum
  * acceleration if their within a certain distance.
  */
-public class SteerTo<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerTo<V extends Vec<V>> extends AbstractSteer<V, SteerTo<V>>
 {
 
     public Target<V> target;
     public boolean shared;
 
-    public SteerTo( Target<V> target )
+    public SteerTo( float minimum, float maximum, Target<V> target )
     {
-        this( target, true );
+        this( minimum, maximum, target, DEFAULT_SHARED );
     }
 
-    public SteerTo( Target<V> target, boolean shared )
+    public SteerTo( float magnitude, Target<V> target )
     {
+        this( magnitude, magnitude, target, DEFAULT_SHARED );
+    }
+
+    public SteerTo( float magnitude, Target<V> target, boolean shared )
+    {
+        this( magnitude, magnitude, target, shared );
+    }
+
+    public SteerTo( float minimum, float maximum, Target<V> target, boolean shared )
+    {
+        super( minimum, maximum );
+        
         this.target = target;
         this.shared = shared;
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         V targetPosition = target.getTarget( subject );
 
         if ( targetPosition != null )
         {
-            towards( subject, targetPosition, out, this );
+            return towards( subject, targetPosition, out, this );
         }
+        
+        return Steer.NONE;
     }
 
     @Override
@@ -48,7 +62,7 @@ public class SteerTo<V extends Vec<V>> extends AbstractSteer<V>
     @Override
     public Steer<V> clone()
     {
-        return new SteerTo<V>( target, shared );
+        return new SteerTo<V>( minimum, maximum, target, shared );
     }
 
 }

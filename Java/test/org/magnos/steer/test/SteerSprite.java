@@ -20,19 +20,14 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
 	public Color color;
 	public boolean drawWrapped = true;
 
-	public SteerSprite( Color color, float radius, float max )
+	public SteerSprite( Color color, float radius, float velocityMax )
 	{
-		this( color, radius, max, max, null );
+		this( color, radius, velocityMax, null );
 	}
 
-	public SteerSprite( Color color, float radius, float velocityMax, float accelerationMax )
+	public SteerSprite( Color color, float radius, float velocityMax, Steer<Vec2> steer )
 	{
-		this( color, radius, velocityMax, accelerationMax, null );
-	}
-
-	public SteerSprite( Color color, float radius, float velocityMax, float accelerationMax, Steer<Vec2> steer )
-	{
-		super( Vec2.ZERO, radius, velocityMax, accelerationMax, steer );
+		super( Vec2.ZERO, radius, velocityMax, steer );
 
 		this.color = color;
 	}
@@ -76,7 +71,7 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
     @Override
     public String toString()
     {
-        return "SteerSprite [color=" + color + ", drawWrapped=" + drawWrapped + ", position=" + position + ", direction=" + direction + ", velocity=" + velocity + ", velocityMax=" + velocityMax + ", acceleration=" + acceleration + ", accelerationMax=" + accelerationMax + ", radius=" + radius + ", groups=" + groups + ", collisionGroups=" + collisionGroups + ", dynamic=" + dynamic + ", inert=" + inert + ", controller=" + controller + "]";
+        return "SteerSprite [color=" + color + ", drawWrapped=" + drawWrapped + ", position=" + position + ", direction=" + direction + ", velocity=" + velocity + ", velocityMax=" + velocityMax + ", acceleration=" + acceleration + ", radius=" + radius + ", groups=" + groups + ", collisionGroups=" + collisionGroups + ", dynamic=" + dynamic + ", inert=" + inert + ", controller=" + controller + "]";
     }
 
 }
