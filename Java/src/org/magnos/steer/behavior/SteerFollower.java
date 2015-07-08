@@ -1,12 +1,13 @@
 
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.vec.Vec;
 
 
-public class SteerFollower<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerFollower<V extends Vec<V>> extends AbstractSteer<V, SteerFollower<V>>
 {
 
     public SteerSubject<V> leader;
@@ -16,13 +17,25 @@ public class SteerFollower<V extends Vec<V>> extends AbstractSteer<V>
     private V future;
     private V closest;
 
-    public SteerFollower( SteerSubject<V> leader, float distance, V template )
+    public SteerFollower( float minimum, float maximum, SteerSubject<V> leader, float distance, V template )
     {
-        this( leader, distance, true, template );
+        this( minimum, maximum, leader, distance, DEFAULT_SHARED, template );
     }
 
-    public SteerFollower( SteerSubject<V> leader, float distance, boolean shared, V template )
+    public SteerFollower( float magnitude, SteerSubject<V> leader, float distance, V template )
     {
+        this( magnitude, magnitude, leader, distance, DEFAULT_SHARED, template );
+    }
+
+    public SteerFollower( float magnitude, SteerSubject<V> leader, float distance, boolean shared, V template )
+    {
+        this( magnitude, magnitude, leader, distance, shared, template );
+    }
+
+    public SteerFollower( float minimum, float maximum, SteerSubject<V> leader, float distance, boolean shared, V template )
+    {
+        super( minimum, maximum );
+        
         this.leader = leader;
         this.distance = distance;
         this.shared = shared;
@@ -31,10 +44,10 @@ public class SteerFollower<V extends Vec<V>> extends AbstractSteer<V>
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         future.set( leader.getPosition() );
-        future.add( leader.getVelocity() );
+        future.addi( leader.getVelocity() );
 
         SteerMath.closest( leader.getPosition(), future, subject.getPosition(), closest );
 
@@ -42,8 +55,10 @@ public class SteerFollower<V extends Vec<V>> extends AbstractSteer<V>
 
         if ( distanceSq <= distance * distance )
         {
-            away( subject, closest, out, this );
+            return away( subject, closest, out, this );
         }
+        
+        return Steer.NONE;
     }
 
     @Override

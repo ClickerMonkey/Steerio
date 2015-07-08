@@ -1,6 +1,7 @@
 
 package org.magnos.steer;
 
+import org.magnos.steer.behavior.AbstractSteer;
 import org.magnos.steer.vec.Vec;
 
 
@@ -9,39 +10,48 @@ import org.magnos.steer.vec.Vec;
  * behavior, apply a weight to the resulting force, and clamp the resulting
  * force's magnitude to a maximum value.
  */
-public class SteerModifier<V extends Vec<V>> implements Steer<V>
+public class SteerModifier<V extends Vec<V>> extends AbstractSteer<V, SteerModifier<V>>
 {
 
     public Steer<V> steer;
-    public float maximum;
     public float weight;
     public float update;
     public boolean enabled;
 
-    protected boolean maximized = true;
     protected float time;
 
     public SteerModifier( Steer<V> steer, float weight )
     {
-        this( steer, INFINITE, weight, 0 );
+        this( steer.getMinimum(), steer.getMaximum(), steer, weight, 0 );
     }
 
-    public SteerModifier( Steer<V> steer, float maximum, float weight )
+    public SteerModifier( float minimum, float maximum, Steer<V> steer, float weight )
     {
-        this( steer, maximum, weight, 0 );
+        this( minimum, maximum, steer, weight, 0 );
     }
 
-    public SteerModifier( Steer<V> steer, float maximum, float weight, float update )
+    public SteerModifier( float magnitude, Steer<V> steer, float weight )
     {
+        this( magnitude, magnitude, steer, weight, 0 );
+    }
+
+    public SteerModifier( float magnitude, Steer<V> steer, float weight, float update )
+    {
+        this( magnitude, magnitude, steer, weight, update );
+    }
+
+    public SteerModifier( float minimum, float maximum, Steer<V> steer, float weight, float update )
+    {
+        super( minimum, maximum );
+        
         this.steer = steer;
-        this.maximum = maximum;
         this.weight = weight;
         this.update = update;
         this.enabled = true;
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         time += elapsed;
 
@@ -61,6 +71,8 @@ public class SteerModifier<V extends Vec<V>> implements Steer<V>
 
             time = Math.max( 0, time - update );
         }
+        
+        return AbstractSteer.forceFromVector( steer, out );
     }
 
     @Override
@@ -70,21 +82,9 @@ public class SteerModifier<V extends Vec<V>> implements Steer<V>
     }
 
     @Override
-    public boolean isMaximized()
-    {
-        return maximized;
-    }
-
-    @Override
-    public void setMaximized( boolean maximize )
-    {
-        this.maximized = maximize;
-    }
-
-    @Override
     public Steer<V> clone()
     {
-        return new SteerModifier<V>( steer.isShared() ? steer : steer.clone(), maximum, weight, update );
+        return new SteerModifier<V>( minimum, maximum, steer.isShared() ? steer : steer.clone(), weight, update );
     }
 
 }

@@ -1,10 +1,11 @@
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.vec.Vec3;
 
 
-public class SteerFlowField3 extends AbstractSteer<Vec3>
+public class SteerFlowField3 extends AbstractSteer<Vec3, SteerFlowField3>
 {
 
 	public Vec3[][][] field;
@@ -25,8 +26,15 @@ public class SteerFlowField3 extends AbstractSteer<Vec3>
     private final Vec3 temp4 = new Vec3();
     private final Vec3 temp5 = new Vec3();
 	
-	public SteerFlowField3(float lookahead, Vec3 fieldMin, Vec3 fieldMax, Vec3[][][] field)
+    public SteerFlowField3(float magnitude, float lookahead, Vec3 fieldMin, Vec3 fieldMax, Vec3[][][] field)
+    {
+        this( magnitude, magnitude, lookahead, fieldMin, fieldMax, field );
+    }
+    
+	public SteerFlowField3(float minimum, float maximum, float lookahead, Vec3 fieldMin, Vec3 fieldMax, Vec3[][][] field)
 	{
+	    super( minimum, maximum );
+	    
 		setField( lookahead, fieldMin, fieldMax, field );
 	}
 	
@@ -45,7 +53,7 @@ public class SteerFlowField3 extends AbstractSteer<Vec3>
 	}
 	
 	@Override
-	public void getForce( float elapsed, SteerSubject<Vec3> subject, Vec3 out )
+	public float getForce( float elapsed, SteerSubject<Vec3> subject, Vec3 out )
 	{
 		lookaheadPoint.set( subject.getPosition() );
 		lookaheadPoint.addsi( subject.getDirection(), lookahead );
@@ -81,8 +89,10 @@ public class SteerFlowField3 extends AbstractSteer<Vec3>
 			
 			out.interpolatei( temp4, temp5, dz );
 			
-			maximize( subject, out );
+			return forceFromVector( this, out );
 		}
+		
+		return Steer.NONE;
 	}
 
 	@Override

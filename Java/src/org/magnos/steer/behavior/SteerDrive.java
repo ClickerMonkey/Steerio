@@ -9,7 +9,7 @@ import org.magnos.steer.vec.Vec;
  * A steering behavior that applies deceleration and simple thrusting, turning, 
  * and braking forces if certain flags on the behavior are true.
  */
-public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V, SteerDrive<V>>
 {
     
 	public float thrust;
@@ -20,14 +20,26 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
 	public boolean braking = false;
     public V[] turnForce;
     public boolean[] turn;
+    
+    public SteerDrive(float minimum, float maximum, float thrust, float brake, float deceleration, V ... turnForce)
+    {
+        this( minimum, maximum, thrust, brake, deceleration, DEFAULT_SHARED, turnForce );
+    }
+    
+    public SteerDrive(float magnitude, float thrust, float brake, float deceleration, V ... turnForce)
+    {
+        this( magnitude, magnitude, thrust, brake, deceleration, DEFAULT_SHARED, turnForce );
+    }
+    
+    public SteerDrive(float magnitude, float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
+    {
+        this( magnitude, magnitude, thrust, brake, deceleration, shared, turnForce );
+    }
 	
-	public SteerDrive(float thrust, float brake, float deceleration, V ... turnForce)
+	public SteerDrive(float minimum, float maximum, float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
 	{
-		this( thrust, brake, deceleration, true, turnForce );
-	}
-	
-	public SteerDrive(float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
-	{
+	    super( minimum, maximum );
+	    
 		this.thrust = thrust;
 		this.brake = brake;
 		this.deceleration = deceleration;
@@ -37,7 +49,7 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
 	}
 	
 	@Override
-	public void getForce( float elapsed, SteerSubject<V> subject, V out )
+	public float getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
 		V dir = subject.getDirection();
 		V vel = subject.getVelocity();
@@ -63,8 +75,10 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
 		
 		if ( speed > 0.001f ) 
 		{
-		    out.addsi( vel, -Math.max(speed, deceleration * elapsed) / speed );
+		    out.addsi( vel, -Math.min( speed, deceleration * elapsed ) / speed );
 		}
+		
+		return forceFromVector( this, out );
 	}
 
 	@Override
@@ -76,7 +90,7 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V>
 	@Override
 	public Steer<V> clone()
 	{
-		return new SteerDrive<V>( thrust, brake, deceleration, shared, turnForce );
+		return new SteerDrive<V>( minimum, maximum, thrust, brake, deceleration, shared, turnForce );
 	}
 
 }

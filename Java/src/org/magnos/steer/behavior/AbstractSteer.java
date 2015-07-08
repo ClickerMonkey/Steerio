@@ -11,29 +11,92 @@ import org.magnos.steer.vec.Vec2;
 /**
  * Abstract steering behavior implementation.
  */
-public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
+public abstract class AbstractSteer<V extends Vec<V>, S extends Steer<V>> implements Steer<V>
 {
 
-    protected boolean maximized = true;
+    protected float maximum;
+    protected float minimum;
+    
+    public AbstractSteer()
+    {
+        
+    }
+    
+    public AbstractSteer( float magnitude )
+    {
+        this( magnitude, magnitude );
+    }
+    
+    public AbstractSteer( float minimum, float maximum )
+    {
+        this.minimum = minimum;
+        this.maximum = maximum;
+    }
+    
+    public S withMagnitude( float magnitude )
+    {
+        return withRange( magnitude, magnitude );
+    }
+    
+    public S withRange( float minimum, float maximum )
+    {
+        this.minimum = minimum;
+        this.maximum = minimum;
+        
+        return (S)this;
+    }
+    
+    protected float calculateMagnitude( float delta )
+    {
+        return (maximum - minimum) * SteerMath.clamp( delta, 0f, 1f ) + minimum;
+    }
 
     @Override
-    public boolean isMaximized()
+    public float getMaximum()
     {
-        return maximized;
+        return maximum;
     }
-    
+
     @Override
-    public void setMaximized(boolean maximize)
+    public void setMaximum( float maximum )
     {
-        this.maximized = maximize;
+        this.maximum = maximum;
     }
-    
-    /**
-     * By default, a Steer cannot be cloned.
-     */
+
+    @Override
+    public float getMinimum()
+    {
+        return minimum;
+    }
+
+    @Override
+    public void setMinimum( float minimum )
+    {
+        this.minimum = minimum;
+    }
+
+    @Override
     public Steer<V> clone()
     {
+        // By default, a Steer cannot be cloned.
         return null;
+    }
+
+    public static <V extends Vec<V>> float forceFromDelta( Steer<V> steer, float delta )
+    {
+        return (steer.getMaximum() - steer.getMinimum()) * delta + steer.getMinimum();
+    }
+
+    public static <V extends Vec<V>> float forceFromVector( Steer<V> steer, V force )
+    {
+        float magnitude = force.normalize();
+        
+        if ( magnitude == 0 )
+        {
+            return 0;
+        }
+        
+        return SteerMath.clamp( magnitude, steer.getMinimum(), steer.getMaximum() );
     }
 
     /**
@@ -48,16 +111,11 @@ public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static <V extends Vec<V>> void towards( SteerSubject<V> subject, V target, V out, Steer<V> steer )
+    public static <V extends Vec<V>> float towards( SteerSubject<V> subject, V target, V out, Steer<V> steer )
     {
-        out.directi( subject.getPosition(), target );
-
-        if ( steer.isMaximized() )
-        {
-            maximize( subject, out );    
-        }
+        return forceFromVector( steer, out.directi( subject.getPosition(), target ) );
     }
-
+    
     /**
      * Computes the force necessary to steer <code>subject</code> away from the <code>target</code> and stores that in <code>out</code>.
      * 
@@ -70,14 +128,9 @@ public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static <V extends Vec<V>> void away( SteerSubject<V> subject, V target, V out, Steer<V> steer )
+    public static <V extends Vec<V>> float away( SteerSubject<V> subject, V target, V out, Steer<V> steer )
     {
-        out.directi( target, subject.getPosition() );
-
-        if ( steer.isMaximized() )
-        {
-            maximize( subject, out );    
-        }
+        return forceFromVector( steer, out.directi( target, subject.getPosition() ) );
     }
 
     /**
@@ -92,15 +145,9 @@ public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static <V extends Vec<V>> void backward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
+    public static <V extends Vec<V>> float backward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
     {
-        out.set( force );
-        out.negi();
-
-        if ( steer.isMaximized() )
-        {
-            maximize( subject, out );
-        }
+        return forceFromVector( steer, out.set( force ).negi() ); 
     }
 
     /**
@@ -115,30 +162,9 @@ public abstract class AbstractSteer<V extends Vec<V>> implements Steer<V>
      * @param steer
      *        The steering behavior to calculate the force for.
      */
-    public static <V extends Vec<V>> void forward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
+    public static <V extends Vec<V>> float forward( SteerSubject<V> subject, V force, V out, Steer<V> steer )
     {
-        out.set( force );
-
-        if ( steer.isMaximized() )
-        {
-            maximize( subject, out );
-        }
-    }
-
-    /**
-     * Maximums the given force based on the {@link SteerSubject}'s maximum acceleration and current velocity.
-     * 
-     * @param subject
-     *        The subject to obtain a velocity and maximum acceleration from to maximize the given force.
-     * @param force
-     *        The force to maximize.
-     */
-    public static <V extends Vec<V>> void maximize( SteerSubject<V> subject, V force )
-    {
-        if ( force.length( subject.getAccelerationMax() ) > 0 )
-        {
-            force.subi( subject.getVelocity() );
-        }
+        return forceFromVector( steer, out.set( force ) );
     }
 
     /**

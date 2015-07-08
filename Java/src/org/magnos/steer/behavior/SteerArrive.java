@@ -11,7 +11,7 @@ import org.magnos.steer.vec.Vec;
  * A steering behavior that moves the subject closer to a target with maximum acceleration but slows down to a complete stop once it comes within a
  * given distance.
  */
-public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V, SteerArrive<V>>
 {
 
     public Target<V> target;
@@ -29,9 +29,9 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
      * @param arrived
      *        The distance from the target that is considered "arrived". A common value for this is 0.
      */
-    public SteerArrive( Target<V> target, float caution, float arrived )
+    public SteerArrive( float maximum, Target<V> target, float caution, float arrived )
     {
-        this( target, caution, arrived, true );
+        this( maximum, target, caution, arrived, DEFAULT_SHARED );
     }
 
     /**
@@ -46,8 +46,10 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerArrive( Target<V> target, float caution, float arrived, boolean shared )
+    public SteerArrive( float maximum, Target<V> target, float caution, float arrived, boolean shared )
     {
+        super( NONE, maximum );
+        
         this.target = target;
         this.caution = caution;
         this.arrived = arrived;
@@ -55,7 +57,7 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         V targetPosition = target.getTarget( subject );
 
@@ -70,12 +72,16 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
                 float factor = Math.min( distance / caution, 1 );
 
                 out.divi( distance );
-                out.muli( subject.getAccelerationMax() );
+                out.muli( maximum );
                 out.muli( factor * factor );
                 out.subi( subject.getVelocity() );
                 out.divi( elapsed );
+                
+                return forceFromVector( this, out );
             }
         }
+        
+        return Steer.NONE;
     }
 
     @Override
@@ -87,7 +93,7 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V>
     @Override
     public Steer<V> clone()
     {
-        return new SteerArrive<V>( target, caution, arrived, shared );
+        return new SteerArrive<V>( maximum, target, caution, arrived, shared );
     }
 
 }

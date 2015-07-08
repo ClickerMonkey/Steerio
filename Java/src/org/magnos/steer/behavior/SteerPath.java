@@ -22,7 +22,7 @@ import org.magnos.steer.vec.Vec;
  * path to find the closest point, every delta value is visited between the
  * current position and current position + skip.
  */
-public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerPath<V extends Vec<V>> extends AbstractSteer<V, SteerPath<V>>
 {
 
     public Path<V> path;
@@ -40,8 +40,15 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
     public V ahead;
     public V target;
 
-    public SteerPath( Path<V> path, float granularity, float lookahead, float thickness, float buffer, float velocity, int direction, boolean cyclic, boolean reset, V template )
+    public SteerPath( float magnitude, Path<V> path, float granularity, float lookahead, float thickness, float buffer, float velocity, int direction, boolean cyclic, boolean reset, V template )
     {
+        this( magnitude, magnitude, path, granularity, lookahead, thickness, buffer, velocity, direction, cyclic, reset, template );
+    }
+    
+    public SteerPath( float minimum, float maximum, Path<V> path, float granularity, float lookahead, float thickness, float buffer, float velocity, int direction, boolean cyclic, boolean reset, V template )
+    {
+        super( minimum, maximum );
+        
         this.path = path;
         this.granularity = granularity;
         this.lookahead = lookahead;
@@ -57,7 +64,7 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         future.set( subject.getPosition() );
         future.addsi( subject.getDirection(), velocity );
@@ -68,7 +75,7 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
         }
         else
         {
-            float s = delta - (granularity * direction);
+            float s = delta + (granularity * direction);
             float e = delta + (lookahead * direction);
             float sc = SteerMath.clamp( s, 0, 1 );
             float ec = SteerMath.clamp( e, 0, 1 );
@@ -85,9 +92,9 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
 
         float offsetSq = target.lengthSq();
 
-        if ( offsetSq > thickness * thickness )
+        if ( offsetSq > thickness * thickness && offsetSq != 0 )
         {
-            float offset = SteerMath.sqrt( offsetSq );
+            float offset = (float)Math.sqrt( offsetSq );
 
             target.divi( offset );
             target.muli( thickness - (offset - thickness) );
@@ -95,7 +102,7 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
 
         target.addi( ahead );
 
-        towards( subject, target, out, this );
+        return towards( subject, target, out, this );
     }
 
     protected void calculateClosestDelta( float min, float max )
@@ -195,7 +202,7 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V>
     @Override
     public Steer<V> clone()
     {
-        return new SteerPath<V>( path, granularity, lookahead, thickness, buffer, velocity, direction, cyclic, reset, future );
+        return new SteerPath<V>( minimum, maximum, path, granularity, lookahead, thickness, buffer, velocity, direction, cyclic, reset, future );
     }
 
 }

@@ -13,7 +13,7 @@ import org.magnos.steer.vec.Vec;
  * A steering behavior that avoids obstacles in space by using a feeler (query)
  * to determine possible collisions and avoiding them.
  */
-public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<V>
+public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<V, SteerAvoidObstacles<V>>
 {
 
     public float lookahead;
@@ -29,24 +29,44 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
     protected final V lookaheadClosest;
     protected final V lookaheadNormal;
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, V template )
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, V template )
     {
-        this( space, lookahead, buffer, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED, template );
+        this( minimum, maximum, space, lookahead, buffer, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, V template )
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, V template )
     {
-        this( space, lookahead, buffer, groups, max, null, DEFAULT_SHARED, template );
+        this( magnitude, magnitude, space, lookahead, buffer, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, V template )
     {
-        this( space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
+        this( minimum, maximum, space, lookahead, buffer, groups, max, null, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, V template )
     {
-        super( space, 0f, groups, max, filter, shared );
+        this( magnitude, magnitude, space, lookahead, buffer, groups, max, null, DEFAULT_SHARED, template );
+    }
+
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    {
+        this( minimum, maximum, space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
+    }
+
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    {
+        this( magnitude, magnitude, space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
+    }
+
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    {
+        this( magnitude, magnitude, space, lookahead, buffer, groups, max, filter, shared, template );
+    }
+
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    {
+        super( minimum, maximum, space, 0f, 0f, groups, max, filter, shared );
 
         this.lookahead = lookahead;
         this.buffer = buffer;
@@ -79,7 +99,7 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         force = out;
 
@@ -87,12 +107,14 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
 
         if ( found > 0 )
         {
-            maximize( subject, force );
+            return forceFromVector( this, force );
         }
+        
+        return Steer.NONE;
     }
 
     @Override
-    public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
+    public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups, float delta )
     {
         float distance = entity.getDistanceAndNormal( lookaheadWallStart, lookaheadWallEnd, lookaheadNormal );
 
@@ -100,8 +122,9 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
 
         if ( found )
         {
-            maximize( subject, lookaheadNormal );
-            force.addi( lookaheadNormal );
+            float magnitude = forceFromVector( this, lookaheadNormal );
+            
+            force.addsi( lookaheadNormal, magnitude * delta );
         }
 
         return found;
@@ -110,7 +133,7 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
     @Override
     public Steer<V> clone()
     {
-        return new SteerAvoidObstacles<V>( space, lookahead, buffer, groups, max, filter, shared, lookaheadPoint );
+        return new SteerAvoidObstacles<V>( minimum, maximum, space, lookahead, buffer, groups, max, filter, shared, lookaheadPoint );
     }
     
 }

@@ -1,6 +1,5 @@
 package org.magnos.steer.spatial;
 
-import org.magnos.steer.SteerMath;
 import org.magnos.steer.vec.Vec;
 
 
@@ -66,7 +65,7 @@ public class SpatialUtility
 			return 0.0f;
 		}
 		
-		return sr - SteerMath.sqrt( sq );
+		return sr - (float)Math.sqrt( sq );
 	}
 	
 	public static <V extends Vec<V>> float distance( SpatialEntity<V> a, V b )

@@ -15,6 +15,13 @@ public interface Steer<V extends Vec<V>>
 	public static final float INFINITE = Float.MAX_VALUE;
 	
 	/**
+	 * No steering force.
+	 */
+	public static final float NONE = 0;
+	
+	public static boolean DEFAULT_SHARED = true;
+	
+	/**
 	 * Gets the amount of force caused by this steering behavior.
 	 * 
 	 * @param elapsed
@@ -24,7 +31,7 @@ public interface Steer<V extends Vec<V>>
 	 * @return
 	 * 	The reference to the force to apply.
 	 */
-	public void getForce( float elapsed, SteerSubject<V> subject, V out );
+	public float getForce( float elapsed, SteerSubject<V> subject, V out );
 	
 	/**
 	 * Whether the steer can be/is shared by several subjects. If this is true
@@ -35,18 +42,11 @@ public interface Steer<V extends Vec<V>>
 	 * 	True if the steering behavior can be/is shared.
 	 */
 	public boolean isShared();
-	
-	/**
-	 * TODO
-	 * @return
-	 */
-	public boolean isMaximized();
-	
-	/**
-	 * TODO
-	 * @param maximize
-	 */
-	public void setMaximized(boolean maximize);
+
+	public float getMaximum();
+	public void setMaximum(float maximum);
+	public float getMinimum();
+	public void setMinimum(float minimum);
 	
 	/**
 	 * Returns a clone of this steering behavior. A behavior would be cloned

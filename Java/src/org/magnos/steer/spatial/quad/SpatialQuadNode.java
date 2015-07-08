@@ -11,8 +11,6 @@ import org.magnos.steer.vec.Vec;
 
 public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, SpatialEntity<V>>
 {
-	
-	public static final int CHILD_COUNT = 4;
 
 	public int size;
 	public int overflowResizes;
@@ -49,7 +47,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 		{
 			boolean added = false;
 			
-			for (int i = 0; i < CHILD_COUNT && !added; i++)
+			for (int i = 0; i < children.length && !added; i++)
 			{
 				final SpatialQuadNode<V> child = children[i];
 				
@@ -134,7 +132,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 			
 			if ( node.isBranch() )
 			{
-				for (int i = 0; i < CHILD_COUNT; i++)
+				for (int i = 0; i < children.length; i++)
 				{
 					SpatialQuadNode<V> child = node.children[i];
 					
@@ -239,7 +237,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 			final LinkedNode<SpatialEntity<V>> next = start.next;
 			final SpatialEntity<V> entity = start.value;
 
-			for (int i = 0; i < CHILD_COUNT; i++)
+			for (int i = 0; i < children.length; i++)
 			{
 				final SpatialQuadNode<V> child = children[i];
 				
@@ -258,7 +256,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 	
 	public void shrink()
 	{
-		for (int i = 0; i < CHILD_COUNT; i++)
+		for (int i = 0; i < children.length; i++)
 		{
 			final SpatialQuadNode<V> child = children[i];
 			final LinkedNode<SpatialEntity<V>> end = child.head;
@@ -342,7 +340,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 	{
 		int collisionCount = 0;
 		
-		for (int i = 0; i < CHILD_COUNT; i++)
+		for (int i = 0; i < children.length; i++)
 		{
 			collisionCount += children[i].handleEntityCollisionFromParent( a, callback );
 		}
@@ -421,7 +419,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 		
 		if ( intersectCount < max && isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
+			for (int i = 0; i < children.length; i++)
 			{
 				SpatialQuadNode<V> child = children[i];
 				
@@ -471,7 +469,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 		
 		if ( containCount < max && isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
+			for (int i = 0; i < children.length; i++)
 			{
 				SpatialQuadNode<V> child = children[i];
 				
@@ -508,7 +506,7 @@ public class SpatialQuadNode<V extends Vec<V>> extends LinkedListBounds<V, Spati
 		
 		if ( isBranch() )
 		{
-			for (int i = 0; i < CHILD_COUNT; i++)
+			for (int i = 0; i < children.length; i++)
 			{
 				 near = children[i].knn( offset, k, collidesWith, nearest, distance, near );
 			}

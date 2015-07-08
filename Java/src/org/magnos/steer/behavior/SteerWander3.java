@@ -10,7 +10,7 @@ import org.magnos.steer.vec.Vec3;
  * A steering behavior that can smoothly move the subject in a random direction
  * at maximum acceleration.
  */
-public class SteerWander3 extends AbstractSteer<Vec3>
+public class SteerWander3 extends AbstractSteer<Vec3, SteerWander3>
 {
 
 	public float yaw;
@@ -18,9 +18,16 @@ public class SteerWander3 extends AbstractSteer<Vec3>
 	public float radius;
 	public float distance;
 	public float wander;
+
+    public SteerWander3(float magnitude, float yaw, float pitch, float radius, float distance, float wander)
+    {
+        this( magnitude, magnitude, yaw, pitch, radius, distance, wander );
+    }
 	
-	public SteerWander3(float yaw, float pitch, float radius, float distance, float wander)
+	public SteerWander3(float minimum, float maximum, float yaw, float pitch, float radius, float distance, float wander)
 	{
+	    super( minimum, maximum );
+	    
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.radius = radius;
@@ -29,14 +36,15 @@ public class SteerWander3 extends AbstractSteer<Vec3>
 	}
 	
 	@Override
-	public void getForce( float elapsed, SteerSubject<Vec3> subject, Vec3 out )
+	public float getForce( float elapsed, SteerSubject<Vec3> subject, Vec3 out )
 	{
 		yaw += ( SteerMath.randomFloat( wander ) - (wander * 0.5f) ) * elapsed;
 		pitch += ( SteerMath.randomFloat( wander ) - (wander * 0.5f) ) * elapsed;
 		
 		out.angle( yaw, pitch, radius );
 		out.addsi( subject.getDirection(), distance );
-		maximize( subject, out );
+		
+		return forceFromVector( this, out );
 	}
 
 	@Override
@@ -48,7 +56,7 @@ public class SteerWander3 extends AbstractSteer<Vec3>
 	@Override
 	public Steer<Vec3> clone()
 	{
-		return new SteerWander3( yaw, pitch, radius, distance, wander );
+		return new SteerWander3( minimum, maximum, yaw, pitch, radius, distance, wander );
 	}
 
 }

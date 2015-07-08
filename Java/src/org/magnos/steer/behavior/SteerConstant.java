@@ -7,26 +7,38 @@ import org.magnos.steer.vec.Vec;
 /**
  * A steering behavior with a constant force.
  */
-public class SteerConstant<V extends Vec<V>> extends AbstractSteer<V>
+public class SteerConstant<V extends Vec<V>> extends AbstractSteer<V, SteerConstant<V>>
 {
 	public final V force;
 	public boolean shared;
+    
+    public SteerConstant( float minimum, float maximum, V force )
+    {
+        this( minimum, maximum, force, DEFAULT_SHARED );
+    }
+    
+    public SteerConstant( float magnitude, V force )
+    {
+        this( magnitude, magnitude, force, DEFAULT_SHARED );
+    }
+    
+    public SteerConstant( float magnitude, V force, boolean shared )
+    {
+        this( magnitude, magnitude, force, shared );
+    }
 	
-	public SteerConstant(V force)
+	public SteerConstant( float minimum, float maximum, V force, boolean shared )
 	{
-		this( force, true );
-	}
-	
-	public SteerConstant(V force, boolean shared)
-	{
+	    super( minimum, maximum );
+	    
 		this.force = force;
 		this.shared = shared;
 	}
 	
 	@Override
-	public void getForce( float elapsed, SteerSubject<V> subject, V out )
+	public float getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-	    out.set( force );
+	    return forceFromVector( this, out.set( force ) );
 	}
 
 	@Override
@@ -38,7 +50,7 @@ public class SteerConstant<V extends Vec<V>> extends AbstractSteer<V>
 	@Override
 	public Steer<V> clone()
 	{
-		return new SteerConstant<V>( shared ? force : force.clone(), shared );
+		return new SteerConstant<V>( minimum, maximum, shared ? force : force.clone(), shared );
 	}
 
 }

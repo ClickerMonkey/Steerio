@@ -13,7 +13,6 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     public V velocity;
     public float velocityMax;
     public V acceleration;
-    public float accelerationMax;
     public float radius;
     public long groups = SpatialDatabase.ALL_GROUPS;
     public long collisionGroups = SpatialDatabase.ALL_GROUPS;
@@ -22,17 +21,12 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     public Object attachment;
     public SteerController<V> controller;
 
-    public BaseSteerSubject( V template, float radius, float max )
+    public BaseSteerSubject( V template, float radius, float velocityMax )
     {
-        this( template, radius, max, max, null );
+        this( template, radius, velocityMax, null );
     }
 
-    public BaseSteerSubject( V template, float radius, float velocityMax, float accelerationMax )
-    {
-        this( template, radius, velocityMax, accelerationMax, null );
-    }
-
-    public BaseSteerSubject( V template, float radius, float velocityMax, float accelerationMax, Steer<V> steer )
+    public BaseSteerSubject( V template, float radius, float velocityMax, Steer<V> steer )
     {
         this.position = template.create();
         this.position.clear();
@@ -48,7 +42,6 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
 
         this.radius = radius;
         this.velocityMax = velocityMax;
-        this.accelerationMax = accelerationMax;
 
         if ( steer != null )
         {
@@ -152,12 +145,6 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     public V getAcceleration()
     {
         return acceleration;
-    }
-
-    @Override
-    public float getAccelerationMax()
-    {
-        return accelerationMax;
     }
 
     @Override

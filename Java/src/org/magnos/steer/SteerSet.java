@@ -1,6 +1,7 @@
 
 package org.magnos.steer;
 
+import org.magnos.steer.behavior.AbstractSteer;
 import org.magnos.steer.vec.Vec;
 
 
@@ -12,48 +13,61 @@ import org.magnos.steer.vec.Vec;
  * a
  * clone must be made to share this set with another subject.
  */
-public class SteerSet<V extends Vec<V>> implements Steer<V>
+public class SteerSet<V extends Vec<V>> extends AbstractSteer<V, SteerSet<V>>
 {
 
-    public float maximum;
     public Steer<V>[] steerings;
-
-    protected boolean maximized = false;
 
     public SteerSet()
     {
-        this( 0, INFINITE );
+        this( NONE, INFINITE, 0 );
     }
 
-    public SteerSet( float maximum )
+    public SteerSet( float minimum, float maximum )
     {
-        this( 0, maximum );
+        this( minimum, maximum, 0 );
     }
 
-    public SteerSet( int steerCount, float maximum )
+    public SteerSet( float magnitude )
     {
-        this.steerings = new Steer[steerCount];
-        this.maximum = maximum;
+        this( magnitude, magnitude, 0 );
+    }
+
+    public SteerSet( float magnitude, int steerCount )
+    {
+        this( magnitude, magnitude, steerCount );
+    }
+
+    public SteerSet( float minimum, float maximum, int steerCount )
+    {
+        super( minimum, maximum );
+        
+        this.steerings = new Steer[ steerCount ];
     }
 
     public SteerSet( Steer<V>... steerings )
     {
-        this( INFINITE, steerings );
+        this( NONE, INFINITE, steerings );
     }
 
-    public SteerSet( float maximum, Steer<V>... steerings )
+    public SteerSet( float magnitude, Steer<V>... steerings )
     {
-        this.maximum = maximum;
+        this( NONE, magnitude, steerings );
+    }
+
+    public SteerSet( float minimum, float maximum, Steer<V>... steerings )
+    {
+        super( minimum, maximum );
+        
         this.steerings = steerings;
     }
 
     @Override
-    public void getForce( float elapsed, SteerSubject<V> subject, V out )
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         V temp = out.create();
 
-        float maximumSq = maximum * maximum;
-
+        float totalMagnitude = 0;
         final int steerCount = steerings.length;
 
         for ( int i = 0; i < steerCount; i++ )
@@ -64,21 +78,25 @@ public class SteerSet<V extends Vec<V>> implements Steer<V>
             {
                 temp.clear();
 
-                steer.getForce( elapsed, subject, temp );
-
-                if ( !temp.isZero() )
+                float magnitude = steer.getForce( elapsed, subject, temp );
+                float magnitudeAvailable = maximum - totalMagnitude;
+                float magnitudeToApply = Math.min( magnitude, magnitudeAvailable );
+                
+                if (magnitudeToApply > 0)
                 {
-                    out.addi( temp );
-
-                    if ( maximum != INFINITE && out.lengthSq() > maximumSq )
-                    {
-                        out.clamp( 0, maximum );
-
-                        break;
-                    }
+                    out.addsi( temp, magnitudeToApply );
+                    
+                    totalMagnitude += magnitudeToApply;
+                }
+                
+                if (magnitudeAvailable == 0)
+                {
+                    break;
                 }
             }
         }
+        
+        return forceFromVector( this, out );
     }
 
     @Override
@@ -100,25 +118,11 @@ public class SteerSet<V extends Vec<V>> implements Steer<V>
     }
 
     @Override
-    public boolean isMaximized()
-    {
-        return maximized;
-    }
-
-    @Override
-    public void setMaximized( boolean maximize )
-    {
-        this.maximized = maximize;
-    }
-
-    @Override
     public Steer<V> clone()
     {
         int steerCount = steerings.length;
 
-        SteerSet<V> cloned = new SteerSet<V>();
-        cloned.maximum = maximum;
-        cloned.steerings = new Steer[steerCount];
+        SteerSet<V> cloned = new SteerSet<V>( minimum, maximum, steerCount );
 
         for ( int i = 0; i < steerCount; i++ )
         {
