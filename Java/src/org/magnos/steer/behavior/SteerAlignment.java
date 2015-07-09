@@ -96,7 +96,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
      * @param fovType
      *        A flag used to determine whether an object is in the field of view of a subject.
      */
-    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter )
+    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter )
     {
         this( minimum, maximum, space, query, groups, max, filter, DEFAULT_SHARED );
     }
@@ -118,7 +118,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
      * @param fovType
      *        A flag used to determine whether an object is in the field of view of a subject.
      */
-    public SteerAlignment( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter )
+    public SteerAlignment( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter )
     {
         this( magnitude, magnitude, space, query, groups, max, filter, DEFAULT_SHARED );
     }
@@ -142,7 +142,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( minimum, maximum, space, query, query, groups, max, filter, shared );
     }
@@ -166,7 +166,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerAlignment( float magnitude, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerAlignment( float magnitude, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( magnitude, magnitude, space, minimumRadius, maximumRadius, groups, max, filter, shared );
     }
@@ -190,7 +190,7 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerAlignment( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared );
     }

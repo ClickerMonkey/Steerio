@@ -32,11 +32,6 @@ public interface SteerSubject<V extends Vec<V>> extends Target<V>, SpatialEntity
     public V getVelocity();
 
     /**
-     * The maximum allowed velocity for this subject.
-     */
-    public float getVelocityMax();
-
-    /**
      * The current acceleration of the subject.
      */
     public V getAcceleration();

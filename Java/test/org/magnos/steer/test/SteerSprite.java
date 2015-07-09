@@ -71,7 +71,7 @@ public class SteerSprite extends BaseSteerSubject<Vec2> implements Entity
     @Override
     public String toString()
     {
-        return "SteerSprite [color=" + color + ", drawWrapped=" + drawWrapped + ", position=" + position + ", direction=" + direction + ", velocity=" + velocity + ", velocityMax=" + velocityMax + ", acceleration=" + acceleration + ", radius=" + radius + ", groups=" + groups + ", collisionGroups=" + collisionGroups + ", dynamic=" + dynamic + ", inert=" + inert + ", controller=" + controller + "]";
+        return "SteerSprite [color=" + color + ", drawWrapped=" + drawWrapped + ", position=" + position + ", direction=" + direction + ", velocity=" + velocity + ", velocityMax=" + velocityMax + ", acceleration=" + acceleration + ", radius=" + radius + ", groups=" + groups + ", collisionGroups=" + collisionGroups + ", fixed=" + fixed + ", inert=" + inert + ", controller=" + controller + "]";
     }
 
 }

@@ -681,35 +681,25 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 		
 	}
 	
-	public class BouncyBall implements SpatialEntity<Vec2>, Entity
+	public class BouncyBall extends BaseSpatialEntity<Vec2> implements SpatialEntity<Vec2>, Entity
 	{
 		public final Vec2 position = new Vec2();
 		public final Vec2 velocity = new Vec2();
 		public final float radius;
-		public final long spatialGroups;
-		public final long spatialCollisionGroups;
-		public boolean inert;
-		public boolean dynamic;
 		
 		public BouncyBall( float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic )
 		{
 			this.radius = radius;
-			this.spatialGroups = spatialGroups;
-			this.spatialCollisionGroups = spatialCollisionGroups;
+			this.groups = spatialGroups;
+			this.collisionGroups = spatialCollisionGroups;
 			this.inert = false;
-			this.dynamic = dynamic;
+			this.fixed = !dynamic;
 		}
         
         @Override
         public Vec2 getPosition()
         {
             return position;
-        }
-        
-        @Override
-        public Vec2 getPosition( Vec2 out )
-        {
-            return out.set( position );
         }
 
 		@Override
@@ -719,33 +709,9 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 		}
 
 		@Override
-		public long getSpatialGroups()
-		{
-			return spatialGroups;
-		}
-
-		@Override
-		public long getSpatialCollisionGroups()
-		{
-			return spatialCollisionGroups;
-		}
-
-		@Override
-		public boolean isStatic()
-		{
-			return !dynamic;
-		}
-
-		@Override
-		public boolean isInert()
-		{
-			return inert;
-		}
-
-		@Override
 		public void update( GameState state, Scene scene )
 		{
-			if ( dynamic )
+			if ( !fixed )
 			{
 				position.addsi( velocity, state.seconds );
 
@@ -797,30 +763,6 @@ public class SpatialDatabaseExample implements Game, CollisionCallback<Vec2>, Se
 		{
 			
 		}
-
-        @Override
-        public float getDistanceAndNormal( Vec2 origin, Vec2 lookahead, Vec2 outNormal )
-        {
-            return 0;
-        }
-
-        @Override
-        public void attach( Object attachment )
-        {
-            
-        }
-
-        @Override
-        public <T> T attachment()
-        {
-            return null;
-        }
-
-        @Override
-        public <T> T attachment( Class<T> type )
-        {
-            return null;
-        }
 		
 	}
 

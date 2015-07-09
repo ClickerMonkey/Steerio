@@ -1,9 +1,9 @@
 
 package org.magnos.steer.behavior;
 
-import org.magnos.steer.Obstacle;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -12,26 +12,26 @@ import org.magnos.steer.vec.Vec;
 public class SteerContainment<V extends Vec<V>> extends AbstractSteer<V, SteerContainment<V>>
 {
 
-    public Obstacle<V> obstacle;
+    public SpatialEntity<V> obstacle;
     public float buffer;
     public boolean shared;
 
-    public SteerContainment( float minimum, float maximum, Obstacle<V> obstacle, float buffer )
+    public SteerContainment( float minimum, float maximum, SpatialEntity<V> obstacle, float buffer )
     {
         this( minimum, maximum, obstacle, buffer, DEFAULT_SHARED );
     }
 
-    public SteerContainment( float magnitude, Obstacle<V> obstacle, float buffer )
+    public SteerContainment( float magnitude, SpatialEntity<V> obstacle, float buffer )
     {
         this( magnitude, magnitude, obstacle, buffer, DEFAULT_SHARED );
     }
 
-    public SteerContainment( float magnitude, Obstacle<V> obstacle, float buffer, boolean shared )
+    public SteerContainment( float magnitude, SpatialEntity<V> obstacle, float buffer, boolean shared )
     {
         this( magnitude, magnitude, obstacle, buffer, shared );
     }
 
-    public SteerContainment( float minimum, float maximum, Obstacle<V> obstacle, float buffer, boolean shared )
+    public SteerContainment( float minimum, float maximum, SpatialEntity<V> obstacle, float buffer, boolean shared )
     {
         super( minimum, maximum );
         

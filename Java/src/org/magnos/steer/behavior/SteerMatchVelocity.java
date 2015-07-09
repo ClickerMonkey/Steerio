@@ -35,27 +35,27 @@ public class SteerMatchVelocity<V extends Vec<V>> extends AbstractSteerSpatial<V
         this( magnitude, magnitude, space, query, groups, max, null, DEFAULT_SHARED );
     }
 
-    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter )
+    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter )
     {
         this( minimum, maximum, space, query, groups, max, filter, DEFAULT_SHARED );
     }
 
-    public SteerMatchVelocity( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter )
+    public SteerMatchVelocity( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter )
     {
         this( magnitude, magnitude, space, query, groups, max, filter, DEFAULT_SHARED );
     }
 
-    public SteerMatchVelocity( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerMatchVelocity( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared )
     {
         this( magnitude, magnitude, space, query, groups, max, filter, shared );
     }
 
-    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( minimum, maximum, space, query, query, groups, max, filter, shared );
     }
 
-    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public SteerMatchVelocity( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared );
     }

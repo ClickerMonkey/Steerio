@@ -699,6 +699,22 @@ public class Vec2 extends AbstractVec<Vec2>
     }
 
     @Override
+    public Vec2[] createArray( int n, boolean populate )
+    {
+        Vec2[] arr = new Vec2[ n ];
+        
+        if ( populate )
+        {
+            for (int i = 0; i < n; i++)
+            {
+                arr[ i ] = create();
+            }
+        }
+        
+        return arr;
+    }
+
+    @Override
     public Vec2 clone( Vec2 value )
     {
         return new Vec2( value );

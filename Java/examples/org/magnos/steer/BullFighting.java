@@ -6,7 +6,7 @@ import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.constraint.ConstraintTurning;
-import org.magnos.steer.filter.FilterViewVector;
+import org.magnos.steer.filter.FilterView;
 import org.magnos.steer.target.TargetFiltered;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.util.FieldOfView;
@@ -41,6 +41,10 @@ public class BullFighting extends SteerBasicExample
     {
         super( w, h );
     }
+    
+    /**
+     * 
+     */
 
     @Override
     public void start( Scene scene )
@@ -48,7 +52,7 @@ public class BullFighting extends SteerBasicExample
         fighter = newSprite( Color.RED, 10, 100, new SteerWander2( 400, 0, 100, 50, 80 ) );
         
         bull = newSprite( Color.WHITE, 10, 100, new SteerFirst<Vec2>( 400,
-           new SteerTo<Vec2>( 400, new TargetFiltered<Vec2>( fighter, FilterViewVector.fromDegrees( 20, 400, FieldOfView.PARTIAL, Vec2.class ) ) ),
+           new SteerTo<Vec2>( 400, new TargetFiltered<Vec2>( fighter, FilterView.fromDegrees( 20, FieldOfView.PARTIAL, Vec2.class ) ) ),
            new SteerWander2( 400, 0, 100, 50, 80 )
         ));
         bull.controller.constraint = new ConstraintTurning<Vec2>( 0.8f );

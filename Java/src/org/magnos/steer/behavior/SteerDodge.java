@@ -38,27 +38,27 @@ public class SteerDodge<V extends Vec<V>> extends AbstractSteerSpatial<V, SteerD
         this( magnitude, magnitude, space, query, groups, max, null, DEFAULT_SHARED );
     }
     
-    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter)
+    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter)
     {
         this( minimum, maximum, space, query, groups, max, filter, DEFAULT_SHARED );
     }
     
-    public SteerDodge(float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter)
+    public SteerDodge(float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter)
     {
         this( magnitude, magnitude, space, query, groups, max, filter, DEFAULT_SHARED );
     }
     
-    public SteerDodge(float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared)
+    public SteerDodge(float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared)
     {
         this( magnitude, magnitude, space, query, groups, max, filter, shared );
     }
     
-    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared)
+    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared)
     {
         super( minimum, maximum, space, query, query, groups, max, filter, shared);
     }
     
-    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared)
+    public SteerDodge(float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared)
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared);
     }
@@ -100,7 +100,7 @@ public class SteerDodge<V extends Vec<V>> extends AbstractSteerSpatial<V, SteerD
 			final V pos = ss.getPosition();
 			final V vel = ss.getVelocity();
 			
-			float intersectionTime = SteerMath.interceptTime( org, subject.getVelocityMax(), pos, vel );
+			float intersectionTime = SteerMath.interceptTime( org, subject.getMaximumVelocity(), pos, vel );
 			
 			if ( applicable = ( intersectionTime > 0 ) )
 			{

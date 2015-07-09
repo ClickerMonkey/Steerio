@@ -459,6 +459,22 @@ public class VecN extends AbstractVec<VecN>
     }
 
     @Override
+    public VecN[] createArray( int n, boolean populate )
+    {
+        VecN[] arr = new VecN[ n ];
+        
+        if ( populate )
+        {
+            for (int i = 0; i < n; i++)
+            {
+                arr[ i ] = create();
+            }
+        }
+        
+        return arr;
+    }
+
+    @Override
     public VecN clone( VecN value )
     {
         return new VecN( value );

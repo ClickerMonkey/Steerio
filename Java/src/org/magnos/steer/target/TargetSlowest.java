@@ -13,7 +13,7 @@ public class TargetSlowest<V extends Vec<V>> implements Target<V>, SearchCallbac
 {
 
 	public SpatialDatabase<V> space;
-    public Filter<V, SpatialEntity<V>> filter;
+    public Filter<V> filter;
 	public float queryOffset;
 	public float queryRadius;
 	public boolean contains;
@@ -26,7 +26,7 @@ public class TargetSlowest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	
 	protected SteerSubject<V> subject;
 
-	public TargetSlowest(SpatialDatabase<V> space, Filter<V, SpatialEntity<V>> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
+	public TargetSlowest(SpatialDatabase<V> space, Filter<V> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
 		this.space = space;
 		this.filter = filter;

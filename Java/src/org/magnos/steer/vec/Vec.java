@@ -2,6 +2,7 @@
 package org.magnos.steer.vec;
 
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 
 /**
  * An interface to a Vector implementation of any dimension.
@@ -32,7 +33,7 @@ import org.magnos.steer.Target;
  * @author Philip Diffenderfer
  * 
  */
-public interface Vec<V extends Vec<V>> extends Target<V>
+public interface Vec<V extends Vec<V>> extends Target<V>, SpatialEntity<V>
 {
 
     /**
@@ -645,6 +646,12 @@ public interface Vec<V extends Vec<V>> extends Target<V>
      * Returns a new Vector that is located at zero.
      */
     public V create();
+    
+    
+    /**
+     * Creates an array of Vectors of the the given size.
+     */
+    public V[] createArray(int n, boolean populate);
 
     /**
      * Clones this Vector.

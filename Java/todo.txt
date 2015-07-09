@@ -1,5 +1,6 @@
 - Target doesn't return Vec, it's passed as an out parameter and Target returns boolean
 - Refactor Target to optionally have Direction, Velocity, and Acceleration
+- Make SteerSubject, SpatialEntity, & Target all have the same interface
 - Combine SpatialEntityObstacle and Obstacle
 - SpatialSweepAndPrune 3d or generic
 - Asteroids Example
@@ -15,6 +16,7 @@
 - Refactor targeting & spatial system
     - SpatialEntity:
          getPosition():V                       required
+         getRadius():float					   0
          getSpatialGroups():long               0
          getSpatialCollisionGroups():long      0
          isStatic():boolean                    false

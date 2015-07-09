@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import org.magnos.steer.SteerSet;
 import org.magnos.steer.obstacle.Plane;
 import org.magnos.steer.spatial.SpatialDatabase;
-import org.magnos.steer.spatial.SpatialEntityObstacle;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
@@ -54,11 +53,16 @@ public class SteerAvoidWallExample extends SteerBasicExample
         Plane<Vec2> sideR = new Plane<Vec2>( new Vec2(DEFAULT_WIDTH, DEFAULT_HEIGHT / 2), Vec2.LEFT );
         Plane<Vec2> sideT = new Plane<Vec2>( new Vec2(DEFAULT_WIDTH / 2, 0), Vec2.TOP );
         Plane<Vec2> sideB = new Plane<Vec2>( new Vec2(DEFAULT_WIDTH / 2, DEFAULT_HEIGHT), Vec2.BOTTOM );
+
+        sideL.groups = GROUP_WALL; sideL.fixed = true;
+        sideR.groups = GROUP_WALL; sideR.fixed = true;
+        sideT.groups = GROUP_WALL; sideT.fixed = true;
+        sideB.groups = GROUP_WALL; sideB.fixed = true;
         
-        database.add( new SpatialEntityObstacle<Vec2>( sideL, new Vec2(), GROUP_WALL, 0, true ) ); // left side
-        database.add( new SpatialEntityObstacle<Vec2>( sideR, new Vec2(), GROUP_WALL, 0, true ) ); // right side
-        database.add( new SpatialEntityObstacle<Vec2>( sideT, new Vec2(), GROUP_WALL, 0, true ) ); // top side
-        database.add( new SpatialEntityObstacle<Vec2>( sideB, new Vec2(), GROUP_WALL, 0, true ) ); // bottom side
+        database.add( sideL ); // left side
+        database.add( sideR ); // right side
+        database.add( sideT ); // top side
+        database.add( sideB ); // bottom side
 		
 		sprite = newSprite( Color.blue, 15, 300, new SteerSet<Vec2>( 900,
 			obstacles = new SteerAvoidObstacles<Vec2>( 1000, database, 80.0f, 30.0f, Vec2.FACTORY ),

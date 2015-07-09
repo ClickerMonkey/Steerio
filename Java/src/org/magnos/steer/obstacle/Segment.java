@@ -1,12 +1,12 @@
 
 package org.magnos.steer.obstacle;
 
-import org.magnos.steer.Obstacle;
 import org.magnos.steer.SteerMath;
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
-public class Segment<V extends Vec<V>> implements Obstacle<V>
+public class Segment<V extends Vec<V>> extends BaseSpatialEntity<V>
 {
 
     public static final float DEFAULT_THICKNESS = 0.000001f;
@@ -34,19 +34,6 @@ public class Segment<V extends Vec<V>> implements Obstacle<V>
     @Override
     public float getDistanceAndNormal( V origin, V lookahead, V outNormal )
     {
-//        V center = start.interpolateTo( end, 0.5f );
-//        
-//        V closest = SteerMath.closest( start, end, lookahead, outNormal );
-//        
-//        float distance = closest.length() - thickness;
-//        
-//        outNormal.set( lookahead ).subi( center );
-//        
-//        if (center != null)
-//        {
-//            return distance * 2;
-//        }
-        
         V u = end.sub( start );
         V v = lookahead.sub( origin );
         V w = start.sub( origin );
@@ -107,6 +94,12 @@ public class Segment<V extends Vec<V>> implements Obstacle<V>
         // dP = w + (sc * u) - (tc * v);
         
         return outNormal.set( w ).addsi( u, sc).addsi( v, -tc ).normalize() - thickness;
+    }
+    
+    @Override
+    public V getPosition()
+    {
+        return start.interpolate( start, end, 0.5f );
     }
 
     @Override

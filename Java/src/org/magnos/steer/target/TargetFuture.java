@@ -10,21 +10,30 @@ import org.magnos.steer.vec.Vec;
 public class TargetFuture<V extends Vec<V>> implements Target<V>
 {
 
+    public static boolean DEFAULT_INTERCEPT_ONLY = false;
+    
     public V position;
     public V velocity;
+    public boolean interceptOnly;
 
     public final V future;
 
     public TargetFuture( SteerSubject<V> target )
     {
-        this( target.getPosition(), target.getVelocity() );
+        this( target.getPosition(), target.getVelocity(), DEFAULT_INTERCEPT_ONLY );
     }
 
-    public TargetFuture( V position, V velocity )
+    public TargetFuture( SteerSubject<V> target, boolean interceptOnly )
+    {
+        this( target.getPosition(), target.getVelocity(), interceptOnly );
+    }
+
+    public TargetFuture( V position, V velocity, boolean interceptOnly )
     {
         this.position = position;
         this.velocity = velocity;
         this.future = position.create();
+        this.interceptOnly = interceptOnly;
     }
 
     @Override
@@ -37,6 +46,10 @@ public class TargetFuture<V extends Vec<V>> implements Target<V>
         if ( time > 0 )
         {
             future.addsi( velocity, time );
+        }
+        else if ( interceptOnly )
+        {
+            return null;
         }
 
         return future;

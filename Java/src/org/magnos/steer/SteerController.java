@@ -49,7 +49,7 @@ public class SteerController<V extends Vec<V>>
 		V a = subject.getAcceleration();
 		V v = subject.getVelocity();
 		V p = subject.getPosition();
-		float vmax = subject.getVelocityMax();
+		float vmax = subject.getMaximumVelocity();
 		
 		if ( immediate )
 		{

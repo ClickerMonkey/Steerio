@@ -25,7 +25,7 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
     public int max;
     public SpatialDatabase<V> space;
     public SteerSubject<V> subject;
-    public Filter<V, SpatialEntity<V>> filter;
+    public Filter<V> filter;
     
     /**
      * Instantiates a new {@link AbstractSteerSpatial}.
@@ -46,7 +46,7 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
      * @param shared
      *        Whether this {@link Steer} implementation can be shared between {@link SteerSubject}s.
      */
-    public AbstractSteerSpatial( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared )
+    public AbstractSteerSpatial( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared )
     {
         super( minimum, maximum );
         
@@ -101,7 +101,7 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
         return (S)this;
     }
     
-    public S withFilter( Filter<V, SpatialEntity<V>> filter )
+    public S withFilter( Filter<V> filter )
     {
         this.filter = filter;
         

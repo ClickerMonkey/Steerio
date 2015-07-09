@@ -1,10 +1,11 @@
 package org.magnos.steer.filter;
 
-import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Filter;
+import org.magnos.steer.SteerSubject;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
-public class FilterProximity<V extends Vec<V>> implements Filter<V, SteerSubject<V>>
+public class FilterProximity<V extends Vec<V>> implements Filter<V>
 {
     
     public float minimum;
@@ -27,7 +28,7 @@ public class FilterProximity<V extends Vec<V>> implements Filter<V, SteerSubject
     }
 
     @Override
-    public boolean isValid( SteerSubject<V> subject, SteerSubject<V> test )
+    public boolean isValid( SteerSubject<V> subject, SpatialEntity<V> test )
     {
         float distanceSq = test.getPosition().distanceSq( subject.getPosition() );
         

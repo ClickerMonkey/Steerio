@@ -1,11 +1,11 @@
 
 package org.magnos.steer.obstacle;
 
-import org.magnos.steer.Obstacle;
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
-public class Plane<V extends Vec<V>> implements Obstacle<V>
+public class Plane<V extends Vec<V>> extends BaseSpatialEntity<V>
 {
 
     public static final float DEFAULT_THICKNESS = 0.000001f;
@@ -42,9 +42,9 @@ public class Plane<V extends Vec<V>> implements Obstacle<V>
     }
 
     @Override
-    public V getPosition( V out )
+    public V getPosition()
     {
-        return out.set( origin );
+        return origin;
     }
 
     @Override

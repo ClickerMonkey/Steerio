@@ -563,6 +563,22 @@ public class Vec3 extends AbstractVec<Vec3>
    {
        return new Vec3();
    }
+
+   @Override
+   public Vec3[] createArray( int n, boolean populate )
+   {
+       Vec3[] arr = new Vec3[ n ];
+       
+       if ( populate )
+       {
+           for (int i = 0; i < n; i++)
+           {
+               arr[ i ] = create();
+           }
+       }
+       
+       return arr;
+   }
    
    @Override
    public Vec3 clone( Vec3 value )

@@ -49,22 +49,22 @@ public class SteerAvoidObstacles<V extends Vec<V>> extends AbstractSteerSpatial<
         this( magnitude, magnitude, space, lookahead, buffer, groups, max, null, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V> filter, V template )
     {
         this( minimum, maximum, space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V> filter, V template )
     {
         this( magnitude, magnitude, space, lookahead, buffer, groups, max, filter, DEFAULT_SHARED, template );
     }
 
-    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerAvoidObstacles( float magnitude, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V> filter, boolean shared, V template )
     {
         this( magnitude, magnitude, space, lookahead, buffer, groups, max, filter, shared, template );
     }
 
-    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerAvoidObstacles( float minimum, float maximum, SpatialDatabase<V> space, float lookahead, float buffer, long groups, int max, Filter<V> filter, boolean shared, V template )
     {
         super( minimum, maximum, space, 0f, 0f, groups, max, filter, shared );
 

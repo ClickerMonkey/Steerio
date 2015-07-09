@@ -9,7 +9,7 @@ import org.magnos.steer.SteerSet;
 import org.magnos.steer.behavior.SteerArrive;
 import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerDrive;
-import org.magnos.steer.target.TargetFilteredSubject;
+import org.magnos.steer.target.TargetFiltered;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
 
@@ -49,7 +49,7 @@ public class FilterInFrontExample extends SteerBasicExample
 	    mouseSubject.position.set( mouse );
 	    
 		sprite = newSprite( Color.blue, 15, 300, new SteerSet<Vec2>( 1000,
-			arrive = new SteerArrive<Vec2>( 1000, new TargetFilteredSubject<Vec2>( mouseSubject, new FilterInFront<Vec2>() ), 100, 0, false ),
+			arrive = new SteerArrive<Vec2>( 1000, new TargetFiltered<Vec2>( mouseSubject, new FilterInFront<Vec2>() ), 100, 0, false ),
 			new SteerDrive<Vec2>( 1000, 0, 0, 100 )
 		));
 	}

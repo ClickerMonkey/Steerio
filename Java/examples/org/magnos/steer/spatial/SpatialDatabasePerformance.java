@@ -104,24 +104,20 @@ public class SpatialDatabasePerformance
 		return balls;
 	}
 	
-	public class BouncyBall implements SpatialEntity<Vec2>
+	public class BouncyBall extends BaseSpatialEntity<Vec2>
 	{
 		public final Vec2 position = new Vec2();
 		public final Vec2 velocity = new Vec2();
 		public final Vec2 min, max;
 		public final float radius;
-		public final long spatialGroups;
-		public final long spatialCollisionGroups;
-		public boolean inert;
-		public boolean dynamic;
 		
 		public BouncyBall(float radius, long spatialGroups, long spatialCollisionGroups, boolean dynamic, Vec2 min, Vec2 max)
 		{
 			this.radius = radius;
-			this.spatialGroups = spatialGroups;
-			this.spatialCollisionGroups = spatialCollisionGroups;
+			this.groups = spatialGroups;
+			this.collisionGroups = spatialCollisionGroups;
 			this.inert = false;
-			this.dynamic = dynamic;
+			this.fixed = !dynamic;
 			this.min = min;
 			this.max = max;
 		}
@@ -138,33 +134,9 @@ public class SpatialDatabasePerformance
 			return radius;
 		}
 
-		@Override
-		public long getSpatialGroups()
-		{
-			return spatialGroups;
-		}
-
-		@Override
-		public long getSpatialCollisionGroups()
-		{
-			return spatialCollisionGroups;
-		}
-
-		@Override
-		public boolean isStatic()
-		{
-			return !dynamic;
-		}
-
-		@Override
-		public boolean isInert()
-		{
-			return inert;
-		}
-
 		public void update( float elapsed )
 		{
-			if ( dynamic )
+			if ( !fixed )
 			{
 				position.addsi( velocity, elapsed );
 
@@ -190,36 +162,6 @@ public class SpatialDatabasePerformance
 				}
 			}
 		}
-
-        @Override
-        public float getDistanceAndNormal( Vec2 origin, Vec2 lookahead, Vec2 outNormal )
-        {
-            return 0;
-        }
-
-        @Override
-        public Vec2 getPosition( Vec2 out )
-        {
-            return out.set( position );
-        }
-
-        @Override
-        public void attach( Object attachment )
-        {
-            
-        }
-
-        @Override
-        public <T> T attachment()
-        {
-            return null;
-        }
-
-        @Override
-        public <T> T attachment( Class<T> type )
-        {
-            return null;
-        }
 	}
 	
 	public class EmptyCollisionCallback implements CollisionCallback<Vec2>

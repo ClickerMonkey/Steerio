@@ -9,13 +9,8 @@ import org.magnos.steer.util.FieldOfView;
 import org.magnos.steer.vec.Vec;
 
 
-public class FilterView<V extends Vec<V>> implements Filter<V, SpatialEntity<V>>
+public class FilterView<V extends Vec<V>> implements Filter<V>
 {
-
-    public static <V extends Vec<V>> FilterView<V> fromRadians( double radians, FieldOfView fovType, Class<V> vectorType )
-    {
-        return fromRadians( radians, fovType );
-    }
     
     public static <V extends Vec<V>> FilterView<V> fromRadians( double radians, FieldOfView fovType )
     {
@@ -25,19 +20,20 @@ public class FilterView<V extends Vec<V>> implements Filter<V, SpatialEntity<V>>
         
         return new FilterView<V>( tan, cos, fovType );
     }
+
+    public static <V extends Vec<V>> FilterView<V> fromRadians( double radians, FieldOfView fovType, Class<V> vectorType )
+    {
+        return fromRadians( radians, fovType );
+    }
     
     public static <V extends Vec<V>> FilterView<V> fromDegrees( double degrees, FieldOfView fovType, Class<V> vectorType )
     {
-        return fromDegrees( degrees, fovType );
+        return fromRadians( Math.toRadians( degrees ), fovType );
     }
 
     public static <V extends Vec<V>> FilterView<V> fromDegrees( double degrees, FieldOfView fovType )
     {
-        double half = Math.toRadians( degrees * 0.5 );
-        double tan = Math.tan( half );
-        double cos = Math.cos( half );
-        
-        return new FilterView<V>( tan, cos, fovType );
+        return fromRadians( Math.toRadians( degrees ), fovType );
     }
 
     public double fovTan;

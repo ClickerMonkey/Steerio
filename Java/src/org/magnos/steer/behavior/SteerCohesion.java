@@ -39,27 +39,27 @@ public class SteerCohesion<V extends Vec<V>> extends AbstractSteerSpatial<V, Ste
         this( magnitude, magnitude, space, query, groups, max, null, DEFAULT_SHARED, template );
     }
 
-    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, V template )
     {
         this( minimum, maximum, space, query, groups, max, filter, DEFAULT_SHARED, template );
     }
 
-    public SteerCohesion( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, V template )
+    public SteerCohesion( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, V template )
     {
         this( magnitude, magnitude, space, query, groups, max, filter, DEFAULT_SHARED, template );
     }
 
-    public SteerCohesion( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerCohesion( float magnitude, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared, V template )
     {
         this( magnitude, magnitude, space, query, groups, max, filter, shared, template );
     }
 
-    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float query, long groups, int max, Filter<V> filter, boolean shared, V template )
     {   
         this( minimum, maximum, space, query, query, groups, max, filter, shared, template );
     }
 
-    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V, SpatialEntity<V>> filter, boolean shared, V template )
+    public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<V> filter, boolean shared, V template )
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared );
 

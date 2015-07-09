@@ -1,24 +1,21 @@
 
 package org.magnos.steer;
 
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.vec.Vec;
 
 
-public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
+public class BaseSteerSubject<V extends Vec<V>> extends BaseSpatialEntity<V> implements SteerSubject<V>
 {
 
     public V position;
     public V direction;
     public V velocity;
     public float velocityMax;
+    public float accelerationMax = Float.MAX_VALUE;
     public V acceleration;
     public float radius;
-    public long groups = SpatialDatabase.ALL_GROUPS;
-    public long collisionGroups = SpatialDatabase.ALL_GROUPS;
-    public boolean dynamic = true;
-    public boolean inert = false;
-    public Object attachment;
     public SteerController<V> controller;
 
     public BaseSteerSubject( V template, float radius, float velocityMax )
@@ -28,6 +25,9 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
 
     public BaseSteerSubject( V template, float radius, float velocityMax, Steer<V> steer )
     {
+        this.groups = SpatialDatabase.ALL_GROUPS;
+        this.collisionGroups = SpatialDatabase.ALL_GROUPS;
+        
         this.position = template.create();
         this.position.clear();
 
@@ -76,51 +76,15 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     }
 
     @Override
-    public V getTarget( SteerSubject<V> subject )
-    {
-        return position;
-    }
-
-    @Override
     public float getRadius()
     {
         return radius;
     }
 
     @Override
-    public long getSpatialGroups()
-    {
-        return groups;
-    }
-
-    @Override
-    public long getSpatialCollisionGroups()
-    {
-        return collisionGroups;
-    }
-
-    @Override
-    public boolean isStatic()
-    {
-        return !dynamic;
-    }
-
-    @Override
-    public boolean isInert()
-    {
-        return inert;
-    }
-
-    @Override
     public V getPosition()
     {
         return position;
-    }
-
-    @Override
-    public V getPosition( V out )
-    {
-        return out.set( position );
     }
 
     @Override
@@ -136,33 +100,21 @@ public class BaseSteerSubject<V extends Vec<V>> implements SteerSubject<V>
     }
 
     @Override
-    public float getVelocityMax()
+    public float getMaximumVelocity()
     {
         return velocityMax;
+    }
+    
+    @Override
+    public float getMaximumAcceleration()
+    {
+        return accelerationMax;
     }
 
     @Override
     public V getAcceleration()
     {
         return acceleration;
-    }
-
-    @Override
-    public void attach( Object attachment )
-    {
-        this.attachment = attachment;
-    }
-
-    @Override
-    public <T> T attachment()
-    {
-        return (T)attachment;
-    }
-
-    @Override
-    public <T> T attachment( Class<T> type )
-    {
-        return attachment != null && type.isAssignableFrom( attachment.getClass() ) ? (T)attachment : null;
     }
 
 }

@@ -17,7 +17,7 @@ public class AssertSteerSpatial extends AbstractSteerSpatial<Vec2, AssertSteerSp
     
     public Vec2 force = new Vec2();
 
-    public AssertSteerSpatial( float minimum, float maximum, SpatialDatabase<Vec2> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<Vec2, SpatialEntity<Vec2>> filter, boolean shared )
+    public AssertSteerSpatial( float minimum, float maximum, SpatialDatabase<Vec2> space, float minimumRadius, float maximumRadius, long groups, int max, Filter<Vec2> filter, boolean shared )
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared );
     }

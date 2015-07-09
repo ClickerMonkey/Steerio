@@ -1,12 +1,11 @@
 
 package org.magnos.steer.obstacle;
 
-import org.magnos.steer.Obstacle;
-import org.magnos.steer.SteerMath;
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
-public class Sphere<V extends Vec<V>> implements Obstacle<V>
+public class Sphere<V extends Vec<V>> extends BaseSpatialEntity<V>
 {
 
     public V position;
@@ -23,15 +22,9 @@ public class Sphere<V extends Vec<V>> implements Obstacle<V>
     }
 
     @Override
-    public float getDistanceAndNormal( V origin, V lookahead, V outNormal )
+    public V getPosition()
     {
-        return SteerMath.closest( origin, lookahead, position, outNormal ).subi( position ).normalize() - radius;
-    }
-
-    @Override
-    public V getPosition( V out )
-    {
-        return out.set( position );
+        return position;
     }
 
     @Override

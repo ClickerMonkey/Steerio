@@ -13,7 +13,7 @@ public class TargetAverage<V extends Vec<V>> implements Target<V>, SearchCallbac
 {
 
 	public SpatialDatabase<V> space;
-	public Filter<V, SpatialEntity<V>> filter;
+	public Filter<V> filter;
 	public float queryOffset;
 	public float queryRadius;
 	public boolean contains;
@@ -25,7 +25,7 @@ public class TargetAverage<V extends Vec<V>> implements Target<V>, SearchCallbac
 	
 	protected SteerSubject<V> subject;
 
-	public TargetAverage(SpatialDatabase<V> space, Filter<V, SpatialEntity<V>> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
+	public TargetAverage(SpatialDatabase<V> space, Filter<V> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
 		this.space = space;
 		this.filter = filter;

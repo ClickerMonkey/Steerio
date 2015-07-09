@@ -2,6 +2,7 @@
 package org.magnos.steer.vec;
 
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.spatial.AbstractSpatialEntity;
 
 /**
  * A dimension absent partial implementation of {@link Vec}.
@@ -9,7 +10,7 @@ import org.magnos.steer.SteerSubject;
  * @author Philip Diffenderfer
  * 
  */
-public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
+public abstract class AbstractVec<V extends AbstractVec<V>> extends AbstractSpatialEntity<V> implements Vec<V>
 {
 
     @Override
@@ -446,7 +447,13 @@ public abstract class AbstractVec<V extends AbstractVec<V>> implements Vec<V>
     @Override
     public V getTarget( SteerSubject<V> subject )
     {
-        return (V)this;
+        return (V) this;
+    }
+    
+    @Override
+    public V getPosition()
+    {
+        return (V) this;
     }
 
 }

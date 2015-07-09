@@ -14,7 +14,7 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 {
 
 	public SpatialDatabase<V> space;
-    public Filter<V, SpatialEntity<V>> filter;
+    public Filter<V> filter;
 	public float queryOffset;
 	public float queryRadius;
 	public boolean contains;
@@ -27,7 +27,7 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	public final V queryPosition;
 	public final V target;
 
-	public TargetWeakest(SpatialDatabase<V> space, Filter<V, SpatialEntity<V>> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
+	public TargetWeakest(SpatialDatabase<V> space, Filter<V> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
 		this.space = space;
 		this.filter = filter;
@@ -81,7 +81,7 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 		{
 			SteerSubject<V> ss = (SteerSubject<V>)entity;
 			
-			float time = SteerMath.interceptTime( subject.getPosition(), subject.getVelocityMax(), ss.getPosition(), ss.getVelocity() );
+			float time = SteerMath.interceptTime( subject.getPosition(), subject.getMaximumVelocity(), ss.getPosition(), ss.getVelocity() );
 			
 			if ( time > 0 )
 			{

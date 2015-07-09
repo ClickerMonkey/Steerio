@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.SteerSet;
+import org.magnos.steer.filter.FilterInFront;
 import org.magnos.steer.obstacle.Bounds;
+import org.magnos.steer.target.TargetFiltered;
 import org.magnos.steer.target.TargetFuture;
 import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
@@ -43,15 +45,15 @@ public class SteerEvadeExample extends SteerBasicExample
 
 	@Override
 	public void start( Scene scene )
-	{
-		sprite = newSprite( Color.blue, 15, 300, new SteerWander2( 1000, 0, 100, 150, 80 ) );
-
+	{	    
+		sprite = newSprite( Color.blue, 15, 200, new SteerWander2( 1000, 0, 100, 150, 80 ) );
+		
 		future = new TargetFuture<Vec2>( sprite );
-		local = new TargetLocal<Vec2>( future, 400 );
+		local = new TargetLocal<Vec2>( future, 200 );
 		
 		scared = newSprite( Color.orange, 15, 300, new SteerSet<Vec2>( 1000,
 		    new SteerContainment<Vec2>( 1000, Bounds.fromMinMax( Vec2.ZERO, new Vec2( width, height ) ), 20 ),
-			new SteerAway<Vec2>( 1000, local ),
+		    new SteerAway<Vec2>( 1000, new TargetFiltered<Vec2>( local, FilterInFront.FRONT ) ),
 			new SteerDrive<Vec2>( 1000, 0, 0, 100 )
 		));
 	}

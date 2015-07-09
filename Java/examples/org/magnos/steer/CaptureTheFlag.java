@@ -22,10 +22,10 @@ import org.magnos.steer.obstacle.Bounds;
 import org.magnos.steer.obstacle.Plane;
 import org.magnos.steer.obstacle.Segment;
 import org.magnos.steer.obstacle.Sphere;
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.spatial.SearchCallbackArray;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
-import org.magnos.steer.spatial.SpatialEntityObstacle;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.target.TargetClosest;
 import org.magnos.steer.target.TargetInterpose;
@@ -181,7 +181,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	    TargetRelative<Vec2> targetCapturer;
 	}
 
-	private List<Obstacle<Vec2>> obstacles;
+	private List<SpatialEntity<Vec2>> obstacles;
 	private SpatialDatabase<Vec2> database;
 	private Team team1;
 	private Team team2;
@@ -243,27 +243,22 @@ public class CaptureTheFlag extends SteerBasicExample
 	    sprites = new EntityList<SteerSprite>();
 	    
         database = new SpatialArray<Vec2>( QUERY_MAX );
-        obstacles = new ArrayList<Obstacle<Vec2>>();
+        obstacles = new ArrayList<SpatialEntity<Vec2>>();
         
         // World Boundaries
-        Plane<Vec2> sideL = new Plane<Vec2>( new Vec2(0, HEIGHT / 2), Vec2.RIGHT );
-        Plane<Vec2> sideR = new Plane<Vec2>( new Vec2(WIDTH, HEIGHT / 2), Vec2.LEFT );
-        Plane<Vec2> sideT = new Plane<Vec2>( new Vec2(WIDTH / 2, 0), Vec2.TOP );
-        Plane<Vec2> sideB = new Plane<Vec2>( new Vec2(WIDTH / 2, HEIGHT), Vec2.BOTTOM );
-        
-        database.add( new SpatialEntityObstacle<Vec2>( sideL, new Vec2(), GROUP_OBSTACLES, 0, true ) ); // left side
-        database.add( new SpatialEntityObstacle<Vec2>( sideR, new Vec2(), GROUP_OBSTACLES, 0, true ) ); // right side
-        database.add( new SpatialEntityObstacle<Vec2>( sideT, new Vec2(), GROUP_OBSTACLES, 0, true ) ); // top side
-        database.add( new SpatialEntityObstacle<Vec2>( sideB, new Vec2(), GROUP_OBSTACLES, 0, true ) ); // bottom side
+        database.add( new Plane<Vec2>( new Vec2(0, HEIGHT / 2),     Vec2.RIGHT  ).withGroups( GROUP_OBSTACLES ).withFixed( true ) ); // left
+        database.add( new Plane<Vec2>( new Vec2(WIDTH, HEIGHT / 2), Vec2.LEFT   ).withGroups( GROUP_OBSTACLES ).withFixed( true ) ); // right
+        database.add( new Plane<Vec2>( new Vec2(WIDTH / 2, 0),      Vec2.TOP    ).withGroups( GROUP_OBSTACLES ).withFixed( true ) ); // top
+        database.add( new Plane<Vec2>( new Vec2(WIDTH / 2, HEIGHT), Vec2.BOTTOM ).withGroups( GROUP_OBSTACLES ).withFixed( true ) ); // bottom
         
         // Random Obstacles
         while ( obstacles.size() < OBSTACLE_COUNT )
         {
-            Obstacle<Vec2> obs = randomObstacle();
+            BaseSpatialEntity<Vec2> obs = randomObstacle();
             
             if (!isInterfering( obs ))
             {
-                database.add( new SpatialEntityObstacle<Vec2>( obs, new Vec2(), GROUP_OBSTACLES, 0, true ) );
+                database.add( obs.withGroups( GROUP_OBSTACLES ).withFixed( true ) );
                 obstacles.add( obs );
             }
         }
@@ -286,7 +281,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	}
 	
 	// Generate a random obstacle
-	public Obstacle<Vec2> randomObstacle()
+	public BaseSpatialEntity<Vec2> randomObstacle()
 	{
 	    switch (SteerMath.randomInt( 2 ))
 	    {
@@ -308,7 +303,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	}
 	
 	// True if the obstacle might interfere with a base or prison
-	public boolean isInterfering( Obstacle<Vec2> obs )
+	public boolean isInterfering( SpatialEntity<Vec2> obs )
 	{
 	    return isInterfering( obs, team1.base, BASE_RADIUS * 2 ) ||
 	           isInterfering( obs, team2.base, BASE_RADIUS * 2 ) ||
@@ -317,7 +312,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	}
 	
 	// True if the obstacle is intersecting with the given circle
-	public boolean isInterfering( Obstacle<Vec2> obs, Vec2 point, float radius )
+	public boolean isInterfering( SpatialEntity<Vec2> obs, Vec2 point, float radius )
 	{
 	    float radiusSum = obs.getRadius() + radius;
 	    
@@ -653,7 +648,7 @@ public class CaptureTheFlag extends SteerBasicExample
     @Override
     public void draw( GameState state, Graphics2D gr, Scene scene )
     {
-        for ( Obstacle<Vec2> obs : obstacles )
+        for ( SpatialEntity<Vec2> obs : obstacles )
         {
             drawObstacle( gr, obs );
         }
@@ -730,7 +725,7 @@ public class CaptureTheFlag extends SteerBasicExample
     }
 
     // Draws an obstacle.
-    public void drawObstacle( Graphics2D gr, Obstacle<Vec2> obs )
+    public void drawObstacle( Graphics2D gr, SpatialEntity<Vec2> obs )
     {
         if ( obs instanceof Sphere )
         {

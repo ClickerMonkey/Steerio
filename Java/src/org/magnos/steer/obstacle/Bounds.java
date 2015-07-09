@@ -1,12 +1,12 @@
 
 package org.magnos.steer.obstacle;
 
-import org.magnos.steer.Obstacle;
 import org.magnos.steer.SteerMath;
+import org.magnos.steer.spatial.BaseSpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
-public class Bounds<V extends Vec<V>> implements Obstacle<V>
+public class Bounds<V extends Vec<V>> extends BaseSpatialEntity<V>
 {
 
     public static <V extends Vec<V>> Bounds<V> fromMinMax( V min, V max )
@@ -59,11 +59,11 @@ public class Bounds<V extends Vec<V>> implements Obstacle<V>
             return outNormal.subi( closest ).normalize();
         }
     }
-
+    
     @Override
-    public V getPosition( V out )
+    public V getPosition()
     {
-        return out.set( center );
+        return center;
     }
 
     @Override
