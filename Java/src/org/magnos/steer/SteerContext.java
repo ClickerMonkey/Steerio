@@ -90,16 +90,27 @@ public class SteerContext<V extends Vec<V>> extends AbstractSteer<V, SteerContex
         
         for (int i = 0; i < steerCount - 1; i++)
         {
+            if ( magnitudes[ i ] == Steer.NONE )
+            {
+                continue;
+            }
+            
             V normali = normals[ i ];
             
             for (int k = i + 1; k < steerCount; k++)
             {
+                if ( magnitudes[ k ] == Steer.NONE )
+                {
+                    continue;
+                }
+                
                 V normalk = normals[ k ];
+                
                 float match = normali.dot( normalk );                
                 
                 if ( match <= -matchThreshold )
                 {
-                    float weight = 1 + ((matchThreshold + match) * matchThresholdScale);
+                    float weight = 1 + ( ( matchThreshold + match ) * matchThresholdScale );
                     
                     magnitudes[ i ] *= weight;
                     magnitudes[ k ] *= weight;

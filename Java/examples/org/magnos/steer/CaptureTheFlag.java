@@ -404,7 +404,7 @@ public class CaptureTheFlag extends SteerBasicExample
 	        Defense def = new Defense();
 	        
 	        def.sprite = new SteerSprite( my.color, PLAYER_RADIUS, PLAYER_VEL_MAX / 2, 
-	            new SteerSet<Vec2>( PLAYER_ACC_MAX / 3 - 1,
+	            new SteerSet<Vec2>( PLAYER_ACC_MAX / 3 - 1, // new boolean[] {false, false, true, false, true, true, },
 	                stayInside,
 	                new SteerContainment<Vec2>( PLAYER_ACC_MAX / 3, my.side, 30 ),
 	                new SteerTo<Vec2>( PLAYER_ACC_MAX / 3, targetOpponentDefense ),
