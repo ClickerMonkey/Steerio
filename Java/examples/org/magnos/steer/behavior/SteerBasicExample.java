@@ -118,7 +118,8 @@ public abstract class SteerBasicExample implements Game
 				Steer<Vec2> f = s.controller.force;
 				
 				Vec2 force = new Vec2();
-				/*float magnitude = */f.getForce( state.seconds, s, force );
+				float magnitude = f.getForce( state.seconds, s, force );
+				force.muli( magnitude );
 
 				drawForce( gr, Color.white, s.position, force, wrapEntities );
 			}

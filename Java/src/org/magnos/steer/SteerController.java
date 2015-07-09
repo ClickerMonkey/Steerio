@@ -61,13 +61,13 @@ public class SteerController<V extends Vec<V>>
 		
 		if (!Float.isNaN( magnitude ) && !Float.isInfinite( magnitude ))
 		{
-		    if ( constraint != null )
-	        {
-	            constraint.constrain( elapsed, subject );
-	        }
-		    
 		    a.muli( magnitude );
 		    a.subi( v );
+
+            if ( constraint != null )
+            {
+                constraint.constrain( elapsed, subject );
+            }
 		    
 	        v.addsi( a, immediate ? 1.0f : elapsed );
 	        

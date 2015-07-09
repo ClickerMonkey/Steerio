@@ -34,6 +34,55 @@ public class Segment<V extends Vec<V>> extends BaseSpatialEntity<V>
     @Override
     public float getDistanceAndNormal( V origin, V lookahead, V outNormal )
     {
+        V closest = SteerMath.closest( start, end, origin, outNormal );
+        
+        return closest.subi( origin ).negi().normalize() - thickness;
+        
+        /*
+        V point1 = origin;
+        V point2 = lookahead;
+        V point3 = start;
+        V point4 = end;
+        
+        V closest1 = SteerMath.closest( start, end, point1, origin.create() );
+        V closest2 = SteerMath.closest( start, end, point2, origin.create() );
+        V closest3 = SteerMath.closest( origin, lookahead, point3, origin.create() );
+        V closest4 = SteerMath.closest( origin, lookahead, point4, origin.create() );
+        
+        float closest1Sq = closest1.distanceSq( point1 );
+        float closest2Sq = closest2.distanceSq( point2 );
+        float closest3Sq = closest3.distanceSq( point3 );
+        float closest4Sq = closest4.distanceSq( point4 );
+        
+        V point = point1;
+        V closest = closest1;
+        float closestSq = closest1Sq;
+        
+        if ( closest2Sq < closestSq )
+        {
+            closestSq = closest2Sq;
+            closest = closest2;
+            point = point2;
+        }
+        if ( closest3Sq < closestSq )
+        {
+            closestSq = closest3Sq;
+            closest = point3;
+            point = closest3;
+        }
+        if ( closest4Sq < closestSq )
+        {
+            closestSq = closest4Sq;
+            closest = point4;
+            point = closest4;
+        }
+        
+        return outNormal.directi( point, closest ).normalize() - thickness;
+        
+        */
+        
+        /*
+        
         V u = end.sub( start );
         V v = lookahead.sub( origin );
         V w = start.sub( origin );
@@ -94,6 +143,7 @@ public class Segment<V extends Vec<V>> extends BaseSpatialEntity<V>
         // dP = w + (sc * u) - (tc * v);
         
         return outNormal.set( w ).addsi( u, sc).addsi( v, -tc ).normalize() - thickness;
+        */
     }
     
     @Override
