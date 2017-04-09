@@ -22,10 +22,11 @@ public class TargetSlowest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	
 	public float slowestVelocitySq;
 	public final V queryPosition;
-	public final V target;
+
+	public SpatialEntity<V> slowest;
 	
 	protected SteerSubject<V> subject;
-
+	
 	public TargetSlowest(SpatialDatabase<V> space, Filter<V> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
 		this.space = space;
@@ -36,17 +37,17 @@ public class TargetSlowest<V extends Vec<V>> implements Target<V>, SearchCallbac
 		this.max = max;
 		this.groups = groups;
 		this.queryPosition = template.create();
-		this.target = template.create();
 	}
 	
 	@Override
-	public V getTarget( SteerSubject<V> s )
+	public SpatialEntity<V> getTarget( SteerSubject<V> s )
 	{
 	    subject = s;
+	    slowest = null;
 		slowestVelocitySq = Float.MAX_VALUE;
 		
-		queryPosition.set( subject.getPosition() );
-		queryPosition.addsi( subject.getDirection(), queryOffset );
+		queryPosition.set( s.getPosition() );
+		queryPosition.addsi( s.getDirection(), queryOffset );
 		
 		int found = 0;
 		
@@ -64,28 +65,26 @@ public class TargetSlowest<V extends Vec<V>> implements Target<V>, SearchCallbac
 			return null;
 		}
 		
-		return target;
+		return slowest;
 	}
 
 	@Override
 	public boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		boolean applicable = (entity instanceof SteerSubject) && (filter == null || filter.isValid( subject, entity ));
+	    if ( filter != null && !filter.isValid( subject, entity ) )
+	    {
+	        return false;
+	    }
+	    
+	    float vsq = entity.getVelocity().lengthSq();
+        
+        if ( vsq < slowestVelocitySq )
+        {
+            slowestVelocitySq = vsq;
+            slowest = entity;
+        }
 
-		if ( applicable )
-		{
-			SteerSubject<V> subject = (SteerSubject<V>)entity;
-			
-			float vsq = subject.getVelocity().lengthSq();
-			
-			if ( vsq < slowestVelocitySq )
-			{
-				slowestVelocitySq = vsq;
-				target.set( subject.getPosition() );
-			}
-		}
-		
-		return applicable;
+        return true;
 	}
 
 }

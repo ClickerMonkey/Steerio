@@ -10,6 +10,7 @@ import org.magnos.steer.behavior.SteerBasicExample;
 import org.magnos.steer.behavior.SteerTo;
 import org.magnos.steer.behavior.SteerWander2;
 import org.magnos.steer.spatial.SpatialDatabase;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
@@ -70,11 +71,11 @@ public class TargetWeakestExample extends SteerBasicExample
 			drawCircle( gr, Color.yellow, weakest.weakest.getPosition(), 5, false );	
 		}
 		
-		Vec2 target = weakest.getTarget( subject );
+		SpatialEntity<Vec2> target = weakest.getTarget( subject );
 		
 		if ( target != null )
 		{
-			drawCircle( gr, Color.red, target, 5, false );
+			drawCircle( gr, Color.red, target.getPosition(), 5, false );
 		}
 		
 		drawCircle( gr, Color.orange, weakest.queryPosition, weakest.queryRadius, false );

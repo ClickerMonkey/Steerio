@@ -23,9 +23,8 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 	
 	public SteerSubject<V> subject;
 	public float weakestTime;
-	public SteerSubject<V> weakest;
+	public SpatialEntity<V> weakest;
 	public final V queryPosition;
-	public final V target;
 
 	public TargetWeakest(SpatialDatabase<V> space, Filter<V> filter, float queryOffset, float queryRadius, boolean contains, int max, long groups, V template)
 	{
@@ -37,11 +36,10 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 		this.max = max;
 		this.groups = groups;
 		this.queryPosition = template.create();
-		this.target = template.create();
 	}
 	
 	@Override
-	public V getTarget( SteerSubject<V> ss )
+	public SpatialEntity<V> getTarget( SteerSubject<V> ss )
 	{
 		weakest = null;
 		weakestTime = Float.MAX_VALUE;
@@ -66,38 +64,32 @@ public class TargetWeakest<V extends Vec<V>> implements Target<V>, SearchCallbac
 			return null;
 		}
 		
-		target.set( weakest.getPosition() );
-		target.addsi( weakest.getVelocity(), weakestTime );
-		
-		return target;
+		return weakest;
 	}
 
 	@Override
 	public boolean onFound( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups )
 	{
-		boolean applicable = (entity instanceof SteerSubject) && (filter == null || filter.isValid( subject, entity ));
+	    if ( filter != null && !filter.isValid( subject, entity ) )
+	    {
+	        return false;
+	    }
+	    
+	    boolean found = false;
+		float time = SteerMath.interceptTime( subject.getPosition(), subject.getMaximumVelocity(), entity.getPosition(), entity.getVelocity() );
 		
-		if (applicable)
+		if ( time > 0 )
 		{
-			SteerSubject<V> ss = (SteerSubject<V>)entity;
-			
-			float time = SteerMath.interceptTime( subject.getPosition(), subject.getMaximumVelocity(), ss.getPosition(), ss.getVelocity() );
-			
-			if ( time > 0 )
+			if ( time < weakestTime )
 			{
-				if ( time < weakestTime )
-				{
-					weakestTime = time;
-					weakest = ss;
-				}
+				weakestTime = time;
+				weakest = entity;
 			}
-			else
-			{
-				applicable = false;
-			}
+			
+			found = true;
 		}
 		
-		return applicable;
+		return found;
 	}
 
 }

@@ -3,6 +3,7 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -19,9 +20,9 @@ public class TargetChain<V extends Vec<V>> implements Target<V>
     }
 
     @Override
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
-        V target = first.getTarget( subject );
+        SpatialEntity<V> target = first.getTarget( subject );
 
         if ( target == null )
         {

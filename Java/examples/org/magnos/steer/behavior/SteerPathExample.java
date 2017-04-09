@@ -60,7 +60,7 @@ public class SteerPathExample extends SteerBasicExample
 		sprite = newSprite( Color.blue, 15, 300, steerRed );
 		sprite.position.set( 100, 110 );
 
-		SteerSprite quicker = newSprite( Color.orange, 15, 300, new SteerSet<Vec2>( 
+		SteerSprite quicker = newSprite( Color.orange, 15, 300, new SteerSet<Vec2>( 10000,
 			new SteerPath<Vec2>( 10000, path, 0.01f, 0.025f, 0, 10, 20, 1, true, false, Vec2.FACTORY ),
 			new SteerAway<Vec2>( 10000,
 			    new TargetFiltered<Vec2>( sprite, 

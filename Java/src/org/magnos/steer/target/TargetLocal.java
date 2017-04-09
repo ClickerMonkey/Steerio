@@ -2,6 +2,7 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -26,16 +27,16 @@ public class TargetLocal<V extends Vec<V>> implements Target<V>
 	}
 	
 	@Override
-	public V getTarget( SteerSubject<V> subject )
+	public SpatialEntity<V> getTarget( SteerSubject<V> subject )
 	{
-		V actual = target.getTarget( subject );
+	    SpatialEntity<V> actual = target.getTarget( subject );
 		
 		if ( actual == null )
 		{
 			return null;
 		}
 		
-		float distanceSq = actual.distanceSq( subject.getPosition() );
+		float distanceSq = actual.getPosition().distanceSq( subject.getPosition() );
 		
 		if (minimum != 0 && distanceSq < minimum * minimum)
 		{

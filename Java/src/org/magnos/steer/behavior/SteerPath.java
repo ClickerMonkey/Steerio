@@ -75,7 +75,7 @@ public class SteerPath<V extends Vec<V>> extends AbstractSteer<V, SteerPath<V>>
         }
         else
         {
-            float s = delta + (granularity * direction);
+            float s = delta - (granularity * direction);
             float e = delta + (lookahead * direction);
             float sc = SteerMath.clamp( s, 0, 1 );
             float ec = SteerMath.clamp( e, 0, 1 );

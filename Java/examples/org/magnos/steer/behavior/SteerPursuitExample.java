@@ -44,7 +44,7 @@ public class SteerPursuitExample extends SteerBasicExample
 		sprite = newSprite( Color.blue, 15, 300, new SteerWander2( 1000, 0, 100, 150, 80 ) );
 
 		predator = newSprite( Color.orange, 15, 200, new SteerSet<Vec2>( 1000,
-			new SteerTo<Vec2>( 1000, future = new TargetFuture<Vec2>( sprite ) ),
+			new SteerTo<Vec2>( 1000, future = new TargetFuture<Vec2>( sprite, Vec2.FACTORY ) ),
 			new SteerDrive<Vec2>( 1000, 0, 0, 100 )
 		));
 	}
@@ -56,7 +56,7 @@ public class SteerPursuitExample extends SteerBasicExample
 
 		if (drawCircles)
 		{
-			drawCircle( gr, Color.red, future.getTarget( predator ), 8, true );	
+			drawCircle( gr, Color.red, future.getTarget( predator ).getPosition(), 8, true );	
 		}
 	}
 

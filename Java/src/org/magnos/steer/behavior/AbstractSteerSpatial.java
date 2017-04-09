@@ -1,9 +1,12 @@
 
 package org.magnos.steer.behavior;
 
-import org.magnos.steer.Steer;
-import org.magnos.steer.SteerSubject;
+import org.magnos.steer.Accumulator;
 import org.magnos.steer.Filter;
+import org.magnos.steer.Steer;
+import org.magnos.steer.SteerMath;
+import org.magnos.steer.SteerSubject;
+import org.magnos.steer.accum.AccumulateAverage;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
@@ -26,6 +29,12 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
     public SpatialDatabase<V> space;
     public SteerSubject<V> subject;
     public Filter<V> filter;
+    
+    public AbstractSteerSpatial( SpatialDatabase<V> space )
+    {
+        this.space = space;
+        this.max = DEFAULT_MAX_RESULTS;
+    }
     
     /**
      * Instantiates a new {@link AbstractSteerSpatial}.
@@ -115,6 +124,11 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
         return (S)this;
     }
     
+    public Accumulator<V> getAccumulator()
+    {
+        return AccumulateAverage.INSTANCE;
+    }
+    
     /**
      * The method invoked when a {@link SpatialEntity} is found in the field of view of the subject meeting all specified criteria.
      * 
@@ -164,20 +178,18 @@ public abstract class AbstractSteerSpatial<V extends Vec<V>, S extends Steer<V>>
         {
             return false;
         }
-
-        // Check if the spatial entity is in the field of view of the subject.
-        boolean inView = filter == null || filter.isValid( subject, entity ); 
-
-        // If it's in view, notify the implementing class.
-        if ( inView )
+        
+        // Check if the entity is valid.
+        if ( filter != null && !filter.isValid( subject, entity ) )
         {
-            float radiusDifference = minimumRadius - maximumRadius;
-            float delta = radiusDifference == 0 ? 1 : Math.min( 1f, overlap / radiusDifference );
-            
-            inView = onFoundInView( entity, overlap, index, queryOffset, queryRadius, queryMax, queryGroups, delta );
+            return false;
         }
-
-        return inView;
+        
+        float radiusDifference = minimumRadius - maximumRadius;
+        float radiusInside = overlap - maximumRadius;
+        float delta = SteerMath.clamp( radiusInside / radiusDifference, 0, 1 );
+        
+        return onFoundInView( entity, overlap, index, queryOffset, queryRadius, queryMax, queryGroups, delta );
     }
 
 }

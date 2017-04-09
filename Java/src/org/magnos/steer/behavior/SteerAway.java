@@ -3,6 +3,7 @@ package org.magnos.steer.behavior;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 /**
@@ -41,11 +42,11 @@ public class SteerAway<V extends Vec<V>> extends AbstractSteer<V, SteerAway<V>>
 	@Override
 	public float getForce( float elapsed, SteerSubject<V> subject, V out )
 	{
-		V targetPosition = target.getTarget( subject );
+		SpatialEntity<V> targetEntity = target.getTarget( subject );
 		
-		if (targetPosition != null)
+		if ( targetEntity != null )
 		{
-			return away(subject, targetPosition, out, this );
+			return away(subject, targetEntity.getPosition(), out, this );
 		}
 		
 		return Steer.NONE;

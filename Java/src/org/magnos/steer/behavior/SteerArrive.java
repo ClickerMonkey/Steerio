@@ -4,6 +4,7 @@ package org.magnos.steer.behavior;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -59,11 +60,11 @@ public class SteerArrive<V extends Vec<V>> extends AbstractSteer<V, SteerArrive<
     @Override
     public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
-        V targetPosition = target.getTarget( subject );
+        SpatialEntity<V> targetEntity = target.getTarget( subject );
 
-        if ( targetPosition != null )
+        if ( targetEntity != null )
         {
-            out.directi( subject.getPosition(), targetPosition );
+            out.directi( subject.getPosition(), targetEntity.getPosition() );
 
             float distance = out.length();
 

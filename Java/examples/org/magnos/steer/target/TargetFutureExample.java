@@ -47,7 +47,7 @@ public class TargetFutureExample extends SteerBasicExample
 		);
 		
 		SteerSprite chaser = newSprite( Color.orange, 15, 280, new SteerSet<Vec2>( 1000,
-			new SteerTo<Vec2>( 1000, future = new TargetFuture<Vec2>( sprite ) ),
+			new SteerTo<Vec2>( 1000, future = new TargetFuture<Vec2>( sprite, Vec2.FACTORY ) ),
 			new SteerDrive<Vec2>( 1000, 0, 0, 100 )
 		));
 		chaser.position.set( 50, 50 );

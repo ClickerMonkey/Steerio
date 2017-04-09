@@ -2,6 +2,7 @@ package org.magnos.steer.spatial.sap;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.magnos.steer.spatial.CollisionCallback;
@@ -27,6 +28,12 @@ public class SpatialSweepAndPrune implements SpatialDatabase<Vec2>
 	public SpatialSweepAndPrune()
 	{
 	}
+
+    @Override
+    public Iterator<SpatialEntity<Vec2>> iterator()
+    {
+        return null;
+    }
 	
 	@Override
 	public void add( SpatialEntity<Vec2> entity )

@@ -1,6 +1,7 @@
 
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.Accumulator;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Filter;
@@ -15,7 +16,10 @@ import org.magnos.steer.vec.Vec;
 public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, SteerAlignment<V>>
 {
     
+    public boolean weighted;
+    
     protected V force;
+    protected float forceMagnitude;
 
     /**
      * Instantiates a new SteerAlignment for all groups, maximum field of view, and up to {@link AbstractSteerSpatial#DEFAULT_MAX_RESULTS} affecting
@@ -194,16 +198,27 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
     {
         super( minimum, maximum, space, minimumRadius, maximumRadius, groups, max, filter, shared );
     }
+    
+    @Override
+    public void accumulateForces( float elapsed, SteerSubject<V> subject, Accumulator<V> accum )
+    {
+        accumulator = accum;
+        
+        search( subject );
+    }
 
     @Override
     public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         force = out; 
+        forceMagnitude = 0;
 
         int total = search( subject );
 
         if ( total > 0 )
         {
+            force.divi( forceMagnitude );
+            
             return forceFromVector( this, force );
         }
         
@@ -219,17 +234,18 @@ public class SteerAlignment<V extends Vec<V>> extends AbstractSteerSpatial<V, St
     @Override
     public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups, float delta )
     {
-        // Only steer subjects are applicable (because only they have direction).
-        boolean applicable = (entity instanceof SteerSubject);
-
-        if ( applicable )
+        if ( weighted )
         {
-            SteerSubject<V> ss = (SteerSubject<V>)entity;
-
-            force.addsi( ss.getDirection(), calculateMagnitude( delta ) );
+            force.addsi( entity.getDirection(), delta );
+            forceMagnitude += delta;
+        }
+        else
+        {
+            force.addi( entity.getDirection() );
+            forceMagnitude += 1.0;
         }
 
-        return applicable;
+        return true;
     }
 
 }

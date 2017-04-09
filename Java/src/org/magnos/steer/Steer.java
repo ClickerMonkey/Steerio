@@ -19,6 +19,9 @@ public interface Steer<V extends Vec<V>>
 	 */
 	public static final float NONE = 0;
 	
+	/**
+	 * The default shared flag (steering behaviors can be shared by default).
+	 */
 	public static boolean DEFAULT_SHARED = true;
 	
 	/**
@@ -32,6 +35,8 @@ public interface Steer<V extends Vec<V>>
 	 * 	The reference to the force to apply.
 	 */
 	public float getForce( float elapsed, SteerSubject<V> subject, V out );
+	
+	public void accumulateForces( float elapsed, SteerSubject<V> subject, Accumulator<V> accum );
 	
 	/**
 	 * Whether the steer can be/is shared by several subjects. If this is true

@@ -1,6 +1,8 @@
 
 package org.magnos.steer.spatial.grid;
 
+import java.util.Iterator;
+
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -77,6 +79,12 @@ public class SpatialGrid<V extends Vec<V>> implements SpatialDatabase<V>
         {
             cells[i] = new SpatialGridCell<V>( getCellIndexFromIndex( i, offset.create() ), i, this );
         }
+    }
+
+    @Override
+    public Iterator<SpatialEntity<V>> iterator()
+    {
+        return null;
     }
 
     public V getCellIndexFromIndex( int at, V out )

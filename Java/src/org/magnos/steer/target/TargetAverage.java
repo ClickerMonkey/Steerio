@@ -1,7 +1,7 @@
 package org.magnos.steer.target;
 
-import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Filter;
+import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -39,7 +39,7 @@ public class TargetAverage<V extends Vec<V>> implements Target<V>, SearchCallbac
 	}
 	
 	@Override
-	public V getTarget( SteerSubject<V> s )
+	public SpatialEntity<V> getTarget( SteerSubject<V> s )
 	{
 	    subject = s;
 		average.clear();

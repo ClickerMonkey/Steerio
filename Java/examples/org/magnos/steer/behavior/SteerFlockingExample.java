@@ -4,17 +4,15 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.magnos.steer.Steer;
+import org.magnos.steer.SteerAccumulate;
 import org.magnos.steer.SteerMath;
-import org.magnos.steer.SteerModifier;
 import org.magnos.steer.SteerSet;
-import org.magnos.steer.filter.FilterView;
+import org.magnos.steer.accum.AccumulateFirst;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
 import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.spatial.array.SpatialArray;
-import org.magnos.steer.target.TargetLocal;
 import org.magnos.steer.test.SteerSprite;
-import org.magnos.steer.util.FieldOfView;
 import org.magnos.steer.vec.Vec2;
 
 import com.gameprogblog.engine.Game;
@@ -40,7 +38,7 @@ public class SteerFlockingExample extends SteerBasicExample
 	public Steer<Vec2> steerings;
 	public float queryAlignment = 80f;
 	public float queryCohesion = 140f;
-	public float querySeparation = 40f;
+	public float querySeparation = 50f;
 	public float queryUser = 80f;
 	public SpatialDatabase<Vec2> database;
 	
@@ -58,13 +56,20 @@ public class SteerFlockingExample extends SteerBasicExample
 			new SteerWander2( 1000, 0, 100, 150, 80 )
 		));
 		
-		steerings = new SteerSet<Vec2>(
+		steerings = new SteerAccumulate<Vec2>( new AccumulateFirst<Vec2>( Vec2.FACTORY ), 
+		    new SteerSeparation<Vec2>( database, Vec2.FACTORY ).withDropOff( 50, 20 ).withRange( 100, 1000 ),
+		    new SteerWander2( 400, 0, 80, 80, 60 )
+		);
+		
+		/*
+		steerings = new SteerSet<Vec2>( 1000,
 			new SteerAway<Vec2>( 1000, new TargetLocal<Vec2>( predator, 400 ) ),
-			new SteerModifier<Vec2>( 1000, new SteerSeparation<Vec2>( 1000, database, querySeparation, Vec2.FACTORY ), 3.0f ),
+			new SteerSeparation<Vec2>( database, Vec2.FACTORY ).withDropOff( querySeparation, 0 ).withRange( 100, 1000 ),
 			new SteerCohesion<Vec2>( 1000, database, queryCohesion, Vec2.FACTORY ),
 			new SteerModifier<Vec2>( 1000, new SteerAlignment<Vec2>( 1000, database, queryAlignment, -1, 16, FilterView.fromDegrees( 270, FieldOfView.HALF, Vec2.class ) ), 1.0f ),
-			new SteerModifier<Vec2>( 1000, new SteerWander2( 1000, 0, 80, 80, 60 ), 0.4f )
+			new SteerWander2( 400, 0, 80, 80, 60 )
 		);
+		*/
 
 		for (int i = 0; i < 16; i++) 
 		{

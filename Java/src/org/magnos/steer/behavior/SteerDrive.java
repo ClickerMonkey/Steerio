@@ -28,12 +28,12 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V, SteerDrive<V>
     
     public SteerDrive(float magnitude, float thrust, float brake, float deceleration, V ... turnForce)
     {
-        this( magnitude, magnitude, thrust, brake, deceleration, DEFAULT_SHARED, turnForce );
+        this( NONE, magnitude, thrust, brake, deceleration, DEFAULT_SHARED, turnForce );
     }
     
     public SteerDrive(float magnitude, float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
     {
-        this( magnitude, magnitude, thrust, brake, deceleration, shared, turnForce );
+        this( NONE, magnitude, thrust, brake, deceleration, shared, turnForce );
     }
 	
 	public SteerDrive(float minimum, float maximum, float thrust, float brake, float deceleration, boolean shared, V ... turnForce)
@@ -75,7 +75,7 @@ public class SteerDrive<V extends Vec<V>> extends AbstractSteer<V, SteerDrive<V>
 		
 		if ( speed > 0.001f ) 
 		{
-		    out.addsi( vel, -Math.min( speed, deceleration * elapsed ) / speed );
+		 out.addsi( vel, -Math.max( speed, deceleration * elapsed ) / speed );
 		}
 		
 		return forceFromVector( this, out );

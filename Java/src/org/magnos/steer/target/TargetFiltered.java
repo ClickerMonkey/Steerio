@@ -4,6 +4,7 @@ package org.magnos.steer.target;
 import org.magnos.steer.Filter;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -20,9 +21,9 @@ public class TargetFiltered<V extends Vec<V>> implements Target<V>
     }
 
     @Override
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
-        V position = target.getTarget( subject );
+        SpatialEntity<V> position = target.getTarget( subject );
         
         if ( position != null && !filter.isValid( subject, position ) )
         {

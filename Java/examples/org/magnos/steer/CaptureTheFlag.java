@@ -364,7 +364,8 @@ public class CaptureTheFlag extends SteerBasicExample
 	        float offvelocity          = SteerMath.randomFloat( PLAYER_VEL_MIN, PLAYER_VEL_MAX );
 	        
 	        off.sprite = new SteerSprite( my.color, PLAYER_RADIUS, 
-	            offvelocity, 
+	            offvelocity,
+	            // new SteerContext<Vec2>( PLAYER_ACC_MAX, new boolean[] {false, false, true, true, false, true, true, true, true},
 	            new SteerSet<Vec2>( PLAYER_ACC_MAX - 1, 
 	                stayInside,
 	                separation,
@@ -721,26 +722,6 @@ public class CaptureTheFlag extends SteerBasicExample
             {
                 drawText( gr, off.tags, team.color, off.sprite.position, 0.5f, 1.7f );
             }
-        }
-    }
-
-    // Draws an obstacle.
-    public void drawObstacle( Graphics2D gr, SpatialEntity<Vec2> obs )
-    {
-        if ( obs instanceof Sphere )
-        {
-            Sphere<Vec2> sphere = (Sphere<Vec2>)obs;
-            drawCircle( gr, Color.white, sphere.position, sphere.radius, false );
-        }
-        if ( obs instanceof Segment )
-        {
-            Segment<Vec2> segment = (Segment<Vec2>)obs;
-            drawLine( gr, Color.white, segment.start, segment.end, false );
-        }
-        if ( obs instanceof Bounds )
-        {
-            Bounds<Vec2> bounds = (Bounds<Vec2>)obs;
-            drawBounds( gr, Color.white, new Bound2( bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ), false );
         }
     }
 

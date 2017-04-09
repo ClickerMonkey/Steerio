@@ -17,6 +17,14 @@ public class SteerSeparation<V extends Vec<V>> extends AbstractSteerSpatial<V, S
     protected V towards;
     protected V force;
     
+    public SteerSeparation( SpatialDatabase<V> space, V template )
+    {
+        super( space );
+        
+        this.towards = template.create();
+        this.force = template.create();
+    }
+    
     public SteerSeparation(float minimum, float maximum, SpatialDatabase<V> space, float query, V template)
     {
         this( minimum, maximum, space, query, SpatialDatabase.ALL_GROUPS, DEFAULT_MAX_RESULTS, null, DEFAULT_SHARED, template );
@@ -89,9 +97,9 @@ public class SteerSeparation<V extends Vec<V>> extends AbstractSteerSpatial<V, S
 	public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups, float delta )
 	{
 		towards.directi( entity.getPosition(), queryOffset );
-		towards.normalize();
+		towards.length( calculateMagnitude( delta ) );
 		
-		force.addsi( towards, delta );
+		force.addi( towards );
 		
 		return true;
 	}

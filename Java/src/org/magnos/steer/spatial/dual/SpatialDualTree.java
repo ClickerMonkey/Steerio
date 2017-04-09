@@ -1,6 +1,10 @@
 package org.magnos.steer.spatial.dual;
 
 
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Queue;
+
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -15,12 +19,20 @@ public class SpatialDualTree<V extends Vec<V>> implements SpatialDatabase<V>
 	public int desiredLeafSize;
 	public int refreshThreshold;
 	public SpatialDualNode<V> root;
+	private SpatialDualTreeIterator iterator;
 	
 	public SpatialDualTree(V min, V max, int desiredLeafSize, int refreshThreshold)
 	{
 		this.root = new SpatialDualNode<V>( null, 0, min, max );
 		this.desiredLeafSize = desiredLeafSize;
 		this.refreshThreshold = refreshThreshold;
+		this.iterator = new SpatialDualTreeIterator();
+	}
+	
+	@Override
+	public Iterator<SpatialEntity<V>> iterator()
+	{
+	    return iterator.hasNext() ? new SpatialDualTreeIterator() : iterator.reset();
 	}
 	
 	@Override
@@ -76,6 +88,50 @@ public class SpatialDualTree<V extends Vec<V>> implements SpatialDatabase<V>
 		}
 		
 		return root.knn( point, k, collidesWith, nearest, distance, 0 );
+	}
+	
+	private class SpatialDualTreeIterator implements Iterator<SpatialEntity<V>>
+	{
+	    private Queue<SpatialDualNode<V>> queue;
+	    
+	    public SpatialDualTreeIterator()
+	    {
+	        queue = new ArrayDeque<SpatialDualNode<V>>();
+	    }
+	    
+	    // TODO
+	    public SpatialDualTreeIterator reset()
+	    {
+	        queue.clear();
+	        
+	        if ( !root.isEmpty() )
+	        {
+	            queue.offer( root );   
+	        }
+	        
+	        return this;
+	    }
+
+        @Override
+        public boolean hasNext()
+        {
+            return queue.size() > 0;
+        }
+
+        @Override
+        public SpatialEntity<V> next()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public void remove()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+	    
 	}
 
 }

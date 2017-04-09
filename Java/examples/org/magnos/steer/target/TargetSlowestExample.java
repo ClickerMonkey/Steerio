@@ -65,7 +65,7 @@ public class TargetSlowestExample extends SteerBasicExample
 	{
 		super.draw( state, gr, scene );
 
-		drawCircle( gr, Color.red, slowest.target, 5, false );
+		drawCircle( gr, Color.red, slowest.slowest.getPosition(), 5, false );
 		drawCircle( gr, Color.orange, slowest.queryPosition, slowest.queryRadius, false );
 	}
 	

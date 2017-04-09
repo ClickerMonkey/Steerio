@@ -48,7 +48,7 @@ public class SteerEvadeExample extends SteerBasicExample
 	{	    
 		sprite = newSprite( Color.blue, 15, 200, new SteerWander2( 1000, 0, 100, 150, 80 ) );
 		
-		future = new TargetFuture<Vec2>( sprite );
+		future = new TargetFuture<Vec2>( sprite, Vec2.FACTORY );
 		local = new TargetLocal<Vec2>( future, 200 );
 		
 		scared = newSprite( Color.orange, 15, 300, new SteerSet<Vec2>( 1000,

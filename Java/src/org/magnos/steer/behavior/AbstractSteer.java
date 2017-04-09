@@ -1,9 +1,11 @@
 
 package org.magnos.steer.behavior;
 
+import org.magnos.steer.Accumulator;
 import org.magnos.steer.Steer;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
+import org.magnos.steer.accum.AccumulateFirst;
 import org.magnos.steer.vec.Vec;
 import org.magnos.steer.vec.Vec2;
 
@@ -16,6 +18,7 @@ public abstract class AbstractSteer<V extends Vec<V>, S extends Steer<V>> implem
 
     protected float maximum;
     protected float minimum;
+    protected Accumulator<V> accumulator;
     
     public AbstractSteer()
     {
@@ -31,6 +34,19 @@ public abstract class AbstractSteer<V extends Vec<V>, S extends Steer<V>> implem
     {
         this.minimum = minimum;
         this.maximum = maximum;
+    }
+    
+    public float getForce( float elapsed, SteerSubject<V> subject, V out )
+    {
+        Accumulator<V> accum = getAccumulator();
+        accum.start( out );
+        accumulateForces( elapsed, subject, accum );
+        return accum.end();
+    }
+    
+    public Accumulator<V> getAccumulator()
+    {
+        return AccumulateFirst.INSTANCE;
     }
     
     public S withMagnitude( float magnitude )
@@ -91,9 +107,9 @@ public abstract class AbstractSteer<V extends Vec<V>, S extends Steer<V>> implem
     {
         float magnitude = force.normalize();
         
-        if ( magnitude == 0 )
+        if ( magnitude == Steer.NONE )
         {
-            return 0;
+            return Steer.NONE;
         }
         
         return SteerMath.clamp( magnitude, steer.getMinimum(), steer.getMaximum() );

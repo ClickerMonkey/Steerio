@@ -3,6 +3,7 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -30,23 +31,23 @@ public class TargetInterpose<V extends Vec<V>> implements Target<V>
     }
 
     @Override
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
-        V t0 = target0.getTarget( subject );
+        SpatialEntity<V> t0 = target0.getTarget( subject );
 
         if ( t0 == null )
         {
             return null;
         }
 
-        V t1 = target1.getTarget( subject );
+        SpatialEntity<V> t1 = target1.getTarget( subject );
 
         if ( t1 == null )
         {
             return null;
         }
 
-        return interpose.interpolatei( t0, t1, delta );
+        return interpose.interpolatei( t0.getPosition(), t1.getPosition(), delta );
     }
 
 }

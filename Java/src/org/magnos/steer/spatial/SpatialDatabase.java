@@ -8,7 +8,7 @@ import org.magnos.steer.vec.Vec;
  * A data structure which stores entities that exist in 2d space for querying
  * and collision handling.
  */
-public interface SpatialDatabase<V extends Vec<V>>
+public interface SpatialDatabase<V extends Vec<V>> extends Iterable<SpatialEntity<V>>
 {
 
 	public static final long ALL_GROUPS = 0xFFFFFFFFFFFFFFFFL;

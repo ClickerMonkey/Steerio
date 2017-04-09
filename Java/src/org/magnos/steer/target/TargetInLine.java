@@ -4,6 +4,7 @@ package org.magnos.steer.target;
 import org.magnos.steer.SteerMath;
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 
@@ -23,25 +24,23 @@ public class TargetInLine<V extends Vec<V>> implements Target<V>
     }
 
     @Override
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
-        V s = target0.getTarget( subject );
+        SpatialEntity<V> start = target0.getTarget( subject );
 
-        if ( s == null )
+        if ( start == null )
         {
             return null;
         }
 
-        V e = target1.getTarget( subject );
+        SpatialEntity<V> end = target1.getTarget( subject );
 
-        if ( e == null )
+        if ( end == null )
         {
             return null;
         }
 
-        V v = subject.getPosition();
-
-        return SteerMath.closest( s, e, v, closest );
+        return SteerMath.closest( start.getPosition(), end.getPosition(), subject.getPosition(), closest );
     }
 
 }

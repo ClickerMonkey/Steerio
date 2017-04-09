@@ -2,6 +2,7 @@
 package org.magnos.steer.spatial.array;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
@@ -17,10 +18,18 @@ public class SpatialArray<V extends Vec<V>> implements SpatialDatabase<V>
 
 	private SpatialEntity<V>[] entities;
 	private int count;
-
+	private SpatialArrayIterator iterator;
+	    
 	public SpatialArray( int initialCapacity )
 	{
 		this.entities = new SpatialEntity[initialCapacity];
+		this.iterator = new SpatialArrayIterator();
+	}
+	
+	@Override
+	public Iterator<SpatialEntity<V>> iterator()
+	{
+	    return iterator.hasNext() ? new SpatialArrayIterator() : iterator.reset();
 	}
 
 	@Override
@@ -186,6 +195,54 @@ public class SpatialArray<V extends Vec<V>> implements SpatialDatabase<V>
 		}
 
 		return near;
+	}
+	
+	private class SpatialArrayIterator implements Iterator<SpatialEntity<V>>
+	{
+	    
+	    private int index;
+	    private boolean removed;
+	    
+	    public SpatialArrayIterator()
+	    {
+	        index = Integer.MAX_VALUE;
+	        removed = false;
+	    }
+	    
+	    public SpatialArrayIterator reset()
+	    {
+	        index = 0;
+	        removed = false;
+	        
+	        return this;
+	    }
+
+        @Override
+        public boolean hasNext()
+        {
+            return index < count;
+        }
+
+        @Override
+        public SpatialEntity<V> next()
+        {
+            removed = false;
+            
+            return entities[ index++ ];
+        }
+
+        @Override
+        public void remove()
+        {
+            if ( !removed )
+            {
+                index--;
+                count--;
+                entities[ index ] = entities[ count ];   
+                removed = true;
+            }
+        }
+	    
 	}
 
 }

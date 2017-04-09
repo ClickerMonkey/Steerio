@@ -2,6 +2,7 @@ package org.magnos.steer.target;
 
 import org.magnos.steer.SteerSubject;
 import org.magnos.steer.Target;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.vec.Vec;
 
 // when your target is not relative to you, it's relative to another steer subject.
@@ -18,7 +19,7 @@ public class TargetRelative<V extends Vec<V>> implements Target<V>
     }
     
     @Override
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
         return target.getTarget( relativeTo );
     }

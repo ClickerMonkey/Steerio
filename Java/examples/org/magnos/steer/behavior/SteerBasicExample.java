@@ -16,6 +16,11 @@ import java.awt.geom.Rectangle2D;
 
 import org.magnos.steer.Path;
 import org.magnos.steer.Steer;
+import org.magnos.steer.SteerSubject;
+import org.magnos.steer.obstacle.Bounds;
+import org.magnos.steer.obstacle.Segment;
+import org.magnos.steer.obstacle.Sphere;
+import org.magnos.steer.spatial.SpatialEntity;
 import org.magnos.steer.test.SteerSprite;
 import org.magnos.steer.vec.Vec2;
 
@@ -177,6 +182,14 @@ public abstract class SteerBasicExample implements Game
 
 		line.setLine( v.x, v.y - radius, v.x, v.y + radius );
 		drawShape( gr, line, wrap, edges );
+	}
+	
+	public static void drawSteerForce( Graphics2D gr, Steer<Vec2> steer, SteerSubject<Vec2> subject, Color color, Vec2 offset, boolean wrap )
+	{
+	    Vec2 force = new Vec2();
+	    force.muli( steer.getForce( 0, subject, force ) );
+	    
+	    drawForce( gr, color, offset, force, wrap );
 	}
 
 	public static void drawForce( Graphics2D gr, Color color, Vec2 offset, Vec2 force, boolean wrap )
@@ -378,6 +391,30 @@ public abstract class SteerBasicExample implements Game
 		while (v.y > bounds.getMaxY())
 			v.y -= bounds.getHeight();
 	}
+
+	public void drawObstacle( Graphics2D gr, SpatialEntity<Vec2> obs )
+	{
+	    drawObstacle( gr, obs, Color.white );
+	}
+	
+    public void drawObstacle( Graphics2D gr, SpatialEntity<Vec2> obs, Color color )
+    {
+        if ( obs instanceof Sphere )
+        {
+            Sphere<Vec2> sphere = (Sphere<Vec2>)obs;
+            drawCircle( gr, color, sphere.position, sphere.radius, false );
+        }
+        if ( obs instanceof Segment )
+        {
+            Segment<Vec2> segment = (Segment<Vec2>)obs;
+            drawLine( gr, color, segment.start, segment.end, false );
+        }
+        if ( obs instanceof Bounds )
+        {
+            Bounds<Vec2> bounds = (Bounds<Vec2>)obs;
+            drawBounds( gr, color, new Bound2( bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ), false );
+        }
+    }
 
 	@Override
 	public void destroy()

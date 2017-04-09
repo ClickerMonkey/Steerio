@@ -12,9 +12,9 @@ public abstract class AbstractSpatialEntity<V extends Vec<V>> implements Spatial
         return out.set( getPosition() );
     }
     
-    public V getTarget( SteerSubject<V> subject )
+    public SpatialEntity<V> getTarget( SteerSubject<V> subject )
     {
-        return getPosition();
+        return this;
     }
     
     public float getDistanceAndNormal( V origin, V lookahead, V outNormal )

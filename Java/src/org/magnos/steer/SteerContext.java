@@ -106,7 +106,7 @@ public class SteerContext<V extends Vec<V>> extends AbstractSteer<V, SteerContex
                 
                 V normalk = normals[ k ];
                 
-                float match = normali.dot( normalk );                
+                float match = normali.dot( normalk );            
                 
                 if ( match <= -matchThreshold )
                 {

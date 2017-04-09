@@ -17,7 +17,13 @@ public class SteerCohesion<V extends Vec<V>> extends AbstractSteerSpatial<V, Ste
 {
 
     private final V center;
-    private float centerMagnitude;
+    
+    public SteerCohesion( SpatialDatabase<V> space, V template )
+    {
+        super( space );
+        
+        this.center = template.create();
+    }
 
     public SteerCohesion( float minimum, float maximum, SpatialDatabase<V> space, float query, V template )
     {
@@ -70,13 +76,12 @@ public class SteerCohesion<V extends Vec<V>> extends AbstractSteerSpatial<V, Ste
     public float getForce( float elapsed, SteerSubject<V> subject, V out )
     {
         center.clear();
-        centerMagnitude = 0;
 
-        search( subject );
+        int total = search( subject );
 
-        if ( centerMagnitude > 0 )
+        if ( total > 0 )
         {
-            center.divi( centerMagnitude );
+            center.divi( total );
 
             return towards( subject, center, out, this );
         }
@@ -87,8 +92,7 @@ public class SteerCohesion<V extends Vec<V>> extends AbstractSteerSpatial<V, Ste
     @Override
     public boolean onFoundInView( SpatialEntity<V> entity, float overlap, int index, V queryOffset, float queryRadius, int queryMax, long queryGroups, float delta )
     {
-        center.addsi( entity.getPosition(), delta );
-        centerMagnitude += delta;
+        center.addi( entity.getPosition() );
 
         return true;
     }

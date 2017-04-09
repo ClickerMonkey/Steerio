@@ -1,6 +1,8 @@
 
 package org.magnos.steer.spatial.quad;
 
+import java.util.Iterator;
+
 import org.magnos.steer.spatial.CollisionCallback;
 import org.magnos.steer.spatial.SearchCallback;
 import org.magnos.steer.spatial.SpatialDatabase;
@@ -21,6 +23,12 @@ public class SpatialQuadTree<V extends Vec<V>> implements SpatialDatabase<V>
         this.root = new SpatialQuadNode<V>( null, min, max );
         this.desiredLeafSize = desiredLeafSize;
         this.refreshThreshold = refreshThreshold;
+    }
+
+    @Override
+    public Iterator<SpatialEntity<V>> iterator()
+    {
+        return null;
     }
 
     @Override

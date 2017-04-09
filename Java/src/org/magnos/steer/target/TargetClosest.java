@@ -37,7 +37,7 @@ public class TargetClosest<V extends Vec<V>> implements Target<V>
 	}
 	
 	@Override
-	public V getTarget( SteerSubject<V> subject )
+	public SpatialEntity<V> getTarget( SteerSubject<V> subject )
 	{
 		chosen = null;
 		
@@ -60,7 +60,7 @@ public class TargetClosest<V extends Vec<V>> implements Target<V>
 			}
 		}
 		
-		return ( chosen == null  ? null : chosen.getPosition() );
+		return chosen;
 	}
 
 }
